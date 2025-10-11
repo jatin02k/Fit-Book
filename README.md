@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FitBook: Single-Vendor Appointment Booking MVP
 
-## Getting Started
+**Project Status:** Technical Blueprint Complete, Core Backend Logic in Development (Phase A3)
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+*FitBook* is a single-vendor scheduling application that replaces manual booking for service businesses. Its core function is the **Crux Logic**, which instantly calculates and presents bookable time slots by dynamically filtering business hours, service duration, and real-time appointments. The focus is on minimizing administrative overhead and reducing no-shows.
+
+### Core Technology Stack
+
+* **Frontend:** Next.js (App Router) + Tailwind CSS
+* **Backend:** Next.js Route Handlers (Node.js)
+* **Database:** Supabase (PostgreSQL)
+
+### Getting Started
+
+1. **Dependencies:** Ensure Node.js is installed.
+   ```bash
+   npm install
+   ```
+   
+2. **Database Setup:**
+
+  Create a Supabase project, run the schema SQL, and seed the required data in the services and business_hours tables (Phase A2).
+  
+  Install the Supabase CLI (supabase login, supabase link YOUR_PROJECT_REF_ID).
+  
+  Generate local TypeScript types:
+
+  ```Bash
+  supabase gen types typescript --linked > src/types/supabase.ts
+  ```
+
+3. **Environment Variables:** Create a .env.local file in the root of the project with your keys:
+
+```
+  NEXT_PUBLIC_SUPABASE_URL=YOUR_PROJECT_URL_HERE
+  NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY_HERE
+  SUPABASE_SERVICE_ROLE_KEY=YOUR_SECRET_SERVICE_ROLE_KEY
+  Note on SUPABASE_SERVICE_ROLE_KEY: This key is highly sensitive as it grants full admin access to the database (bypassing RLS). Use it ONLY in server environments (Route Handlers).
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. **Run Development Server:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Bash
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npm run dev
+Access the application at http://localhost:3000. Test the Crux API manually via your browser:
+http://localhost:3000/api/public/availability?serviceId=[ID]&date=[YYYY-MM-DD]
 
-## Learn More
+### Coding Flow Checkpoint
+We are currently completing Phase A3: Crux Logic API (/api/public/availability). This is the core algorithm that calculates available time slots.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Next Step:
+Proceed to Phase A4: Booking API by implementing the /api/public/bookings/route.ts handler (C-4, C-5 Logic).
