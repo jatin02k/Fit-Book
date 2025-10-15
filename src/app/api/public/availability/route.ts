@@ -1,17 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
+// Define the type for the new API response structure
+interface TimeSlot {
+    time: string; // e.g., "09:00 AM"
+    isAvailable: boolean;
+}
+
 const BUFFER_MINUTES = 15;
 
 export async function GET(request: Request) {
   const supabase = await createClient();
   const { searchParams } = new URL(request.url);
 
-  //get inputs ( serviceId and date )
   const serviceId = searchParams.get("serviceId");
   const dateString = searchParams.get("date");
 
-  // validate inputs available or not
   if (!serviceId || !dateString) {
     return NextResponse.json(
       { error: "Missing req paramets. serviceId and date" },
@@ -19,7 +23,7 @@ export async function GET(request: Request) {
     );
   }
 
-  //convert inputs from string to object and get dayOfWeek
+  // Convert inputs from string to object and get dayOfWeek
   const targetDate = new Date(dateString);
   if (isNaN(targetDate.getTime())) {
     return NextResponse.json(
@@ -29,55 +33,54 @@ export async function GET(request: Request) {
   }
   const dayOfWeek = targetDate.getDay();
 
-  // logic to define and fetch service duration, slots_duration , business_hours and existing Bookings.
+  // --- Fetching Data ---
   try {
     // a. fetch service duration from service table
     const { data: serviceData, error: serviceError } = await supabase
       .from("services")
       .select("duration_minutes")
       .eq("id", serviceId)
-      .single(); // Use single() because we expect one result.
+      .single(); 
 
-    // error handling. If service not found, stop here.
     if (!serviceData || serviceError) {
+      // Return 404 if service ID is invalid
       return NextResponse.json(
         { error: "Service Not Found or Database Error." },
         { status: 404 }
       );
     }
 
-    //Incase service data is found. calculate service and slot duration.
-    const serviceDuration = serviceData.duration_minutes; //original serive time only
-    const slotDuration = serviceDuration + BUFFER_MINUTES; //total slot time
+    const serviceDuration = serviceData.duration_minutes;
+    // The total time block consumed by a single service booking
+    const slotDuration = serviceDuration + BUFFER_MINUTES; 
+    const slotDurationMs = slotDuration * 60 * 1000;
+
 
     // b. fetch business Hours from business_hours table
     const { data: hoursData, error: hoursError } = await supabase
       .from("business_hours")
       .select("open_time, close_time")
-      .eq("day_of_week", dayOfWeek) // Match the numerical day (e.g., 1 for Monday)
+      .eq("day_of_week", dayOfWeek)
       .single();
 
     if (!hoursData || hoursError) {
-      //businees closed on this day
-      return NextResponse.json({ availableSlots: [] }, { status: 404 });
+      // Business closed on this day.
+      return NextResponse.json({ fullTimeBlock: [] }, { status: 200 });
     }
 
     // c. fetch existing booking from appointments table
-    // define 24-hr window for database query
-    // Corrected (Safer) Date Handling:
-    const startOfDayObject = new Date(dateString); // Clone
+    const startOfDayObject = new Date(dateString);
     startOfDayObject.setHours(0, 0, 0, 0);
     const startOfDay = startOfDayObject.toISOString();
 
-    const endOfDayObject = new Date(dateString); // Clone
+    const endOfDayObject = new Date(dateString);
     endOfDayObject.setHours(23, 59, 59, 999);
     const endOfDay = endOfDayObject.toISOString();
 
     const { data: appointments, error: appointmentsError } = await supabase
       .from("appointments")
       .select("start_time, end_time")
-      .gte("start_time", startOfDay)
-      .lte("end_time", endOfDay);
+      .or(`and(start_time.lt.${endOfDay},end_time.gt.${startOfDay})`);
 
     if (appointmentsError) {
       return NextResponse.json(
@@ -86,15 +89,15 @@ export async function GET(request: Request) {
       );
     }
 
-    //... (after fetching data) ...
-    // Helper to combine date  string (YYYY-MM-DD) and time string (HH:MM:SS) into a single Date object
+    // --- Time Calculation (CRUX LOGIC) ---
+    
     const createDateTime = (timeString: string): Date => {
       return new Date(`${dateString}T${timeString}`);
     };
+    
     const businessOpen = createDateTime(hoursData.open_time);
     const businessClose = createDateTime(hoursData.close_time);
 
-    //convert raw booking data into objects for easier manuplation
     const bookedSlots: { start: Date; end: Date }[] = appointments.map(
       (appt) => ({
         start: new Date(appt.start_time),
@@ -102,43 +105,60 @@ export async function GET(request: Request) {
       })
     );
 
-    const availableSlots: string[] = [];
+    // 💡 NEW OUTPUT ARRAY: Will hold all slots (available and unavailable)
+    const fullTimeBlock: TimeSlot[] = [];
+    
+    // 💡 Logic Correction: Iterate through every potential slot at a fixed interval
     let currentTime = businessOpen;
-    // The loop continues as long as a full slot fits before the business closing time.
-    // slotDuration * 60 * 1000 converts minutes to milliseconds.
-    const slotDurationMs = slotDuration * 60 * 1000;
+    const now = new Date(); // Current time for "past slot" check
+
     while (currentTime.getTime() + slotDurationMs <= businessClose.getTime()) {
-      const potentialSlotStart = currentTime;
+      const potentialSlotStart = new Date(currentTime); // Use a copy
       const potentialSlotEnd = new Date(
         potentialSlotStart.getTime() + slotDurationMs
       );
+      
       let isConflict = false;
-      for (const booked of bookedSlots) {
-        if (
-          potentialSlotStart.getTime() < booked.end.getTime() &&
-          potentialSlotEnd.getTime() > booked.start.getTime()
-        ) {
-          isConflict = true;
-          // If conflict found, jump the current time past the booked slot to continue searching
-          currentTime = booked.end;
-          break;
+      
+      // 1. Check if the slot is in the past
+      if (potentialSlotStart.getTime() < now.getTime()) {
+          isConflict = true; // Treat past slots as unavailable
+      }
+      
+      // 2. Conflict Check against existing bookings
+      if (!isConflict) {
+        for (const booked of bookedSlots) {
+          // Conflict if the new slot overlaps with the booked slot
+          if (
+            potentialSlotStart.getTime() < booked.end.getTime() &&
+            potentialSlotEnd.getTime() > booked.start.getTime()
+          ) {
+            isConflict = true;
+            break;
+          }
         }
       }
-      if (!isConflict) {
-        // If no conflict, add the start time to the list (format as HH:MM)
-        const hours = potentialSlotStart.getHours().toString().padStart(2, "0");
-        const minutes = potentialSlotStart
-          .getMinutes()
-          .toString()
-          .padStart(2, "0");
-        availableSlots.push(`${hours}:${minutes}`);
+      
+      // 3. Store the slot status in the new array
+      const timeString = potentialSlotStart.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          hour12: true 
+      });
 
-        // Move to the start of the next potential slot (the end of the current one)
-        currentTime = potentialSlotEnd;
-      }
+      fullTimeBlock.push({
+          time: timeString,
+          isAvailable: !isConflict,
+      });
+
+      // Move to the next potential start time by the full slot duration
+      currentTime = potentialSlotEnd; 
     }
+    
     // 5. Return the result
-    return NextResponse.json({ availableSlots }, { status: 200 });
+    // 💡 CHANGE: Return the fullTimeBlock instead of just availableSlots
+    return NextResponse.json({ fullTimeBlock }, { status: 200 });
+    
   } catch (error) {
     console.log("Internal Server Error in Crux Logic:", error);
     return NextResponse.json(
