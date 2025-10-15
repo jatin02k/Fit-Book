@@ -121,19 +121,25 @@ export type Database = {
       }
       services: {
         Row: {
+          description: string | null
           duration_minutes: number
+          features: string[] | null
           id: string
           name: string
           price: number
         }
         Insert: {
+          description?: string | null
           duration_minutes: number
+          features?: string[] | null
           id?: string
           name: string
           price: number
         }
         Update: {
+          description?: string | null
           duration_minutes?: number
+          features?: string[] | null
           id?: string
           name?: string
           price?: number
