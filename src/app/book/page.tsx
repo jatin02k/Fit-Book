@@ -5,7 +5,7 @@ import { AvailabilitySelector } from '@/app/components/AvailabilitySelector'; //
 import { Button } from "../components/ui/button";
 //server wrapper
 
-export default async function BookingPage({
+export default async function SlotSelectionPage({
     searchParams,
 }: {
     searchParams: { serviceId?: string };
