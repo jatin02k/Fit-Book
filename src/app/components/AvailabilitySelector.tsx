@@ -39,6 +39,18 @@ export function AvailabilitySelector({ serviceId, serviceName, durationMinutes, 
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
     // const router = useRouter();
+    const to24Hour = (t: string) => {
+        // expects like "09:00 AM" or "12:30 PM"
+        const [time, meridiem] = t.split(' ');
+        let [hh, mm] = time.split(':').map(Number);
+        if (meridiem === 'PM' && hh !== 12) hh += 12;
+        if (meridiem === 'AM' && hh === 12) hh = 0;
+        return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+      };
+      
+      // inside your JSX, ensure selectedDate && selectedTime are set
+      const dateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
+      const timeParam = selectedTime ? to24Hour(selectedTime) : '';
 
     useEffect(() => {
         if (!selectedDate) {
@@ -50,7 +62,7 @@ export function AvailabilitySelector({ serviceId, serviceName, durationMinutes, 
             setTimeSlots([]);
             setSelectedTime(null);
 
-            const dateString = format(selectedDate, 'yyyy-MM-dd');
+
             const url = `/api/public/availability?serviceId=${serviceId}&date=${dateString}`
 
             try {
@@ -184,9 +196,8 @@ export function AvailabilitySelector({ serviceId, serviceName, durationMinutes, 
                                     </p>
                                 </div>
                                 <Link
-                                    href={`/book?serviceId=${serviceId}/summary`}
+                                    href={`/checkout?serviceId=${serviceId}&date=${dateString}&time=${timeParam}`}
                                     className="ml-auto"
-                                    passHref
                                 >
                                     <Button
                                         className="bg-black text-white hover:bg-gray-800"

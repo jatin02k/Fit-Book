@@ -2,8 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import * as crypto from "crypto";
 import { ZodError } from "zod";
-import { BookingInput, bookingSchema } from "@/lib/validation/bookingSchema";
-import { error } from "console";
+import { bookingSchema } from "@/lib/validation/bookingSchema";
 
 const BUFFER_MINUTES = 15;
 
@@ -75,7 +74,7 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
-    //d. COMMIT THE BOOKING (Database Write)
+    //d. COMMIT THE BOOKING Cancellation(Database Write)
     const cancellationLinkUuid = crypto.randomUUID();
     const { error: insertError } = await supabase
       .from("appointments")
