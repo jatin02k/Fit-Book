@@ -26,6 +26,7 @@ export async function GET(request: Request) {
       serviceName: appt.services?.name || "Unknown Service",
       serviceDuration: appt.services?.duration_minutes,
       cancellationLink: `/admin/cancel/${appt.cancellation_link_uuid}`,
+      
     }));
     return NextResponse.json(formattedAppointments, { status: 200 });
   } catch (error) {

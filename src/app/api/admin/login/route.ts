@@ -1,14 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
-// import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import z from "zod";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs"; 
+import jwt from "jsonwebtoken";
+
 
 const loginSchema = z.object({
   email: z
     .email("Invalid email address.")
     .nonempty({ message: "Email is required." }),
-  password: z.string().min(8, "Password must be at least 8 characters."),
+  password: z.string().nonempty({ message: "Password is required." }),
 });
 
 export async function POST(request: Request) {
@@ -16,42 +17,55 @@ export async function POST(request: Request) {
   const validatedLogin = loginSchema.safeParse(body);
 
   if (!validatedLogin.success) {
-    return NextResponse.json({ error: "Invalid Input" }, { status: 400 });
+    // We avoid sending specific Zod errors for basic login security
+    return NextResponse.json({ error: "Invalid email or password." }, { status: 400 });
   }
 
   const { email, password } = validatedLogin.data;
 
-  const supabase = await createClient();
+  // IMPORTANT: This uses the service client to read the protected admin table
+  const supabase = await createClient(); 
+
   try {
+    // 1. Check if the user exists and fetch the hashed password
     const { data: adminUser, error: fetchError } = await supabase
       .from("admin")
-      .select("hashed_password")
+      .select("*")
       .eq("email", email)
       .single();
 
     if (fetchError || !adminUser) {
-      return NextResponse.json(
-        { error: "Invalid Credentials" },
-        { status: 401 }
-      );
+      // Return generic 401 Unauthorized to prevent revealing existing emails
+      return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
     }
 
+    // 2. Compare the submitted password with the stored hash
     const hashedPassword = adminUser.hashed_password;
     const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
     if (!passwordMatch) {
-      return NextResponse.json(
-        { error: "Invalid credentials." },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
     }
 
-    return NextResponse.json(
-      { message: "Login successful.", token: "admin_token_placeholder" },
-      { status: 200 }
-    );
+    const token = jwt.sign(
+    { id: adminUser.id, email: adminUser.email, role: "admin" },
+    process.env.JWT_SECRET!,
+    { expiresIn: "1d" }
+  );
+
+  // 4. Store token in a cookie
+  const response = NextResponse.json({ message: "Login successful" });
+  response.cookies.set("admin_token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    sameSite: "lax",
+  });
+
+    // 4. Success: Session cookie is now set. Middleware will permit access.
+    return response;
   } catch (error) {
-    console.error("Login error", error);
-    return NextResponse.json({ error: "Internal Server error during Login Process" }, { status: 500 });
+    console.error("Fatal Login Handler Error:", error);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
   }
 }

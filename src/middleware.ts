@@ -1,31 +1,26 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "./lib/supabase/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export function middleware(req: NextRequest) {
+  const token = req.cookies.get("admin_token")?.value;
+  const path = req.nextUrl.pathname;
 
-  const isProtectedPath = request.nextUrl.pathname.startsWith("/admin");
-  const isLoginPage = request.nextUrl.pathname === "/admin/login";
+  const isLoginPage = path === "/admin/login";
+  const isAdminRoot = path === "/admin";
+  const isProtected = path.startsWith("/admin") && !isLoginPage && !isAdminRoot;
 
-  if (isProtectedPath) {
-    if (!user) {
-      const loginUrl = new URL("/admin/login", request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-    if (user && isLoginPage) {
-      const dashboardUrl = new URL("/admin/dashboard", request.url);
-      return NextResponse.redirect(dashboardUrl);
-    }
+  // If NOT logged in and trying to access a protected route
+  if (isProtected && !token) {
+    return NextResponse.redirect(new URL("/admin/login", req.url));
   }
+
+  // If logged in and tries to access login page, redirect to dashboard
+  if (isLoginPage && token) {
+    return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+  }
+
   return NextResponse.next();
 }
-// This configuration tells Next.js which paths the middleware should run on.
+
 export const config = {
-  matcher: [
-    /* Match all /admin paths */
-    "/admin/:path*",
-  ],
+  matcher: ["/admin/:path*"],
 };

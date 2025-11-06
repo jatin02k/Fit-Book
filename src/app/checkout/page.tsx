@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import BookingForm from "../components/bookingForm";
 import z from "zod";
-import { Loader2 } from "lucide-react";
 
 export default async function CheckoutPage({ searchParams }: { searchParams: { serviceId?: string; date?: string; time?: string } }) {
     const paramsSchema = z.object({
