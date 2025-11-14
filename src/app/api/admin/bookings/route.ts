@@ -7,8 +7,6 @@ export async function GET() {
     .from("appointments")
     .select(`*, services (name, duration_minutes, price)`)
     .order("start_time", { ascending: true });
-
-  console.log('appointments here:',appointments)
   if (error) {
     console.error("SUPABASE FETCH ERROR:", error);
     return NextResponse.json({ error: "Failed to retrieve appointments." }, { status: 500 });
