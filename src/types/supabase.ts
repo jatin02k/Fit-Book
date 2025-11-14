@@ -67,6 +67,7 @@ export type Database = {
           phone_number: string
           service_id: string
           start_time: string
+          status: string
         }
         Insert: {
           cancellation_link_uuid?: string
@@ -77,6 +78,7 @@ export type Database = {
           phone_number: string
           service_id: string
           start_time: string
+          status: string
         }
         Update: {
           cancellation_link_uuid?: string
@@ -87,6 +89,7 @@ export type Database = {
           phone_number?: string
           service_id?: string
           start_time?: string
+          status: string
         }
         Relationships: [
           {

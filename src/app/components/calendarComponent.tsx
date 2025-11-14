@@ -1,24 +1,30 @@
-'use client'
-import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Calendar } from './ui/calendar';
-import { Clock, Dumbbell, User } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { Appointment } from '../admin/dashboard/page';
+"use client";
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Calendar } from "./ui/calendar";
+import { Clock, Dumbbell, User } from "lucide-react";
+import { Badge } from "./ui/badge";
+import { Appointment } from "../admin/dashboard/page";
 
 interface CalendarComponentProps {
   appointments: Appointment[];
 }
-export function CalendarComponent({appointments}:CalendarComponentProps) {
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+export function CalendarComponent({ appointments }: CalendarComponentProps) {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
   );
-    const totalAppointments = appointments.length;
+  const totalAppointments = appointments.length;
+  console.log('appointments length',totalAppointments);
+
   const getAppointmentsForDate = (date: Date) => {
     return appointments.filter(
-      (appointment) => new Date(appointment.start).toDateString() === date.toDateString()
+      (appointment) =>
+        new Date(appointment.start).toDateString() === date.toDateString()
     );
   };
+  const selectedDateAppointments = selectedDate
+    ? getAppointmentsForDate(selectedDate)
+    : [];
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("en-US", {
       hour: "numeric",
@@ -52,9 +58,8 @@ export function CalendarComponent({appointments}:CalendarComponentProps) {
         return "bg-gray-100 text-gray-800";
     }
   };
-  const selectedDateAppointments = selectedDate
-    ? getAppointmentsForDate(selectedDate)
-    : [];
+ 
+    
   return (
     <div className="ml-64 p-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -66,7 +71,8 @@ export function CalendarComponent({appointments}:CalendarComponentProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+          {/* Calendar */}
+          <div className="lg:col-span-1">
             <Card>
               <CardHeader>
                 <CardTitle>Select Date</CardTitle>
@@ -80,8 +86,9 @@ export function CalendarComponent({appointments}:CalendarComponentProps) {
                 />
               </CardContent>
             </Card>
-            {/* Daily Appointments */}
-          
+          </div>
+          {/* Daily Appointments */}
+          <div className="lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -127,7 +134,9 @@ export function CalendarComponent({appointments}:CalendarComponentProps) {
                           </div>
                           <div className="flex items-center gap-2">
                             <Badge
-                              className={getServiceColor(appointment.serviceName)}
+                              className={getServiceColor(
+                                appointment.serviceName
+                              )}
                             >
                               {appointment.serviceName}
                             </Badge>
@@ -148,13 +157,14 @@ export function CalendarComponent({appointments}:CalendarComponentProps) {
                 )}
               </CardContent>
             </Card>
-        
+          </div>
+        </div>
 
         {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-              
                 <div>
                   <p className="text-sm text-gray-600">Today's Appointments</p>
                   <p className="text-2xl text-black">
@@ -188,7 +198,10 @@ export function CalendarComponent({appointments}:CalendarComponentProps) {
                 <div>
                   <p className="text-sm text-gray-600">Pending Confirmations</p>
                   <p className="text-2xl text-black">
-                    {appointments.filter(apt => apt.status === 'pending').length}
+                    {
+                      appointments.filter((apt) => apt.status === "pending")
+                        .length
+                    }
                   </p>
                 </div>
               </div>
@@ -197,5 +210,5 @@ export function CalendarComponent({appointments}:CalendarComponentProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

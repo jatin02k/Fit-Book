@@ -30,7 +30,6 @@ export default async function ServiceSelectionPage({
 
   if (error) {
     // Handle database fetch errors
-    console.error("Error fetching services:", error);
     return (
       <div className="text-center text-red-500 mt-20">
         Error loading services. Please check the database connection and keys.
