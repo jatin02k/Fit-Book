@@ -1,6 +1,3 @@
-// import ServiceOverview from './ServiceOverview';
-// import BusinessHoursForm from './BusinessHoursForm'; 
-
 import BusinessHoursForm from "@/app/components/BusinessHoursForm";
 import ServiceOverview from "@/app/components/ServiceOverview";
 import { createClient } from "@/lib/supabase/server";
@@ -36,7 +33,7 @@ async function getBusinessHours() {
 
 export default async function ServiceAndHoursPage() {
   const initialServices = await getServices();
-  const initialHours = await getBusinessHours();
+  const initialBusinessHours = await getBusinessHours();
 
   return (
 
@@ -48,8 +45,10 @@ export default async function ServiceAndHoursPage() {
           </h1>
           <p className="text-gray-600">Manage your services and business hours</p>
         </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <ServiceOverview initialServices={initialServices} />
+        <BusinessHoursForm initialHours={initialBusinessHours} />
+        </div>
       </div>
     </div>
   );

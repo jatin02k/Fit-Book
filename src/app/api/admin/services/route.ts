@@ -19,9 +19,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { name, duration, price, description, features } = await request.json();
+  const { name, duration_minutes, price, description, features } = await request.json();
 
-  if (!name || !duration || price === undefined) {
+  if (!name || !duration_minutes || price === undefined) {
     return NextResponse.json(
       { error: "Missing required service fields." },
       { status: 400 }
@@ -33,8 +33,8 @@ export async function POST(request: Request) {
     .insert([
       {
         name,
-        duration_minutes: duration,
-        price: price,
+        duration_minutes,
+        price,
         description,
         features,
       },
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   const supabase = await createClient();
-  const { id, name, duration, price, description, features } =
+  const { id, name, duration_minutes, price, description, features } =
     await request.json();
 
   if (!id) {
@@ -65,8 +65,9 @@ export async function PUT(request: Request) {
   }
   const { data, error } = await supabase
     .from("services")
-    .update({ name, duration_minutes: duration, price, description, features })
+    .update({ name, duration_minutes, price, description, features })
     .eq("id", id)
+    .select('*')
     .single();
 
     if(error){
@@ -82,16 +83,27 @@ export async function PUT(request: Request) {
 export async function DELETE(request:Request) {
     const supabase = await createClient();
     const { id } = await request.json()
-    if (!id) {
-    return NextResponse.json(
-      { error: "Missing required service ID for Deletion." },
-      { status: 400 }
-    );
-  }
-  const {error} = await supabase.from('services').delete().eq('id',id);
-  if (error) {
-    console.error('Error deleting service:', error);
-    return NextResponse.json({ error: 'Failed to delete service' }, { status: 500 });
-  }
-  return NextResponse.json(null,{status:204});
+
+    // 1. Delete all related appointments first
+    const { error: apptError } = await supabase
+        .from('appointments')
+        .delete()
+        .eq('service_id', id); // Assuming your foreign key column is named 'service_id'
+
+    if (apptError) {
+        console.error('Error deleting related appointments:', apptError);
+        return NextResponse.json({ error: `Failed to clear appointments: ${apptError.message}` }, { status: 500 });
+    }
+
+    // 2. Now delete the service
+    const { error: serviceError } = await supabase
+        .from('services')
+        .delete()
+        .eq('id',id);
+
+    if (serviceError) {
+        console.error('Error deleting service:', serviceError);
+        return NextResponse.json({ error: `Database Delete Failed: ${serviceError.message}` }, { status: 500 });
+    }
+    return new Response(null,{status:204});
 }

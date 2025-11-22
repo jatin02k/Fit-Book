@@ -10,15 +10,22 @@ import { Badge } from "./ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 
 interface Service {
-  id: number;
+  id: string;
   name: string;
-  duration_minutes: string;
-  price: string;
-  status: "active" | "inactive";
+  duration_minutes: number;
+  price: Number;
+}
+interface ServiceOverviewProps {
+  initialServices: Service[];
 }
 
-export default function ServiceOverview({ initialServices}:any) {
-  const [ services, setServices] = useState<Service[]>( initialServices );
+export default function ServiceOverview({ initialServices }:ServiceOverviewProps) {
+  const [ services, setServices] = useState<Service[]>( initialServices.map((s:any) => ({
+        ...s,
+        id: String(s.id), // Ensure id is string
+        duration_minutes: Number(s.duration_minutes), // Ensure it's a number
+        status: s.status || 'active' // Default status if needed
+    })) );
      // Edit service states
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [editName, setEditName] = useState("");
@@ -31,69 +38,126 @@ export default function ServiceOverview({ initialServices}:any) {
   const [newName, setNewName] = useState("");
   const [newDuration, setNewDuration] = useState("");
   const [newPrice, setNewPrice] = useState("");
-  const [newStatus, setNewStatus] = useState<"active" | "inactive">("active");
+  // const [newStatus, setNewStatus] = useState<"active" | "inactive">("active");
 
   const handleEditService = (service: Service) => {
     setEditingService(service);
     setEditName(service.name);
-    setEditDuration(service.duration_minutes);
-    setEditPrice(service.price);
-    setEditStatus(service.status);
+    setEditDuration(String(service.duration_minutes));
+    setEditPrice(String(service.price));
+    // setEditStatus(service.status);
   };
-
-  const handleSaveEdit = () => {
+   const handleSaveEdit = async () => {
     if (!editingService || !editName || !editDuration || !editPrice) return;
 
-    const updatedServices = services.map(s => 
-      s.id === editingService.id 
-        ? { ...s, name: editName, duration: editDuration, price: editPrice, status: editStatus }
-        : s
-    );
+    // FIX 4: Call PUT API
+    const response = await fetch('/api/admin/services', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        id: editingService.id, 
+        name: editName, 
+        duration_minutes: Number(editDuration), // Send as number
+        price: editPrice,
+        // status: editStatus // Remove status if not persisted
+      }),
+    });
     
-    setServices(updatedServices);
-    setEditingService(null);
-    resetEditForm();
+    if (response.ok) {
+      const updatedServiceData = await response.json();
+      setServices(services.map(s => 
+        s.id === editingService.id 
+          ? { 
+              ...s, 
+              name: updatedServiceData.name, 
+              duration_minutes: updatedServiceData.duration_minutes, 
+              price: updatedServiceData.price,
+              status: editStatus
+            }
+          : s
+      ));
+      setEditingService(null);
+      resetEditForm();
+    } else {
+      console.error("Failed to save edit:", await response.json());
+      alert("Failed to save changes.");
+    }
   };
 
-  const handleAddService = () => {
+  const handleAddService = async () => {
     if (!newName || !newDuration || !newPrice) return;
 
-    const newService: Service = {
-      id: Math.max(...services.map(s => s.id)) + 1,
-      name: newName,
-      duration_minutes: newDuration,
-      price: newPrice,
-      status: newStatus
-    };
+    // FIX 5: Call POST API
+    const response = await fetch('/api/admin/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: newName, 
+          duration_minutes: Number(newDuration), // Send as number
+          price: newPrice 
+        }),
+    });
 
-    setServices([...services, newService]);
-    setIsAddingService(false);
-    resetAddForm();
+    if (response.ok) {
+        const newServiceData = await response.json();
+        const newService: Service = {
+            ...newServiceData,
+            id: String(newServiceData.id), // Use DB generated ID (UUID)
+            duration_minutes: Number(newServiceData.duration_minutes), // Ensure number
+        };
+        setServices([...services, newService]);
+        setIsAddingService(false);
+        resetAddForm();
+    } else {
+        console.error("Failed to add service:", await response.json());
+        alert("Failed to add service.");
+    }
   };
 
-  const handleDeleteService = (serviceId: number) => {
-    setServices(services.filter(s => s.id !== serviceId));
+
+  const handleDeleteService = async (serviceId: string) => {
+    // FIX 6: Add confirmation dialogue here (or wrap the button better)
+    if (!confirm(`Are you sure you want to delete service ID ${serviceId}?`)) return;
+
+    // FIX 7: Call DELETE API
+    const response = await fetch('/api/admin/services', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: serviceId }),
+    });
+
+    if (response.status === 204) {
+        setServices(services.filter(s => s.id !== serviceId));
+    } else {
+      let errorMessage = "Failed to delete service.";
+        try {
+            const errorBody = await response.json();
+            // Assuming the server returns an object like { error: "Database Delete Failed: ..." }
+            errorMessage = errorBody.error || errorMessage; 
+        } catch (e) {
+            // Failsafe if the 500 error response wasn't proper JSON either
+            console.error("Could not parse error response body:", e);
+        }
+        console.error("Failed to delete service:", await response.json());
+        alert("Failed to delete service.");
+    }
   };
 
   const resetEditForm = () => {
     setEditName("");
     setEditDuration("");
     setEditPrice("");
-    setEditStatus("active");
+    // setEditStatus("active");
   };
 
   const resetAddForm = () => {
     setNewName("");
     setNewDuration("");
     setNewPrice("");
-    setNewStatus("active");
+    // setNewStatus("active");
   };
 
   return (
- 
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Service Overview */}
           <div className="lg:col-span-1">
             <Card className="border-2 border-purple-200 shadow-lg">
               <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 border-b border-purple-100">
@@ -185,9 +249,9 @@ export default function ServiceOverview({ initialServices}:any) {
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="text-black">{service.name}</h3>
                         <div className="flex items-center gap-2">
-                          <Badge className={`bg-gradient-to-r ${gradient.badge} text-white border-0`}>
+                          {/* <Badge className={`bg-gradient-to-r ${gradient.badge} text-white border-0`}>
                             {service.status}
-                          </Badge>
+                          </Badge> */}
                           <div className="flex gap-1">
                             <Dialog>
                               <DialogTrigger asChild>
@@ -287,7 +351,7 @@ export default function ServiceOverview({ initialServices}:any) {
                       </div>
                       <div className="flex items-center gap-4 text-sm text-gray-600">
                         <span>⏱️ {service.duration_minutes}</span>
-                        <span>💰 {service.price}</span>
+                        <span>💰 {String(service.price)}</span>
                       </div>
                     </div>
                     );
@@ -296,7 +360,6 @@ export default function ServiceOverview({ initialServices}:any) {
               </CardContent>
             </Card>
           </div>
-        </div>
   )
 }
 
