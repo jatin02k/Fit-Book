@@ -87,7 +87,7 @@ export async function POST(request: Request) {
           email,
           phone_number: phoneNo ?? "",
           cancellation_link_uuid: cancellationLinkUuid,
-          status
+          status:'confirmed'
         },
       ])
       .select()
