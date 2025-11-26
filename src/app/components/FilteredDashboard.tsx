@@ -95,7 +95,7 @@ export function FilteredDashboard({
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [isDefaultView, setIsDefaultView] = useState(true);
   const handleCancelAppointment = async(appointmentId: string) => {
-    
+    setAppointments(appointments.filter((apt) => apt.id !== appointmentId));
     // TODO: Add actual API call here to notify the backend/Supabase
     const response = await fetch('/api/admin/appointments', {
         method: 'DELETE',
@@ -103,19 +103,26 @@ export function FilteredDashboard({
         body: JSON.stringify({ id: appointmentId}),
     });
     if (response.status === 204) {
-        setAppointments(appointments.filter((apt) => apt.id !== appointmentId));
+        console.log(`Appointment ${appointmentId} successfully cancelled.`);
     } else {
-      let errorMessage = "Failed to cancel Appointment.";
+      let errorMessage = "Failed to cancel Appointment (Unknown error).";
+    
+    // ONLY attempt to read JSON if status is something that might contain a body (e.g., 400, 500)
+    if (response.headers.get('content-type')?.includes('application/json')) {
         try {
             const errorBody = await response.json();
-            // Assuming the server returns an object like { error: "Database Delete Failed: ..." }
             errorMessage = errorBody.error || errorMessage; 
         } catch (e) {
-            // Failsafe if the 500 error response wasn't proper JSON either
+            // If parsing fails (i.e., it was HTML), fall back to a generic message
+            errorMessage = `Server returned an invalid response (Status: ${response.status}).`;
             console.error("Could not parse error response body:", e);
         }
-        console.error("Failed to Cancel Appointment:", await response.json());
-        alert("Failed to Cancel Appointment.");
+    } else {
+        // If the response is not JSON (i.e., an HTML error page)
+        errorMessage = `Server returned a generic error page (Status: ${response.status}).`;
+    }
+    
+    throw new Error(errorMessage);
     }
   };
 
@@ -350,10 +357,31 @@ export function FilteredDashboard({
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
+              <TableBody>
+              {sortedAppointments.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                  <p className="text-xl font-semibold text-gray-700">
+                    No Appointments Found
+                  </p>
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      setDateRange(undefined); // Clear range
+                      setIsDefaultView(true); // Return to default upcoming view
+                    }}
+                    className="mt-3"
+                  >
+                    Clear Filters
+                     <X className="h-10 w-10" />
+                  </Button>
+                </div>
+                </TableCell>
+                </TableRow>
+              ) : (
 
-              {sortedAppointments.length > 0 ? (
-                <TableBody>
-                  {sortedAppointments.map((appointment) => {
+                  sortedAppointments.map((appointment) => {
                     const { date, time } = formatDateTime(
                       appointment.start_time
                     );
@@ -430,27 +458,9 @@ export function FilteredDashboard({
                         </TableCell>
                       </TableRow>
                     );
-                  })}
-                </TableBody>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-                  <p className="text-xl font-semibold text-gray-700">
-                    No Appointments Found
-                  </p>
-                  <Button
-                    variant="link"
-                    onClick={() => {
-                      setDateRange(undefined); // Clear range
-                      setIsDefaultView(true); // Return to default upcoming view
-                    }}
-                    className="mt-3"
-                  >
-                    Clear Filters
-                     <X className="h-10 w-10" />
-                  </Button>
-
-                </div>
+                  })
               )}
+              </TableBody>
             </Table>
           </CardContent>
         </Card>

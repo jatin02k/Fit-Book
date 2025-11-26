@@ -2,23 +2,50 @@ import BusinessHoursForm from "@/app/components/BusinessHoursForm";
 import ServiceOverview from "@/app/components/ServiceOverview";
 import { createClient } from "@/lib/supabase/server";
 
+interface Service {
+  id: string;
+  name: string;
+  duration_minutes: number;
+  price: number; // Ensuring price is number for math
+  description: string;
+  features: string[];
+}
 // This is a Server Component, responsible for fetching initial data
-async function getServices() {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('services')
-    .select('id, name, duration_minutes, price');
-  
-  if (error) {
-    console.error('Error fetching services on server:', error);
-    // In a real app, handle this gracefully
-    return []; 
-  }
-  return data;
+export async function getServices(): Promise<Service[]> {
+    const supabase = await createClient();
+    // FIX: Renamed destructured data variable from 'services' to 'rawServices' to avoid conflict
+    const { data: rawServices, error } = await supabase
+        .from('services')
+        .select('id, name, duration_minutes, price, description, features'); // Select all necessary fields
+
+    if (error) {
+        console.error("Error fetching services:", error);
+        return [];
+    }
+
+    // Handle case where rawServices might be null (though unlikely with Supabase client)
+    if (!rawServices) {
+        return [];
+    }
+
+    // FIX: Map the data to ensure no null values are passed to the client component
+    const cleanServices: Service[] = rawServices.map((s: any) => ({
+        id: String(s.id),
+        name: s.name || 'Untitled Service',
+        duration_minutes: Number(s.duration_minutes || 0),
+        price: Number(s.price || 0),
+        
+        // FIX: Handle potential nulls and ensure correct type
+        description: s.description || '', 
+        // FIX: Handle potential nulls and ensure the type is always string[]
+        features: (s.features && Array.isArray(s.features)) ? s.features : [], 
+    }));
+
+    return cleanServices;
 }
 
 // Fetch hours here too, to pass as a prop to BusinessHoursForm
-async function getBusinessHours() {
+export async function getBusinessHours() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('business_hours')
