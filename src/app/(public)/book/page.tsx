@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { AvailabilitySelector } from '@/app/components/AvailabilitySelector'; // Client Component
+import { AvailabilitySelector } from '@/app/(public)/components/AvailabilitySelector'; // Client Component
 import { Button } from "../components/ui/button";
 //server wrapper
 

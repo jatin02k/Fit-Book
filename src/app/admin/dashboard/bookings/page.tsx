@@ -2,7 +2,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from 'uuid'; 
-import { ManualBookingForm } from "@/app/components/ManualBookingForm";
+import { ManualBookingForm } from "@/app/(public)/components/ManualBookingForm";
 import { getBusinessHours, getServices } from "../services/page";
 
 // Define the structure for a single service item
@@ -133,7 +133,6 @@ export default async function CreateBookingPage() {
 
     return (
         <div className="p-8">
-            <h1 className="text-3xl font-bold mb-6">Manual Booking Form</h1>
             <ManualBookingForm
                 services={services} 
                 businessHours={businessHours}

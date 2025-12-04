@@ -1,5 +1,5 @@
-import BusinessHoursForm from "@/app/components/BusinessHoursForm";
-import ServiceOverview from "@/app/components/ServiceOverview";
+import BusinessHoursForm from "@/app/(public)/components/BusinessHoursForm";
+import ServiceOverview from "@/app/(public)/components/ServiceOverview";
 import { createClient } from "@/lib/supabase/server";
 
 interface Service {

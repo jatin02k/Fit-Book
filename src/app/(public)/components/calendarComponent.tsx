@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Calendar } from "./ui/calendar";
 import { Clock, Dumbbell, User } from "lucide-react";
 import { Badge } from "./ui/badge";
-import { Appointment } from "../admin/dashboard/page";
+import { Appointment } from "../../admin/dashboard/page";
 
 interface CalendarComponentProps {
   appointments: Appointment[];

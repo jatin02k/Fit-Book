@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardContent,
   CardTitle,
-} from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
+} from "@/app/(public)/components/ui/card";
+import { Button } from "@/app/(public)/components/ui/button";
 // import { ServiceCardButton } from "@/app/components/serviceCardButton";
-import { ImageWithFallback } from "@/app/figma/imageWithFallback";
+import { ImageWithFallback } from "@/app/(public)/figma/imageWithFallback";
 
 interface ServicesPageProps {
   onSelectService: (service: string) => void;

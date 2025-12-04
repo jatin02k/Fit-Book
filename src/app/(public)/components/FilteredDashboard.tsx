@@ -32,7 +32,7 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { List, User, Clock, X, Filter, CalendarIcon } from "lucide-react";
-import { AppointmentList } from "../api/admin/appointments/route";
+import { AppointmentList } from "../../api/admin/appointments/route";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";

@@ -10,10 +10,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/components/ui/card";
-import { Label } from "@/app/components/ui/label";
-import { Input } from "@/app/components/ui/input";
-import { Button } from "@/app/components/ui/button";
+} from "@/app/(public)/components/ui/card";
+import { Label } from "@/app/(public)/components/ui/label";
+import { Input } from "@/app/(public)/components/ui/input";
+import { Button } from "@/app/(public)/components/ui/button";
 
 /**
  * PHASE B4 - Admin Login Page (A-1)

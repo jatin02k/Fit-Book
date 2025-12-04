@@ -8,7 +8,7 @@ import { Calendar } from "./ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { CheckCircle2, AlertCircle, UserPlus } from "lucide-react";
 import { Alert, AlertDescription } from "./ui/alert";
-import { ManualBookingFormProps } from "../admin/dashboard/bookings/page";
+import { ManualBookingFormProps } from "../../admin/dashboard/bookings/page";
 
 // Helper function to generate time slots based on business hours
 const generateTimeSlots = (start: string, end: string, interval: number): string[] => {

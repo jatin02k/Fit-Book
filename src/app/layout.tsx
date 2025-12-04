@@ -1,6 +1,7 @@
 import './globals.css'; // Global styles (Tailwind CSS imports here)
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Navigation } from './(public)/components/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
