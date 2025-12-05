@@ -12,7 +12,7 @@ interface SearchParams {
 // Define a minimal prop structure for the function input
 interface MinimalPageProps {
     // Required by Next.js component contract for any page (static or dynamic)
-    params: {}; 
+    params:Readonly<Record<string, never>>; 
     
     // Required for search queries
     searchParams: SearchParams; 
