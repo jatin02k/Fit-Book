@@ -1,13 +1,13 @@
+// Define the interfaces at the top of src/app/(public)/book/page.tsx
 interface SearchParams {
     serviceId?: string;
 }
 
-// Define the standard Next.js Page Props structure using the imported standard types
-// Note: We use 'unknown' for params to ensure maximum compatibility if no dynamic routes exist.
-// interface MyPageProps {
-//     searchParams: SearchParams;
-//     params?: unknown; // Add params, even if not used, for structural compatibility
-// }
+// Define the simplest structure the compiler *should* accept
+interface MinimalPageProps {
+    searchParams?: SearchParams; // Make optional to match default Next.js behavior
+}
+// ------------------------------------------------------------------------
 
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from 'next/navigation';
@@ -15,21 +15,17 @@ import Link from 'next/link';
 import { AvailabilitySelector } from '@/app/(public)/components/AvailabilitySelector'; // Client Component
 import { Button } from "../components/ui/button";
 
-// --- FIX: Define local interfaces to override conflicting global types ---
+export default async function SlotSelectionPage(
+    // Use the simplest possible type for the prop object
+    // You can even omit this annotation entirely if it causes issues, 
+    // but MinimalPageProps should work.
+    props: MinimalPageProps 
+) {
+    // FIX: Extract the searchParams property and cast it 
+    // to the correct, non-Promise type using a local constant.
+    const searchParams = props.searchParams as SearchParams | undefined;
 
-interface SearchParams {
-    serviceId?: string;
-}
-
-interface PageProps {
-    searchParams: SearchParams;
-}
-
-export default async function SlotSelectionPage({
-    searchParams,
-// Use a type that ensures structural compatibility with the internal constraint
-// while still defining your local type.
-}: PageProps & Record<string, unknown>) { // <-- Component now uses the locally defined, correct PageProps
+    // Now proceed with your original logic, which is correctly typed
     const serviceId = searchParams?.serviceId ?? '';
 
     const supabase = await createClient();
@@ -41,9 +37,6 @@ export default async function SlotSelectionPage({
 
 
     if (error || !service) {
-        // You might want to ensure 'service' type is correct here, 
-        // especially if the database returned a null or array.
-        // Assuming your 'service' object contains id, name, etc.
         notFound();
     }
 
