@@ -18,8 +18,6 @@ export default async function AdminDashboardPage() {
   // }/api/admin/bookings`;
 
   let appointments: Appointment[] = [];
-  let error: string | null = null;
-
   try {
     const res = await fetch("http://localhost:3000/api/admin/bookings", { cache: "no-store" });
 
