@@ -3,15 +3,21 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { AvailabilitySelector } from '@/app/(public)/components/AvailabilitySelector'; // Client Component
 import { Button } from "../components/ui/button";
-//server wrapper
 
-// NOTE: The conflicting type (SlotSelectionPageProps) is now removed.
+// --- FIX: Define local interfaces to override conflicting global types ---
+
+interface SearchParams {
+    serviceId?: string;
+}
+
+interface PageProps {
+    searchParams: SearchParams;
+}
+// ------------------------------------------------------------------------
 
 export default async function SlotSelectionPage({
     searchParams,
-}: {
-    searchParams: { serviceId?: string }; // <-- Inline type definition
-}) {
+}: PageProps) { // <-- Component now uses the locally defined, correct PageProps
     const serviceId = searchParams?.serviceId ?? '';
 
     const supabase = await createClient();
@@ -23,6 +29,9 @@ export default async function SlotSelectionPage({
 
 
     if (error || !service) {
+        // You might want to ensure 'service' type is correct here, 
+        // especially if the database returned a null or array.
+        // Assuming your 'service' object contains id, name, etc.
         notFound();
     }
 
