@@ -4,16 +4,14 @@ import Link from 'next/link';
 import { AvailabilitySelector } from '@/app/(public)/components/AvailabilitySelector'; // Client Component
 import { Button } from "../components/ui/button";
 //server wrapper
-type SlotSelectionPageProps = {
-    searchParams: { 
-        serviceId?: string 
-    };
-    // If you were using dynamic routing, you'd add:
-    // params: {} 
-};
+
+// NOTE: The conflicting type (SlotSelectionPageProps) is now removed.
+
 export default async function SlotSelectionPage({
     searchParams,
-}: SlotSelectionPageProps) {
+}: {
+    searchParams: { serviceId?: string }; // <-- Inline type definition
+}) {
     const serviceId = searchParams?.serviceId ?? '';
 
     const supabase = await createClient();
