@@ -4,6 +4,22 @@ import { createClient } from "@/lib/supabase/server";
 import { format } from "date-fns";
 import { NextResponse } from "next/server";
 
+export interface RawBookingData {
+    id: string;
+    start_time: string;
+    end_time: string;
+    customer_name: string;
+    email:string;
+    phone_number:string;
+    service_id: string;
+    cancellation_link_uuid: string;
+    status: string;
+    services: {
+        name: string;
+        duration_minutes: number;
+    } | null;
+}
+
 export interface AppointmentList{
   id: string;
   start_time: string;
@@ -42,7 +58,7 @@ export async function fetchAdminBookings():Promise<AppointmentList[]>{
         // In a real application, you might throw an error or handle it more gracefully
         return []; 
     }
-    const appointmentsList: AppointmentList[] = bookings.map((booking: any) => ({
+    const appointmentsList: AppointmentList[] = bookings.map((booking: RawBookingData) => ({
         id: booking.id,
         start_time: booking.start_time,
         end_time: booking.end_time,
@@ -52,8 +68,8 @@ export async function fetchAdminBookings():Promise<AppointmentList[]>{
         service_id: booking.service_id,
         cancellation_link_uuid: booking.cancellation_link_uuid,
         status: (booking.status as AppointmentList['status']) || 'pending',
-        serviceName: booking.services.name,
-        serviceDuration:booking.services.duration_minutes,
+        serviceName: booking.services?.name || 'Unknown Service',
+        serviceDuration: String(booking.services?.duration_minutes || 0),
     }));
 
     return appointmentsList;
