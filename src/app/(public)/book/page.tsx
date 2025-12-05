@@ -1,31 +1,30 @@
-// Define the interfaces at the top of src/app/(public)/book/page.tsx
+
+// Define interfaces at the top of src/app/(public)/book/page.tsx
 interface SearchParams {
     serviceId?: string;
 }
 
-// Define the simplest structure the compiler *should* accept
-interface MinimalPageProps {
-    searchParams?: SearchParams; // Make optional to match default Next.js behavior
-}
 // ------------------------------------------------------------------------
-
+// NO CHANGES TO IMPORTS
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { AvailabilitySelector } from '@/app/(public)/components/AvailabilitySelector'; // Client Component
 import { Button } from "../components/ui/button";
+import { AvailabilitySelector } from "../components/AvailabilitySelector";
+// ... rest of imports
 
-export default async function SlotSelectionPage(
-    // Use the simplest possible type for the prop object
-    // You can even omit this annotation entirely if it causes issues, 
-    // but MinimalPageProps should work.
-    props: MinimalPageProps 
-) {
-    // FIX: Extract the searchParams property and cast it 
-    // to the correct, non-Promise type using a local constant.
-    const searchParams = props.searchParams as SearchParams | undefined;
-
-    // Now proceed with your original logic, which is correctly typed
+// The component function uses the simplest accepted signature: just destructuring props
+export default async function SlotSelectionPage({
+    searchParams,
+}: {
+    // We use the simplest possible annotation here to avoid conflicts
+    searchParams: { serviceId?: string }
+}) {
+    // We rely on the simple inline type annotation above, but if the compiler 
+    // is still throwing errors, the most effective structural fix is to 
+    // rename the function and assert the type on the export.
+    
+    // --- Reverting to the simplest functional signature ---
     const serviceId = searchParams?.serviceId ?? '';
 
     const supabase = await createClient();
@@ -40,6 +39,7 @@ export default async function SlotSelectionPage(
         notFound();
     }
 
+    // ... rest of JSX return
     return (
         <div className="min-h-screen pt-20 pb-16 bg-gray-50">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
