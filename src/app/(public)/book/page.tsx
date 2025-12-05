@@ -4,12 +4,16 @@ import Link from 'next/link';
 import { AvailabilitySelector } from '@/app/(public)/components/AvailabilitySelector'; // Client Component
 import { Button } from "../components/ui/button";
 //server wrapper
-
+type SlotSelectionPageProps = {
+    searchParams: { 
+        serviceId?: string 
+    };
+    // If you were using dynamic routing, you'd add:
+    // params: {} 
+};
 export default async function SlotSelectionPage({
     searchParams,
-}: {
-    searchParams: { serviceId?: string };
-}) {
+}: SlotSelectionPageProps) {
     const serviceId = searchParams?.serviceId ?? '';
 
     const supabase = await createClient();
