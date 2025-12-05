@@ -1,3 +1,14 @@
+interface SearchParams {
+    serviceId?: string;
+}
+
+// Define the standard Next.js Page Props structure using the imported standard types
+// Note: We use 'unknown' for params to ensure maximum compatibility if no dynamic routes exist.
+// interface MyPageProps {
+//     searchParams: SearchParams;
+//     params?: unknown; // Add params, even if not used, for structural compatibility
+// }
+
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -13,11 +24,12 @@ interface SearchParams {
 interface PageProps {
     searchParams: SearchParams;
 }
-// ------------------------------------------------------------------------
 
 export default async function SlotSelectionPage({
     searchParams,
-}: PageProps) { // <-- Component now uses the locally defined, correct PageProps
+// Use a type that ensures structural compatibility with the internal constraint
+// while still defining your local type.
+}: PageProps & Record<string, unknown>) { // <-- Component now uses the locally defined, correct PageProps
     const serviceId = searchParams?.serviceId ?? '';
 
     const supabase = await createClient();
