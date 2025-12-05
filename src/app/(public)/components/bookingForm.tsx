@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import z from "zod";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 
 type BookingFormProps = {
@@ -23,6 +24,7 @@ export default function BookingForm({
     date,
     time,
 }: BookingFormProps) {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         'name': '',
         'email': '',
@@ -121,8 +123,11 @@ export default function BookingForm({
                 }
                 return;
             }
+            const cancellationId = data.cancellationLinkUuid;
+            console.log(cancellationId)
 
             toast.success('Booking confirmed!', { position: "top-right", autoClose: 4000, theme: "dark", transition: Bounce });
+            router.push(`/checkout/booking-summary/${cancellationId}`)
         } catch (error) {
             console.log('Booking Submit error:', error);
             toast.error('Booking Not Confirmed', {
@@ -205,6 +210,7 @@ export default function BookingForm({
                     disabled={isSubmitting}
                     className="bg-black text-white hover:bg-gray-800 px-8 py-3 text-lg"
                     size="lg"
+                    
                 >
                     {isSubmitting ?(<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> 'Confirming...'</>)  : ('Confirm Booking')}
                 </Button>

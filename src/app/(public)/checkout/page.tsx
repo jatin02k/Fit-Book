@@ -12,7 +12,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: { s
         date: z.string().optional(), // YYYY-MM-DD (we will pass-through to client validation)
         time: z.string().optional(), // HH:mm (24h)
     });
-    const parsed = paramsSchema.safeParse(searchParams ?? {});
+    const parsed = paramsSchema.safeParse(await searchParams ?? {});
 
     const serviceId = parsed.success ? (parsed.data.serviceId ?? '') : '';
     const bookingDate = parsed.success ? (parsed.data.date ?? '') : '';

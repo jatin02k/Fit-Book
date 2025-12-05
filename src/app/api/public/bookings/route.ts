@@ -104,6 +104,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         message: "Booking confirmed successfully!",
+        cancellationLinkUuid,
         cancellationLink: `/cancel/${cancellationLinkUuid}`, // Simulate the unique link (C-5)
       },
       { status: 201 } // 201 Created
