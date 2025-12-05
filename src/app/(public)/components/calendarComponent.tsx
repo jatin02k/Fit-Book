@@ -166,7 +166,7 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div>
-                  <p className="text-sm text-gray-600">Today's Appointments</p>
+                  <p className="text-sm text-gray-600">Today&apos;s Appointments</p>
                   <p className="text-2xl text-black">
                     {getAppointmentsForDate(new Date()).length}
                   </p>

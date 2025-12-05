@@ -152,7 +152,7 @@ export function FilteredDashboard({
         const filterStart = new Date(dateRange.from);
         filterStart.setHours(0, 0, 0, 0);
 
-        let filterEnd = dateRange.to
+        const filterEnd = dateRange.to
           ? new Date(dateRange.to)
           : new Date(dateRange.from);
         filterEnd.setHours(23, 59, 59, 999);

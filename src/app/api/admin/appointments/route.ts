@@ -37,11 +37,7 @@ export async function fetchAdminBookings():Promise<AppointmentList[]>{
     const supabase = await createClient();
     const today = new Date();
     const nextSevenDays = new Date();
-    nextSevenDays.setDate(today.getDate() + 7);
-
-    // Using 'Z' for explicit UTC interpretation to match timestamptz
-    const dateStart = format(today, "yyyy-MM-dd'T'00:00:00.000");
-    const dateEnd = format(nextSevenDays, "yyyy-MM-dd'T'23:59:59.000");
+    nextSevenDays.setDate(today.getDate() + 7); 
 
     const { data: bookings, error } = await supabase
         .from('appointments')

@@ -2,6 +2,17 @@ import BusinessHoursForm from "@/app/(public)/components/BusinessHoursForm";
 import ServiceOverview from "@/app/(public)/components/ServiceOverview";
 import { createClient } from "@/lib/supabase/server";
 
+interface RawService {
+  // The ID can be a number or a string that needs to be coerced.
+  id: string | number;
+  name: string | null | undefined;
+  duration_minutes: number | string | null | undefined;
+  price: number | string | null | undefined;
+  description: string | null | undefined;
+  // Features might be a string[], or null/undefined from the database
+  features: string[] | null | undefined;
+}
+
 interface Service {
   id: string;
   name: string;
@@ -29,7 +40,7 @@ export async function getServices(): Promise<Service[]> {
     }
 
     // FIX: Map the data to ensure no null values are passed to the client component
-    const cleanServices: Service[] = rawServices.map((s: any) => ({
+    const cleanServices: Service[] = rawServices.map((s: RawService) => ({
         id: String(s.id),
         name: s.name || 'Untitled Service',
         duration_minutes: Number(s.duration_minutes || 0),

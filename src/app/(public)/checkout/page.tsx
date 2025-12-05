@@ -48,7 +48,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: { s
                         Complete Your Booking
                     </h1>
                     <p className="text-xl text-gray-600">
-                        Just a few details and you're all set!
+                        Just a few details and you are all set!
                     </p>
                 </div>
 

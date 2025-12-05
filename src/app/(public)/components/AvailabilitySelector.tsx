@@ -26,7 +26,7 @@ interface AvailabilitySelectorProps {
     price: number;
 };
 
-export function AvailabilitySelector({ serviceId, serviceName, durationMinutes, price }: AvailabilitySelectorProps) {
+export function AvailabilitySelector({ serviceId, serviceName }: AvailabilitySelectorProps) {
 
     // DATE selection
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -40,13 +40,19 @@ export function AvailabilitySelector({ serviceId, serviceName, durationMinutes, 
 
     // const router = useRouter();
     const to24Hour = (t: string) => {
-        // expects like "09:00 AM" or "12:30 PM"
-        const [time, meridiem] = t.split(' ');
-        let [hh, mm] = time.split(':').map(Number);
-        if (meridiem === 'PM' && hh !== 12) hh += 12;
-        if (meridiem === 'AM' && hh === 12) hh = 0;
-        return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
-      };
+    // expects like "09:00 AM" or "12:30 PM"
+    const [time, meridiem] = t.split(' ');
+    
+    // Split the array destructuring:
+    const timeParts = time.split(':').map(Number);
+    let hh = timeParts[0]; // hh needs 'let' because it is reassigned
+    const mm = timeParts[1]; // mm can be 'const' because it is never reassigned
+    
+    if (meridiem === 'PM' && hh !== 12) hh += 12;
+    if (meridiem === 'AM' && hh === 12) hh = 0;
+    
+    return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+};
       
       // inside your JSX, ensure selectedDate && selectedTime are set
       const dateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
@@ -85,7 +91,7 @@ export function AvailabilitySelector({ serviceId, serviceName, durationMinutes, 
             }
         };
         fetchAvailability();
-    }, [selectedDate, serviceId])
+    }, [selectedDate, serviceId, dateString])
 
     return (
         <div>

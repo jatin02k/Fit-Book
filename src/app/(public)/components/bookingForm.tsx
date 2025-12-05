@@ -11,6 +11,7 @@ import z from "zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+type BookingField = keyof typeof bookingSchema.shape;
 
 type BookingFormProps = {
     serviceId: string;
@@ -20,7 +21,6 @@ type BookingFormProps = {
 };
 export default function BookingForm({
     serviceId,
-    serviceName,
     date,
     time,
 }: BookingFormProps) {
@@ -39,17 +39,24 @@ export default function BookingForm({
         phoneNo: bookingSchema.shape.phoneNo.optional(),
     }), []);
 
-    const validateField = useCallback((field: keyof typeof formData, value: string) => {
-        try {
-            clientSchema.pick({ [field]: true } as any).parse({ [field]: value });
-            setErrors(prev => ({ ...prev, [field]: undefined }));
-        } catch (e) {
-            if (e instanceof z.ZodError) {
-                const message = e.issues[0]?.message || "Invalid value";
-                setErrors(prev => ({ ...prev, [field]: message }));
-            }
+    const validateField = useCallback((field: BookingField, value: string) => {
+    try {
+        // Fix: Use the Zod schema directly. We still use a small 'as' cast 
+        // to simplify the argument to pick, but now based on known types.
+        
+        // Zod's pick method expects an object with keys from the schema 
+        // and values of 'true'. We can cast the dynamic object to ensure 
+        // the argument type is correct without using 'any'.
+        bookingSchema.pick({ [field]: true } as { [K in BookingField]: true }).parse({ [field]: value });
+        
+        setErrors(prev => ({ ...prev, [field]: undefined }));
+    } catch (e) {
+        if (e instanceof z.ZodError) {
+            const message = e.issues[0]?.message || "Invalid value";
+            setErrors(prev => ({ ...prev, [field]: message }));
         }
-    }, [clientSchema]);
+    }
+}, [bookingSchema]);
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({
@@ -212,7 +219,7 @@ export default function BookingForm({
                     size="lg"
                     
                 >
-                    {isSubmitting ?(<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> 'Confirming...'</>)  : ('Confirm Booking')}
+                    {isSubmitting ?(<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Confirming...</>)  : ('Confirm Booking')}
                 </Button>
 
                 <p className="text-sm text-gray-500 mt-4">

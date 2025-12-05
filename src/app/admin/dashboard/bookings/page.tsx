@@ -5,6 +5,21 @@ import { v4 as uuidv4 } from 'uuid';
 import { ManualBookingForm } from "@/app/(public)/components/ManualBookingForm";
 import { getBusinessHours, getServices } from "../services/page";
 
+interface RawService {
+    id: string; // Assuming database ID is string or needs simple cast
+    name: string;
+    price: number; // Database often returns numbers for currency
+    duration_minutes: number;
+    // Include all fields returned by getServices()
+}
+
+interface RawBusinessHour {
+    id?: string; // May be optional/nullable depending on source
+    day_of_week: number;
+    open_time: string; // The raw field name
+    close_time: string; // The raw field name
+    // Include all fields returned by getBusinessHours()
+}
 // Define the structure for a single service item
 export interface Service {
   id: string;
@@ -116,19 +131,22 @@ async function createManualBooking(formData: FormData) {
 
 export default async function CreateBookingPage() {
     const rawServices = await getServices();
-    const services: Service[] = rawServices.map((s: any) => ({
+    const services: Service[] = rawServices.map((s: RawService) => ({
         id: s.id,
         name: s.name,
         price: String(s.price),
         duration_minutes: s.duration_minutes,
     }));
-    const rawBusinessHours = await getBusinessHours();
+
+    const rawBusinessHours: RawBusinessHour[] = await getBusinessHours();
     
-    const businessHours: BusinessHour[] = rawBusinessHours.map((bh: any) => ({
-        id: bh.id || `${bh.day_of_week}`,
+    // Fix 2: Map function argument is now typed as RawBusinessHour
+    const businessHours: BusinessHour[] = rawBusinessHours.map((bh: RawBusinessHour) => ({
+        // Use non-null assertion or type guard if bh.id is truly optional
+        id: bh.id || `${bh.day_of_week}`, 
         day_of_week: bh.day_of_week,
-        start_time: bh.open_time,
-        end_time: bh.close_time,
+        start_time: bh.open_time, // Map raw field to destination field
+        end_time: bh.close_time,   // Map raw field to destination field
     }));
 
     return (

@@ -12,7 +12,6 @@ import {
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Badge } from "./ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,11 +24,21 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 
+interface RawService {
+  id: number | string;
+  name: string;
+  duration_minutes: number | string;
+  price: number | string;
+  description: string;
+  features: string | string[] | null | undefined;
+  // Add other properties if they exist in the raw data
+}
+
 interface Service {
   id: string;
   name: string;
   duration_minutes: number;
-  price: Number;
+  price: number;
   description: string;
   features: string[];
 }
@@ -54,7 +63,7 @@ export default function ServiceOverview({
   initialServices,
 }: ServiceOverviewProps) {
   const [services, setServices] = useState<Service[]>(
-    initialServices.map((s: any) => ({
+    (initialServices as RawService[]).map((s: RawService) => ({
       ...s,
       id: String(s.id), // Ensure id is string
       duration_minutes: Number(s.duration_minutes),

@@ -1,6 +1,4 @@
 // app/booking-summary/[id]/page.tsx
-
-import { Button } from "@/app/(public)/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/(public)/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 
@@ -128,7 +126,7 @@ export default async function BookingSummary({
         {/* NEXT STEPS */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="text-black">What's Next?</CardTitle>
+            <CardTitle className="text-black">What to do Next?</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
@@ -169,17 +167,6 @@ export default async function BookingSummary({
 
         {/* CTA */}
         <div className="text-center space-y-4">
-          {/* <Button
-            className="bg-black text-white hover:bg-gray-800 px-8"
-            size="lg"
-            onClick={() => {
-              // send them back to home
-              // (optional)
-            }}
-          >
-            Book Another Appointment
-          </Button> */}
-
           <p className="text-sm text-gray-500">
             Need help? Contact support at 6778-90
           </p>

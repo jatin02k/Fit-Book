@@ -9,17 +9,11 @@ import {
   CardTitle,
 } from "@/app/(public)/components/ui/card";
 import { Button } from "@/app/(public)/components/ui/button";
-// import { ServiceCardButton } from "@/app/components/serviceCardButton";
 import { ImageWithFallback } from "@/app/(public)/figma/imageWithFallback";
 
-interface ServicesPageProps {
-  onSelectService: (service: string) => void;
-}
 
 // The main Server Component function
-export default async function ServiceSelectionPage({
-  onSelectService,
-}: ServicesPageProps) {
+export default async function ServiceSelectionPage() {
   const supabase = await createClient();
 
   // 1. Fetch Services (A-2 Data) securely on the server
