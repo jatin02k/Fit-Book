@@ -1,31 +1,30 @@
 
-// Define interfaces at the top of src/app/(public)/book/page.tsx
-interface SearchParams {
-    serviceId?: string;
-}
-
-// ------------------------------------------------------------------------
-// NO CHANGES TO IMPORTS
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { notFound } from 'next/navigation';
 import { Button } from "../components/ui/button";
 import { AvailabilitySelector } from "../components/AvailabilitySelector";
 // ... rest of imports
+interface SearchParams {
+    serviceId?: string;
+}
 
-// The component function uses the simplest accepted signature: just destructuring props
-export default async function SlotSelectionPage({
-    searchParams,
-}: {
-    // We use the simplest possible annotation here to avoid conflicts
-    searchParams: { serviceId?: string }
-}) {
-    // We rely on the simple inline type annotation above, but if the compiler 
-    // is still throwing errors, the most effective structural fix is to 
-    // rename the function and assert the type on the export.
+// Define a minimal prop structure for the function input
+interface MinimalPageProps {
+    // Required by Next.js component contract for any page (static or dynamic)
+    params: {}; 
     
-    // --- Reverting to the simplest functional signature ---
+    // Required for search queries
+    searchParams: SearchParams; 
+}
+
+async function SlotSelectionPage({
+   params, // Must be present in the signature, even if unused
+   searchParams,
+}: MinimalPageProps) {
+    // ... rest of your logic using searchParams ...
     const serviceId = searchParams?.serviceId ?? '';
+    // ...
 
     const supabase = await createClient();
     const { data: service, error } = await supabase
@@ -70,3 +69,4 @@ export default async function SlotSelectionPage({
         </div>
     );
 }
+export default SlotSelectionPage as typeof SlotSelectionPage;
