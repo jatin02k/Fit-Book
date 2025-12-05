@@ -1,51 +1,87 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-// ... (GET function remains the same) ...
+// 1. Define the expected TypeScript structure for a single day's data
+interface BusinessHourInput {
+  day_of_week: number | string; // Expecting number or string from JSON body
+  open_time: string;
+  close_time: string;
+}
+
+// 2. Define the structure for the data we send to Supabase
+interface FormattedBusinessHour {
+  day_of_week: number;
+  open_time: string;
+  close_time: string;
+}
+
+// (The GET function remains the same)
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const hoursData = await request.json();
+  
+  // Cast request.json() to the expected type for type-safe access
+  const hoursData: BusinessHourInput[] = await request.json(); 
+
+  // Initial validation for array structure
   if (!Array.isArray(hoursData) || hoursData.length === 0) {
     return NextResponse.json(
-      { error: "Invalid or empty hours data." },
+      { error: "Invalid or empty hours data: Expected an array." },
       { status: 400 }
     );
   }
-  const formattedData = hoursData.map((day: any) => { // Added 'day: any' for safety during map
-    
-    // FIX 1: Ensure day.day_of_week is treated as a number initially, since the FE sends a number
-    const dayOfWeekInt = Number(day.day_of_week); 
 
-    // FIX 2: Validate the number directly
-    if (dayOfWeekInt < 1 || dayOfWeekInt > 7) {
-      throw new Error(`Invalid day_of_week value: ${day.day_of_week}`);
-    }
-    
-    // FIX 3: Check for string presence, not just field existence
-    if (day.open_time === undefined || day.open_time === null || day.open_time === '' || 
-        day.close_time === undefined || day.close_time === null || day.close_time === '') {
-         throw new Error("Missing required time fields for a business day.");
-    }
-    
-    return {
-      day_of_week: dayOfWeekInt,
-      open_time: day.open_time, // This is now HH:MM:SS string from frontend
-      close_time: day.close_time, 
-    };
-  });
-  
+  const formattedData: FormattedBusinessHour[] = [];
+
   try {
-    const { data, error } = await supabase.from('business_hours').upsert(formattedData, {onConflict:'day_of_week'}).select('*');
-    if(error){
-        console.error('Error in saving business hours:', error);
-        // FIX 4: Add the specific Supabase error message for better debugging
-        return NextResponse.json({ error: `Failed to save business hours: ${error.message}` }, { status: 500 });
+    for (const day of hoursData) {
+      // 3. Type-safe extraction and validation
+      const dayOfWeekInt = Number(day.day_of_week); 
+
+      // Input Validation
+      if (isNaN(dayOfWeekInt) || dayOfWeekInt < 1 || dayOfWeekInt > 7) {
+        throw new Error(`Invalid day_of_week value (${day.day_of_week}). Must be a number between 1 and 7.`);
+      }
+
+      if (!day.open_time || typeof day.open_time !== 'string' || 
+          !day.close_time || typeof day.close_time !== 'string') {
+           throw new Error(`Missing or invalid time fields for day ${dayOfWeekInt}.`);
+      }
+      
+      // We could add more rigorous validation here (e.g., regex for HH:MM:SS format)
+      
+      formattedData.push({
+        day_of_week: dayOfWeekInt,
+        open_time: day.open_time,
+        close_time: day.close_time, 
+      });
     }
-    return NextResponse.json(data)
+
+    // 4. Supabase Upsert Operation
+    const { data, error } = await supabase
+      .from('business_hours')
+      .upsert(formattedData, { 
+          onConflict: 'day_of_week' 
+      })
+      .select('*');
+
+    if (error) {
+        console.error('Error in saving business hours:', error);
+        return NextResponse.json(
+            { error: `Failed to save business hours: ${error.message}` }, 
+            { status: 500 }
+        );
+    }
+    
+    return NextResponse.json(data);
+
   } catch (validationError: unknown) {
+    // 5. Improved error handling for validation issues
     const message =
-      validationError instanceof Error ? validationError.message : String(validationError);
+      validationError instanceof Error ? validationError.message : "An unknown validation error occurred.";
+    
+    console.error('Validation Error during hours processing:', validationError);
+      
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
