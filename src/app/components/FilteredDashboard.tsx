@@ -37,7 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
-import { AppointmentList } from "../api/admin/appointments/route";
+import { AppointmentList } from "@/lib/fetchAdminBookings";
 
 interface FilteredDashboardProps {
   appointmentsList: AppointmentList[];

@@ -1,14 +1,17 @@
 import React from "react";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 import { AvailabilitySelector } from "@/app/components/AvailabilitySelector";
 import { Button } from "@/app/components/ui/button";
 
-export default async function SlotSelectionPage(
-  { searchParams }: { searchParams: Record<string, string | string[] | undefined> }
-) {
-  const serviceId = String(searchParams?.serviceId ?? "");
+type Props = {
+  searchParams: {
+    serviceId?: string;
+  };
+};
+export default async function SlotSelectionPage({ searchParams }: Props) {
+  const serviceId = searchParams?.serviceId ?? "";
 
   const supabase = await createClient();
   const { data: service, error } = await supabase
@@ -23,17 +26,12 @@ export default async function SlotSelectionPage(
     <div className="min-h-screen pt-20 pb-16 bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link href="/services">
-          <Button
-            variant="outline"
-            className="mb-4 border-black text-black hover:bg-black hover:text-white"
-          >
+          <Button variant="outline" className="mb-4 border-black text-black hover:bg-black hover:text-white">
             ← Back to Services
           </Button>
         </Link>
 
-        <h1 className="text-3xl md:text-4xl text-black mb-2">
-          Select Your Appointment
-        </h1>
+        <h1 className="text-3xl md:text-4xl text-black mb-2">Select Your Appointment</h1>
 
         <p className="text-xl text-gray-600">
           Service: <span className="text-black">{service.name}</span>
