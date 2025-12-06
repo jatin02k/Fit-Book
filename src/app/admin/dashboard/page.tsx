@@ -14,10 +14,13 @@ export interface Appointment {
 }
 
 export default async function AdminDashboardPage() {
-
+  const isLocal = process.env.NODE_ENV === 'development';
+  const baseUrl = isLocal ? 'http://localhost:3000' : '';
+  
+  const apiUrl = `${baseUrl}/api/admin/bookings`;
   let appointments: Appointment[] = [];
   try {
-    const res = await fetch("/api/admin/bookings", { cache: "no-store" });
+    const res = await fetch(apiUrl, { cache: "no-store" });
 
     if (!res.ok) {
       const data = await res.json();
@@ -33,7 +36,7 @@ export default async function AdminDashboardPage() {
   } catch (e: unknown) {
     const errorMessage =
       e instanceof Error ? e.message : "An unknown error occurred";
-    console.error(`API Fetch Error: ${errorMessage}`);
+    console.log(`API Fetch Error: ${errorMessage}`);
   }
   return <CalendarComponent appointments={appointments} />;
 }
