@@ -5,14 +5,9 @@ import { notFound } from "next/navigation";
 import { AvailabilitySelector } from "@/app/components/AvailabilitySelector";
 import { Button } from "@/app/components/ui/button";
 
-type Props = {
-  searchParams: {
-    serviceId?: string;
-  };
-};
-export default async function SlotSelectionPage({ searchParams }: Props) {
-  const serviceId = searchParams?.serviceId ?? "";
 
+export default async function SlotSelectionPage({ params }: { params: { id: string } }) {
+  const serviceId: string = params.id
   const supabase = await createClient();
   const { data: service, error } = await supabase
     .from("services")
