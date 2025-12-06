@@ -1,8 +1,8 @@
 
+import { ManualBookingForm } from "@/app/components/ManualBookingForm";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { v4 as uuidv4 } from 'uuid'; 
-import { ManualBookingForm } from "@/app/(public)/components/ManualBookingForm";
+import { v4 as uuidv4 } from 'uuid';
 import { getBusinessHours, getServices } from "../services/page";
 
 interface RawService {

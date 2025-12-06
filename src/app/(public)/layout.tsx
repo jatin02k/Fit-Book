@@ -1,6 +1,4 @@
-// src/app/(public)/layout.tsx
-
-import { Navigation } from "./components/navigation";
+import { Navigation } from "../components/navigation";
 
 
 interface PublicLayoutProps {

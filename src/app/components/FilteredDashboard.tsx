@@ -32,12 +32,12 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { List, User, Clock, X, Filter, CalendarIcon } from "lucide-react";
-import { AppointmentList } from "../../api/admin/appointments/route";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
+import { AppointmentList } from "../api/admin/appointments/route";
 
 interface FilteredDashboardProps {
   appointmentsList: AppointmentList[];

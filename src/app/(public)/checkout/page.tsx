@@ -1,10 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import { Button } from "../components/ui/button";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import BookingForm from "../components/bookingForm";
 import z from "zod";
+import { Button } from "@/app/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import BookingForm from "@/app/components/bookingForm";
 
 export default async function CheckoutPage({ searchParams }: { searchParams: { serviceId?: string; date?: string; time?: string } }) {
     const paramsSchema = z.object({

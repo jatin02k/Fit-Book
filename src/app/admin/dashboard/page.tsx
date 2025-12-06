@@ -1,4 +1,4 @@
-import { CalendarComponent } from "@/app/(public)/components/calendarComponent";
+import { CalendarComponent } from "@/app/components/calendarComponent";
 
 export interface Appointment {
   id: string;

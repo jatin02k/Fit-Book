@@ -1,5 +1,5 @@
 import { AppointmentList, fetchAdminBookings } from "@/app/api/admin/appointments/route";
-import { FilteredDashboard } from "@/app/(public)/components/FilteredDashboard";
+import { FilteredDashboard } from "@/app/components/FilteredDashboard";
 
 export default async function AppointmentsPage() {
   

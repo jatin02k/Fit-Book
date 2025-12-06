@@ -1,6 +1,6 @@
 // src/app/(admin)/layout.tsx
 
-import { StaffSidebar } from "../(public)/components/StaffSidebar";
+import { StaffSidebar } from "../components/StaffSidebar";
 
 // import { AdminNavigation } from "@/components/AdminNavigation"; // You would create this component later
 

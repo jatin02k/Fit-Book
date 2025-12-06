@@ -1,7 +1,7 @@
 import { Sparkles, Zap } from "lucide-react";
 import { Button } from "./ui/button";
-import { ImageWithFallback } from "../figma/imageWithFallback";
 import Link from "next/link";
+import { ImageWithFallback } from "../(public)/figma/imageWithFallback";
 
 export function HeroPage() {
   return (

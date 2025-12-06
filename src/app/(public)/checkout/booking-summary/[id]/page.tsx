@@ -1,6 +1,6 @@
 // app/booking-summary/[id]/page.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/(public)/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 
 export default async function BookingSummary({
   params,

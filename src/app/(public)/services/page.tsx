@@ -1,15 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { Check, ArrowRight } from "lucide-react";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardContent,
-  CardTitle,
-} from "@/app/(public)/components/ui/card";
-import { Button } from "@/app/(public)/components/ui/button";
 import { ImageWithFallback } from "@/app/(public)/figma/imageWithFallback";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Button } from "@/app/components/ui/button";
 
 
 // The main Server Component function

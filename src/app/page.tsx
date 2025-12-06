@@ -1,5 +1,5 @@
-import { HeroPage } from "./(public)/components/HeroPage";
-import { Navigation } from "./(public)/components/navigation";
+import { HeroPage } from "./components/HeroPage";
+import { Navigation } from "./components/navigation";
 
 
 export default function HomePage() {
