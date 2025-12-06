@@ -8,17 +8,12 @@ import { AvailabilitySelector } from "../components/AvailabilitySelector";
 interface SearchParams {
     serviceId?: string;
 }
-interface MinimalPageProps {
-    // Corrected type for 'params'
-    params: Readonly<Record<string, string | string[]>>; 
-    
-    // Your 'searchParams' is correctly typed
+interface PageProps {
     searchParams: SearchParams; 
 }
 async function SlotSelectionPage({
-   params, // Must be present in the signature, even if unused
    searchParams,
-}: MinimalPageProps) {
+}: PageProps) {
     // ... rest of your logic using searchParams ...
     const serviceId = searchParams?.serviceId ?? '';
     // ...
