@@ -1,13 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
-import jwt from "jsonwebtoken"; // Ensure this is installed: npm install jsonwebtoken
+import jwt from "jsonwebtoken"; 
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("admin_token")?.value;
   const path = req.nextUrl.pathname;
 
   const isLoginPage = path === "/admin/login";
-  const isProtected = path.startsWith("/admin") && !isLoginPage; // Simplify protection check
-
+  const isProtected = path.startsWith("/admin") && !isLoginPage; 
+  
+  // 1. If trying to access protected route, check token validity
   if (isProtected) {
     if (!token) {
       // No token found, redirect to login
@@ -15,15 +16,15 @@ export function middleware(req: NextRequest) {
     }
 
     try {
-      // ⚠️ CRITICAL: VERIFY THE TOKEN BEFORE PROCEEDING
-      // This ensures the token is signed with your VERCEL-set JWT_SECRET
+      // ⚠️ CRITICAL STEP: VERIFY THE TOKEN
+      // This throws an error if the token is invalid or expired.
       jwt.verify(token, process.env.JWT_SECRET!); 
       
       // Token is valid, allow access
       return NextResponse.next();
 
     } catch (err) {
-      // Verification FAILED (expired, tampered, or wrong secret used by Vercel)
+      // 2. Verification FAILED (token is bad, expired, or secret is wrong)
       console.error("JWT Verification failed in middleware:", err);
       // Redirect to login and clear the bad cookie
       const response = NextResponse.redirect(new URL("/admin/login", req.url));
@@ -31,8 +32,8 @@ export function middleware(req: NextRequest) {
       return response;
     }
   }
-  
-  // If logged in and tries to access login page, redirect to dashboard
+
+  // 3. If logged in and tries to access login page, redirect to dashboard
   if (isLoginPage && token) {
     return NextResponse.redirect(new URL("/admin/dashboard", req.url));
   }
