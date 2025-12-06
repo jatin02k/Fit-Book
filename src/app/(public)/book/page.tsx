@@ -8,16 +8,13 @@ import { AvailabilitySelector } from "../components/AvailabilitySelector";
 interface SearchParams {
     serviceId?: string;
 }
-
-// Define a minimal prop structure for the function input
 interface MinimalPageProps {
-    // Required by Next.js component contract for any page (static or dynamic)
-    params:Readonly<Record<string, never>>; 
+    // Corrected type for 'params'
+    params: Readonly<Record<string, string | string[]>>; 
     
-    // Required for search queries
+    // Your 'searchParams' is correctly typed
     searchParams: SearchParams; 
 }
-
 async function SlotSelectionPage({
    params, // Must be present in the signature, even if unused
    searchParams,
