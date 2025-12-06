@@ -1,16 +1,13 @@
-// middleware.ts
 import { NextResponse, type NextRequest } from "next/server";
-import jwt from "jsonwebtoken"; // 💡 Import jsonwebtoken
+import jwt from "jsonwebtoken"; // Ensure this is installed: npm install jsonwebtoken
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("admin_token")?.value;
   const path = req.nextUrl.pathname;
 
   const isLoginPage = path === "/admin/login";
-  const isAdminRoot = path === "/admin";
-  const isProtected = path.startsWith("/admin") && !isLoginPage && !isAdminRoot;
+  const isProtected = path.startsWith("/admin") && !isLoginPage; // Simplify protection check
 
-  // 1. If trying to access protected route, check token validity
   if (isProtected) {
     if (!token) {
       // No token found, redirect to login
@@ -18,26 +15,25 @@ export function middleware(req: NextRequest) {
     }
 
     try {
-      // 2. VERIFY THE TOKEN
-      // CRITICAL: process.env.JWT_SECRET must be available in Vercel env vars
+      // ⚠️ CRITICAL: VERIFY THE TOKEN BEFORE PROCEEDING
+      // This ensures the token is signed with your VERCEL-set JWT_SECRET
       jwt.verify(token, process.env.JWT_SECRET!); 
       
       // Token is valid, allow access
       return NextResponse.next();
 
     } catch (err) {
-      // 3. Verification FAILED (expired, tampered, wrong secret)
+      // Verification FAILED (expired, tampered, or wrong secret used by Vercel)
       console.error("JWT Verification failed in middleware:", err);
-      // Redirect to login and delete the bad cookie (optional but helpful)
+      // Redirect to login and clear the bad cookie
       const response = NextResponse.redirect(new URL("/admin/login", req.url));
       response.cookies.delete("admin_token");
       return response;
     }
   }
-
+  
   // If logged in and tries to access login page, redirect to dashboard
   if (isLoginPage && token) {
-    // If they have a token, assume it's valid enough to redirect them away from login
     return NextResponse.redirect(new URL("/admin/dashboard", req.url));
   }
 
