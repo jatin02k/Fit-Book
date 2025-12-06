@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
 import { Check, ArrowRight } from "lucide-react";
 import {
   Card,
@@ -10,6 +9,7 @@ import {
 } from "@/app/(public)/components/ui/card";
 import { Button } from "@/app/(public)/components/ui/button";
 import { ImageWithFallback } from "@/app/(public)/figma/imageWithFallback";
+import Link from "next/link";
 
 
 // The main Server Component function
@@ -143,6 +143,11 @@ export default async function ServiceSelectionPage() {
           <p className="text-gray-600 mb-4">
             Not sure which service is right for you?
           </p>
+          <Link 
+          href={'/contact'}
+          className="w-full"
+          passHref
+          >
           <Button
             variant="outline"
             className="border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-300 hover:scale-105"
@@ -150,6 +155,7 @@ export default async function ServiceSelectionPage() {
             Contact Us for Guidance
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+          </Link>
         </div>
       </div>
     </div>
