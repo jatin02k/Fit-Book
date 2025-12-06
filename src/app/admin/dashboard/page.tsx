@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 
 import { CalendarComponent } from "@/app/components/calendarComponent";
 
