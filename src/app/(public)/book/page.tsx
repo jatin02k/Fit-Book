@@ -8,12 +8,16 @@ import { AvailabilitySelector } from "../components/AvailabilitySelector";
 interface SearchParams {
     serviceId?: string;
 }
-interface PageProps {
-    searchParams: SearchParams; 
-}
+
 async function SlotSelectionPage({
-   searchParams,
-}: PageProps) {
+    // We still have to include 'params', but we give it a simple type 
+    // and instruct TypeScript to ignore its usage (or lack thereof).
+    params, 
+    searchParams,
+}: {
+    params: Readonly<Record<string, string | string[]>>;
+    searchParams: SearchParams;
+}) {
     // ... rest of your logic using searchParams ...
     const serviceId = searchParams?.serviceId ?? '';
     // ...
