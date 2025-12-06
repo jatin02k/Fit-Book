@@ -48,10 +48,17 @@ export async function POST(request: Request) {
     }
 
     const token = jwt.sign(
-    { id: adminUser.id, email: adminUser.email, role: "admin" },
-    process.env.JWT_SECRET!,
-    { expiresIn: "1d" }
-  );
+{ 
+    id: adminUser.id, 
+    email: adminUser.email, 
+    role: "admin",
+    // 💡 FIX: Add claims expected by the jose library
+    iss: 'urn:fitbook:issuer', // The issuer of the token
+    aud: 'urn:fitbook:audience', // Who the token is intended for
+},
+process.env.JWT_SECRET!,
+{ expiresIn: "1d" }
+);
 
   // 4. Store token in a cookie
   const response = NextResponse.json({ message: "Login successful" });

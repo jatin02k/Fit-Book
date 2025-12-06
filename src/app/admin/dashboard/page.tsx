@@ -33,7 +33,7 @@ export default async function AdminDashboardPage() {
   } catch (e: unknown) {
     const errorMessage =
       e instanceof Error ? e.message : "An unknown error occurred";
-    throw new Error(`API Fetch Error: ${errorMessage}`);
+    console.error(`API Fetch Error: ${errorMessage}`);
   }
   return <CalendarComponent appointments={appointments} />;
 }
