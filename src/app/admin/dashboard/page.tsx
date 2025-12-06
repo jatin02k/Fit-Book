@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 
 import { CalendarComponent } from "@/app/components/calendarComponent";
 
@@ -14,15 +13,10 @@ export interface Appointment {
 }
 
 export default async function AdminDashboardPage() {
-  const baseUrl = process.env.VERCEL_URL 
-    ? `https://${process.env.VERCEL_URL}` // Vercel's dynamic URL
-    : 'http://localhost:3000'; // Fallback for local dev
-
-  const apiUrl = `${baseUrl}/api/admin/bookings`;
 
   let appointments: Appointment[] = [];
   try {
-    const res = await fetch(apiUrl, { cache: "no-store" });
+    const res = await fetch("/api/admin/bookings", { cache: "no-store" });
 
     if (!res.ok) {
       const data = await res.json();
@@ -32,6 +26,9 @@ export default async function AdminDashboardPage() {
     }
 
     appointments = await res.json();
+    if (!Array.isArray(appointments)) {
+    throw new Error("API returned invalid data format. Expected an array.");
+}
   } catch (e: unknown) {
     const errorMessage =
       e instanceof Error ? e.message : "An unknown error occurred";
