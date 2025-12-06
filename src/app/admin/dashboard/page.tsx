@@ -15,7 +15,9 @@ export interface Appointment {
 
 export default async function AdminDashboardPage() {
   const isLocal = process.env.NODE_ENV === 'development';
-  const baseUrl = isLocal ? 'http://localhost:3000' : '';
+  const baseUrl = isLocal 
+    ? 'http://localhost:3000' 
+    : process.env.NEXT_PUBLIC_BASE_URL || ''; // Use the Vercel-set public URL
   
   const apiUrl = `${baseUrl}/api/admin/bookings`;
   let appointments: Appointment[] = [];
