@@ -114,7 +114,7 @@ export default async function ServiceSelectionPage() {
                 </ul>
 
                 <Link
-                  href={`/book?serviceId=${service.id}`}
+                  href={`/book/${service.id}`}
                   className="w-full"
                   passHref
                 >
