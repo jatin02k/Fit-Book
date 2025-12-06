@@ -63,8 +63,8 @@ export async function POST(request: Request) {
   });
 
     // 4. Success: Session cookie is now set. Middleware will permit access.
-    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
-  
+  return response;
+    
   } catch (error) {
     console.error("Fatal Login Handler Error:", error);
     return NextResponse.json({ error: "Internal server error." }, { status: 500 });
