@@ -14,9 +14,11 @@ export interface Appointment {
 }
 
 export default async function AdminDashboardPage() {
-  const apiUrl = `${
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:3000"
-  }/api/admin/bookings`;
+  const baseUrl = process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` // Vercel's dynamic URL
+    : 'http://localhost:3000'; // Fallback for local dev
+
+  const apiUrl = `${baseUrl}/api/admin/bookings`;
 
   let appointments: Appointment[] = [];
   try {
