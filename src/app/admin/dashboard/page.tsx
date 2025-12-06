@@ -10,18 +10,17 @@ export interface Appointment {
   serviceName: string;
   serviceDuration: number;
   cancellationLink: string;
-  status: 'pending' | 'confirmed' | 'upcoming';
+  status: "pending" | "confirmed" | "upcoming";
 }
 
 export default async function AdminDashboardPage() {
-
-  // const apiUrl = `${
-  //   process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:3000"
-  // }/api/admin/bookings`;
+  const apiUrl = `${
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:3000"
+  }/api/admin/bookings`;
 
   let appointments: Appointment[] = [];
   try {
-    const res = await fetch("http://localhost:3000/api/admin/bookings", { cache: "no-store" });
+    const res = await fetch(apiUrl, { cache: "no-store" });
 
     if (!res.ok) {
       const data = await res.json();
@@ -34,9 +33,7 @@ export default async function AdminDashboardPage() {
   } catch (e: unknown) {
     const errorMessage =
       e instanceof Error ? e.message : "An unknown error occurred";
-    throw new Error(errorMessage);
+    throw new Error(`API Fetch Error: ${errorMessage}`);
   }
-  return (
-    <CalendarComponent appointments={appointments} />
-  );
+  return <CalendarComponent appointments={appointments} />;
 }
