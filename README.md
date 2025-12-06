@@ -1,55 +1,66 @@
-# FitBook: Single-Vendor Appointment Booking MVP
+# 🏋️ FitBook: Premium Fitness Appointment Scheduling SaaS MVP
 
-**Project Status:** Technical Blueprint Complete, Core Backend Logic in Development (Phase A3)
+**Visit here: https://fit-book-smoky.vercel.app**
 
-## Overview
+## **🚀 Project Overview**
 
-*FitBook* is a single-vendor scheduling application that replaces manual booking for service businesses. Its core function is the **Crux Logic**, which instantly calculates and presents bookable time slots by dynamically filtering business hours, service duration, and real-time appointments. The focus is on minimizing administrative overhead and reducing no-shows.
+FitBook is a Minimum Viable Product (MVP) for a dedicated SaaS platform designed for premium fitness businesses (gyms, personal trainers, studios). It provides a seamless, modern, and flexible solution for clients to **book appointments, manage classes, and connect with certified expert trainers**—all within a single, elegant interface.
 
-### Core Technology Stack
+This MVP focuses on validating the core scheduling and user experience for both administrators and clients.
 
-* **Frontend:** Next.js (App Router) + Tailwind CSS
-* **Backend:** Next.js Route Handlers (Node.js)
-* **Database:** Supabase (PostgreSQL)
+## **✨ Core Features**
 
-### Getting Started
+| Feature | Description | Status in MVP |
+| :--- | :--- | :--- |
+| **Client Booking Portal** | Easy-to-use public interface for browsing services and booking sessions. | ✅ Complete |
+| **Service Management** | Define, edit, and categorize different fitness services (e.g., Personal Training, Group Classes). | ✅ Complete |
+| **Admin Dashboard** | Secure area for managing schedules, viewing upcoming appointments, and client data. | ✅ Complete |
+| **Flexible Scheduling** | Logic to prevent double-booking and allow clients to find times that fit their busy lifestyle. | ✅ Complete |
 
-1. **Dependencies:** Ensure Node.js is installed.
-   ```bash
-   npm install
-   ```
-   
-2. **Database Setup:**
+## **🛠️ Tech Stack**
 
-  Create a Supabase project, run the schema SQL, and seed the required data in the services and business_hours tables (Phase A2).
-  
-  Install the Supabase CLI (supabase login, supabase link YOUR_PROJECT_REF_ID).
-  
-  Generate local TypeScript types:
+This project is built using a modern and scalable stack:
 
-  ```Bash
-  supabase gen types typescript --linked > src/types/supabase.ts
-  ```
+* **Frontend:** **React** / **Next.js**
+* **Styling:** **Tailwind CSS** (for rapid, utility-first styling)
+* **Deployment:** **Vercel** (for seamless frontend deployment)
 
-3. **Environment Variables:** Create a .env.local file in the root of the project with your keys:
+## **▶️ Getting Started**
 
-```
-  NEXT_PUBLIC_SUPABASE_URL=YOUR_PROJECT_URL_HERE
-  NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY_HERE
-  SUPABASE_SERVICE_ROLE_KEY=YOUR_SECRET_SERVICE_ROLE_KEY
-  Note on SUPABASE_SERVICE_ROLE_KEY: This key is highly sensitive as it grants full admin access to the database (bypassing RLS). Use it ONLY in server environments (Route Handlers).
-```
+Follow these instructions to set up and run the FitBook MVP locally for development.
 
-4. **Run Development Server:**
+### **Prerequisites**
 
-Bash
+You will need the following installed:
 
-npm run dev
-Access the application at http://localhost:3000. Test the Crux API manually via your browser:
-http://localhost:3000/api/public/availability?serviceId=[ID]&date=[YYYY-MM-DD]
+* **Node.js** (LTS version)
+* **npm** or **yarn**
 
-### Coding Flow Checkpoint
-We are currently completing Phase A3: Crux Logic API (/api/public/availability). This is the core algorithm that calculates available time slots.
+### **Installation**
 
-### Next Step:
-Proceed to Phase A4: Booking API by implementing the /api/public/bookings/route.ts handler (C-4, C-5 Logic).
+1.  **Clone the Repository:**
+    ```bash
+    git clone [YOUR_GITHUB_REPO_URL]
+    cd fitbook-saas-mvp
+    ```
+
+2.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Run the Application:**
+    Start the development server:
+    ```bash
+    npm run dev
+    ```
+
+The application will now be running on `http://localhost:3000`.
+
+## **🤝 Contribution & Feedback**
+
+As this is an MVP, your feedback is invaluable! If you find a bug or have a suggestion, please **open an issue** in this repository.
+
+## **📄 License**
+
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
