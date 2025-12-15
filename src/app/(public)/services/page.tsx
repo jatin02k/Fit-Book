@@ -39,6 +39,7 @@ export default async function ServiceSelectionPage() {
     { gradient: "from-orange-500 to-pink-500", shadow: "shadow-pink-500/20" },
     { gradient: "from-blue-500 to-cyan-500", shadow: "shadow-cyan-500/20" },
     { gradient: "from-green-500 to-lime-500", shadow: "shadow-lime-500/20" },
+    { gradient: "from-green-500 to-lime-500", shadow: "shadow-lime-500/20" },
   ];
 
   // 2. Render UI with Figma Styles and Real Data (C-1 Acceptance)

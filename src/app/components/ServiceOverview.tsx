@@ -152,7 +152,7 @@ export default function ServiceOverview({
   };
 
   const handleAddService = async () => {
-    if (!newName || !newDuration || !newPrice || !newDescription || newFeatures)
+    if (!newName || !newDuration || !newPrice || !newDescription || !newFeatures)
       return;
     const featuresArray = stringToArray(newFeatures);
     if (featuresArray.length === 0) return;
@@ -165,7 +165,7 @@ export default function ServiceOverview({
         duration_minutes: Number(newDuration), // Send as number
         price: newPrice,
         description: newDescription,
-        features: newFeatures,
+        features: featuresArray,
       }),
     });
 
@@ -175,6 +175,10 @@ export default function ServiceOverview({
         ...newServiceData,
         id: String(newServiceData.id), // Use DB generated ID (UUID)
         duration_minutes: Number(newServiceData.duration_minutes), // Ensure number
+        name:String(newServiceData.name),
+        price:Number(newServiceData.price),
+        description: String(newServiceData.description),
+        features:newServiceData.features,
       };
       setServices([...services, newService]);
       setIsAddingService(false);
@@ -253,7 +257,7 @@ export default function ServiceOverview({
                   Add Service
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className=" bg-gray-50">
                 <DialogHeader>
                   <DialogTitle>Add New Service</DialogTitle>
                 </DialogHeader>
@@ -264,7 +268,7 @@ export default function ServiceOverview({
                       id="new-name"
                       value={newName}
                       onChange={(e) => setNewName(e.target.value)}
-                      placeholder="e.g., 60 Minute Personal Training"
+                      placeholder="e.g., Personal Training"
                     />
                   </div>
 
@@ -294,7 +298,7 @@ export default function ServiceOverview({
                       id="new-description"
                       value={newDescription}
                       onChange={(e) => setNewDescription(e.target.value)}
-                      placeholder="e.g., $80"
+                      placeholder="e.g., Service Description"
                     />
                   </div>
 
@@ -304,7 +308,7 @@ export default function ServiceOverview({
                       id="new-features"
                       value={newFeatures}
                       onChange={(e) => setNewFeatures(e.target.value)}
-                      placeholder="e.g., $80"
+                      placeholder="e.g., Service Features"
                     />
                   </div>
 
