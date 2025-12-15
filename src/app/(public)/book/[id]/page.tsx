@@ -7,7 +7,8 @@ import { Button } from "@/app/components/ui/button";
 
 
 export default async function SlotSelectionPage({ params }: { params: { id: string } }) {
-  const serviceId: string = params.id
+  const awaitedParams = await params;
+        const serviceId: string = awaitedParams.id;
   const supabase = await createClient();
   const { data: service, error } = await supabase
     .from("services")

@@ -34,7 +34,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: { s
         <div className="min-h-screen pt-20 pb-16 bg-gray-50">
             <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-8">
-                    <Link href={`/book?serviceId=${serviceId}`}>
+                    <Link href={`/book/${serviceId}`}>
                         <Button
                             variant="outline"
                             className="mb-4 border-black text-black hover:bg-black hover:text-white"
