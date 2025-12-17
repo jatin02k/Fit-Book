@@ -1,48 +1,47 @@
-import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/mail";
+import { createClient } from "@/lib/supabase/client";
 
 export async function GET(request: Request) {
-  // 1. Security Check (Only allow Cron to call this)
-  const authHeader = request.headers.get('authorization');
+  // Verify Secret
+  const authHeader = request.headers.get('Authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 
   const supabase = await createClient();
   
-  // 2. Define the "Reminder Window" (e.g., sessions starting in 30-45 mins)
+  // Window: 30 to 45 minutes from now
   const now = new Date();
-  const windowStart = new Date(now.getTime() + 30 * 60000).toISOString();
-  const windowEnd = new Date(now.getTime() + 45 * 60000).toISOString();
+  const startWindow = new Date(now.getTime() + 30 * 60000).toISOString();
+  const endWindow = new Date(now.getTime() + 45 * 60000).toISOString();
 
-  // 3. Fetch confirmed appointments in that window
   const { data: upcoming } = await supabase
     .from('appointments')
     .select('*, services(name)')
     .eq('status', 'confirmed')
-    .eq('reminder_sent', false)
-    .gte('start_time', windowStart)
-    .lte('start_time', windowEnd);
+    .eq('reminder_sent', false) // Don't double-send
+    .gte('start_time', startWindow)
+    .lte('start_time', endWindow);
 
-  if (!upcoming || upcoming.length === 0) return new Response('No reminders needed');
+  if (!upcoming || upcoming.length === 0) return new Response('No reminders');
 
-  // 4. Send Emails
   for (const appt of upcoming) {
-    const time = new Date(appt.start_time).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-    
+    // IMPORTANT: Skip render() if your template returns a string from baseLayout
+    // Passing a string into render() causes the "Raw HTML" error in Gmail
+
+
     await sendEmail({
       to: appt.email,
-      subject: `🔔 Reminder: Your session starts at ${time}`,
-      html: `
+      subject: "🔔 Reminder: Your session starts in 30 mins!",
+      html:  `
         <h1>See you soon, ${appt.customer_name}!</h1>
         <p>This is a friendly reminder that your <strong>${appt.services.name}</strong> starts in about 30 minutes.</p>
-        <p><strong>Time:</strong> ${time}</p>
-      `
+        <p><strong>Time:</strong> ${new Date(appt.start_time).toLocaleTimeString('en-IN')}</p>
+      `// Ensure lib/mail.ts uses the 'html' field
     });
 
-    // 5. Update database so we don't send again
-    await supabase.from('appointments').update({ reminder_sent: true, status: appt.status, payment_url: appt.payment_url }).eq('id', appt.id);
+    await supabase.from('appointments').update({ reminder_sent: true }).eq('id', appt.id);
   }
 
-  return new Response(`Sent ${upcoming.length} reminders`);
+  return new Response('Reminders Sent');
 }
