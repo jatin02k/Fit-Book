@@ -1,8 +1,3 @@
-type BaseLayoutProps = {
-  title: string;
-  content: string;
-};
-
 // lib/mail/templates/baseLayout.ts
 export function baseLayout({ title, content }: { title: string; content: string }) {
   return `

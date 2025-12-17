@@ -68,7 +68,7 @@ export type Database = {
           service_id: string
           start_time: string
           status: string
-          payment_url: String
+          payment_url: string
         }
         Insert: {
           cancellation_link_uuid?: string
@@ -80,7 +80,7 @@ export type Database = {
           service_id: string
           start_time: string
           status: string
-          payment_url: String
+          payment_url: string
         }
         Update: {
           cancellation_link_uuid?: string
@@ -92,7 +92,7 @@ export type Database = {
           service_id?: string
           start_time?: string
           status: string
-          payment_url: String
+          payment_url: string
         }
         Relationships: [
           {

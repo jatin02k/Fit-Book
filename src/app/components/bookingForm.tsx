@@ -1,7 +1,7 @@
 "use client";
 
 import { bookingSchema } from "@/lib/validation/bookingSchema";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -135,9 +135,10 @@ export default function BookingForm({
       router.push(
         `/checkout/booking-summary/${data.cancellationLinkUuid}`
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error(err.message || "Something went wrong");
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

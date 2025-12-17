@@ -4,19 +4,10 @@ import * as crypto from "crypto";
 import { bookingSchema } from "@/lib/validation/bookingSchema";
 import { sendEmail } from "@/lib/mail";
 import { customerPendingTemplate } from "@/lib/mail/templates/customerPending";
-import { render } from "@react-email/render"; // IMPORTANT: Needs this to convert React to HTML
 import { adminPendingTemplate } from "@/lib/mail/templates/adminPending";
 
 const BUFFER_MINUTES = 15;
-type Props = {
-  customer: string;
-  email: string;
-  phone?: string;
-  service: string;
-  date: string;
-  time: string;
-  paymentUrl: string;
-};
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -51,7 +42,7 @@ export async function POST(request: Request) {
 
     // 4. Insert Appointment
     const cancellationUuid = crypto.randomUUID();
-    const { data: booking, error: insertError } = await supabase
+    const { error: insertError } = await supabase
       .from("appointments")
       .insert([{
         service_id: validatedData.serviceId,
@@ -109,8 +100,9 @@ try {
 
     return NextResponse.json({ cancellationLinkUuid: cancellationUuid }, { status: 201 });
 
-  } catch (error: any) {
+  } catch (error:unknown) {
     console.error(error);
-    return NextResponse.json({ error: error.message || "Internal Error" }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Internal Error";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
