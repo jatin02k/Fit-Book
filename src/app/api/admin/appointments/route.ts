@@ -29,7 +29,7 @@ export async function PATCH(request: Request) {
 
   const { data: appointment, error: updateError } = await supabase
       .from("appointments")
-      .update({ status, payment_url: "" })
+      .update({ status, payment_url: "",reminder_sent:false })
       .eq("id", id)
       .select("*, services(name)") // Join with services to get the name for the email
       .single();

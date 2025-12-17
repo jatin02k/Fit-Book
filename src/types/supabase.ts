@@ -69,6 +69,7 @@ export type Database = {
           start_time: string
           status: string
           payment_url: string
+          reminder_sent: boolean
         }
         Insert: {
           cancellation_link_uuid?: string
@@ -81,6 +82,7 @@ export type Database = {
           start_time: string
           status: string
           payment_url: string
+          reminder_sent: boolean
         }
         Update: {
           cancellation_link_uuid?: string
@@ -93,6 +95,7 @@ export type Database = {
           start_time?: string
           status: string
           payment_url: string
+          reminder_sent: boolean
         }
         Relationships: [
           {

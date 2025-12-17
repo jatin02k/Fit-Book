@@ -53,7 +53,8 @@ export async function POST(request: Request) {
         phone_number: validatedData.phoneNo,
         payment_url: validatedData.paymentProofUrl,
         cancellation_link_uuid: cancellationUuid,
-        status: "pending"
+        status: "pending",
+        reminder_sent: false,
       }])
       .select()
       .single();

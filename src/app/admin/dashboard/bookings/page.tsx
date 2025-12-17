@@ -93,6 +93,7 @@ async function createManualBooking(formData: FormData) {
         status: 'confirmed',
         cancellation_link_uuid: cancellationUuid,
         payment_url:'',
+        reminder_sent:false,
     };
 
     const { error: insertError } = await supabase
