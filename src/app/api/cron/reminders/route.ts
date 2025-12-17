@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export async function GET(request: Request) {
   // Verify Secret
-  const authHeader = request.headers.get('Authorization');
+  const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response('Unauthorized', { status: 401 });
   }
