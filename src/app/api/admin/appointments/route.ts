@@ -22,6 +22,20 @@ export async function GET() {
         );
     }
 }
+
+export async function PATCH(request: Request) {
+    const supabase = await createClient();
+  const { id, status } = await request.json();
+
+  const { error } = await supabase
+    .from('appointments')
+    .update({ status: status })
+    .eq('id', id);
+
+  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 400 });
+  
+  return new Response(null, { status: 204 });
+}
 export async function DELETE(request:Request) {
     const supabase = await createClient();
     const { id } = await request.json()

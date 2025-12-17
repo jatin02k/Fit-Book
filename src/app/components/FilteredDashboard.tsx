@@ -94,35 +94,67 @@ export function FilteredDashboard({
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [isDefaultView, setIsDefaultView] = useState(true);
-  const handleCancelAppointment = async(appointmentId: string) => {
+
+  const handleToggleStatus = async (appointmentId: string, currentStatus: string) => {
+  // 1. Toggle logic (e.g., if pending -> confirmed, if confirmed -> pending)
+  const nextStatus = currentStatus === "pending" ? "confirmed" : "pending";
+
+  // 2. Optimistic Update (update UI immediately)
+  const previousAppointments = [...appointments]; // Keep backup for rollback
+  setAppointments((prev) =>
+    prev.map((apt) =>
+      apt.id === appointmentId ? { ...apt, status: nextStatus } : apt
+    )
+  );
+
+  try {
+    // 3. Update Backend
+    const response = await fetch("/api/admin/appointments", {
+      method: "PATCH", // Using PATCH for updates
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: appointmentId, status: nextStatus }),
+    });
+
+    if (!response.ok) throw new Error("Failed to update status");
+    
+    console.log(`Appointment ${appointmentId} set to ${nextStatus}`);
+  } catch (error) {
+    console.error(error);
+    // 4. Rollback UI if the database update fails
+    setAppointments(previousAppointments);
+    alert("Could not update status. Please try again.");
+  }
+};
+  
+  const handleCancelAppointment = async (appointmentId: string) => {
     setAppointments(appointments.filter((apt) => apt.id !== appointmentId));
     // TODO: Add actual API call here to notify the backend/Supabase
-    const response = await fetch('/api/admin/appointments', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: appointmentId}),
+    const response = await fetch("/api/admin/appointments", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: appointmentId }),
     });
     if (response.status === 204) {
-        console.log(`Appointment ${appointmentId} successfully cancelled.`);
+      console.log(`Appointment ${appointmentId} successfully cancelled.`);
     } else {
       let errorMessage = "Failed to cancel Appointment (Unknown error).";
-    
-    // ONLY attempt to read JSON if status is something that might contain a body (e.g., 400, 500)
-    if (response.headers.get('content-type')?.includes('application/json')) {
+
+      // ONLY attempt to read JSON if status is something that might contain a body (e.g., 400, 500)
+      if (response.headers.get("content-type")?.includes("application/json")) {
         try {
-            const errorBody = await response.json();
-            errorMessage = errorBody.error || errorMessage; 
+          const errorBody = await response.json();
+          errorMessage = errorBody.error || errorMessage;
         } catch (e) {
-            // If parsing fails (i.e., it was HTML), fall back to a generic message
-            errorMessage = `Server returned an invalid response (Status: ${response.status}).`;
-            console.error("Could not parse error response body:", e);
+          // If parsing fails (i.e., it was HTML), fall back to a generic message
+          errorMessage = `Server returned an invalid response (Status: ${response.status}).`;
+          console.error("Could not parse error response body:", e);
         }
-    } else {
+      } else {
         // If the response is not JSON (i.e., an HTML error page)
         errorMessage = `Server returned a generic error page (Status: ${response.status}).`;
-    }
-    
-    throw new Error(errorMessage);
+      }
+
+      throw new Error(errorMessage);
     }
   };
 
@@ -358,29 +390,28 @@ export function FilteredDashboard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-              {sortedAppointments.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
-                <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-                  <p className="text-xl font-semibold text-gray-700">
-                    No Appointments Found
-                  </p>
-                  <Button
-                    variant="link"
-                    onClick={() => {
-                      setDateRange(undefined); // Clear range
-                      setIsDefaultView(true); // Return to default upcoming view
-                    }}
-                    className="mt-3"
-                  >
-                    Clear Filters
-                     <X className="h-10 w-10" />
-                  </Button>
-                </div>
-                </TableCell>
-                </TableRow>
-              ) : (
-
+                {sortedAppointments.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                        <p className="text-xl font-semibold text-gray-700">
+                          No Appointments Found
+                        </p>
+                        <Button
+                          variant="link"
+                          onClick={() => {
+                            setDateRange(undefined); // Clear range
+                            setIsDefaultView(true); // Return to default upcoming view
+                          }}
+                          className="mt-3"
+                        >
+                          Clear Filters
+                          <X className="h-10 w-10" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : (
                   sortedAppointments.map((appointment) => {
                     const { date, time } = formatDateTime(
                       appointment.start_time
@@ -403,7 +434,17 @@ export function FilteredDashboard({
                         <TableCell>{date}</TableCell>
                         <TableCell>{time}</TableCell>
                         <TableCell>
-                          <Badge className={getStatusColor(appointment.status)}>
+                          <Badge
+                            className={`${getStatusColor(
+                              appointment.status
+                            )} cursor-pointer hover:opacity-80 transition-all`}
+                            onClick={() =>
+                              handleToggleStatus(
+                                appointment.id,
+                                appointment.status
+                              )
+                            }
+                          >
                             {appointment.status}
                           </Badge>
                         </TableCell>
@@ -459,7 +500,7 @@ export function FilteredDashboard({
                       </TableRow>
                     );
                   })
-              )}
+                )}
               </TableBody>
             </Table>
           </CardContent>
