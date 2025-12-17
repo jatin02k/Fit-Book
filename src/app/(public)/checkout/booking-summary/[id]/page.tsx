@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 export default async function BookingSummary({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>; // Update type to Promise
 }) {
-  const cancellationId =await params.id;
+  const { id } = await params;
+  const cancellationId =id;
   const supabase = await createClient();
 
   // 1) Fetch appointment

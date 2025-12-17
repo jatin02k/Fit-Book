@@ -1,233 +1,225 @@
-'use client'
+"use client";
 
 import { bookingSchema } from "@/lib/validation/bookingSchema";
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { Bounce, toast, ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import z from "zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-type BookingField = keyof typeof bookingSchema.shape;
+import { createClient } from "@/lib/supabase/client";
 
 type BookingFormProps = {
-    serviceId: string;
-    serviceName: string;
-    date: string;        // YYYY-MM-DD
-    time: string;        // HH:mm (24h)
+  serviceId: string;
+  serviceName: string;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:mm
 };
-export default function BookingForm({
-    serviceId,
-    date,
-    time,
-}: BookingFormProps) {
-    const router = useRouter();
-    const [formData, setFormData] = useState({
-        'name': '',
-        'email': '',
-        'phoneNo': ''
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [errors, setErrors] = useState<{ name?: string; email?: string; phoneNo?: string }>({});
 
-    const clientSchema = useMemo(() => z.object({
+export default function BookingForm({
+  serviceId,
+  date,
+  time,
+}: BookingFormProps) {
+  const router = useRouter();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phoneNo: "",
+  });
+
+  const [file, setFile] = useState<File | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Client-only schema (NO file here)
+  const clientSchema = useMemo(
+    () =>
+      z.object({
         name: bookingSchema.shape.name,
         email: bookingSchema.shape.email,
         phoneNo: bookingSchema.shape.phoneNo.optional(),
-    }), []);
+      }),
+    []
+  );
 
-    const validateField = useCallback((field: BookingField, value: string) => {
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // 1️⃣ Basic checks
+    if (!file) {
+      toast.error("Please upload payment screenshot");
+      return;
+    }
+
+    // 2️⃣ Validate form fields
+    const parsed = clientSchema.safeParse(formData);
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      parsed.error.issues.forEach((i) => {
+        fieldErrors[String(i.path[0])] = i.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    // 3️⃣ File type guard
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const supabase = await createClient();
+
     try {
-        // Fix: Use the Zod schema directly. We still use a small 'as' cast 
-        // to simplify the argument to pick, but now based on known types.
-        
-        // Zod's pick method expects an object with keys from the schema 
-        // and values of 'true'. We can cast the dynamic object to ensure 
-        // the argument type is correct without using 'any'.
-        bookingSchema.pick({ [field]: true } as { [K in BookingField]: true }).parse({ [field]: value });
-        
-        setErrors(prev => ({ ...prev, [field]: undefined }));
-    } catch (e) {
-        if (e instanceof z.ZodError) {
-            const message = e.issues[0]?.message || "Invalid value";
-            setErrors(prev => ({ ...prev, [field]: message }));
-        }
+      // 4️⃣ Upload image
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `payments/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("fitbook")
+        .upload(filePath, file, {
+          contentType: file.type,
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // 5️⃣ Get public URL
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("fitbook").getPublicUrl(filePath);
+
+      if (!publicUrl) throw new Error("Failed to get image URL");
+
+      // 6️⃣ Build final payload
+      const startTime = new Date(`${date}T${time}`).toISOString();
+
+      const payload = {
+        ...formData,
+        serviceId,
+        startTime,
+        paymentProofUrl: publicUrl,
+      };
+
+      // 7️⃣ Server-level validation safety
+      const serverParsed = bookingSchema.safeParse(payload);
+      if (!serverParsed.success) {
+        throw new Error("Invalid booking data");
+      }
+
+      // 8️⃣ Send to API
+      const res = await fetch("/api/public/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Booking failed");
+      }
+
+      toast.success("Booking submitted!");
+      router.push(
+        `/checkout/booking-summary/${data.cancellationLinkUuid}`
+      );
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
     }
-}, [bookingSchema]);
+  };
 
-    const handleInputChange = (field: string, value: string) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value
-        }));
-        validateField(field as keyof typeof formData, value);
-    };
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const start = new Date(`${date}T${time}`);
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Contact Information</CardTitle>
+        </CardHeader>
 
-        setIsSubmitting(true);
-        const { name, email, phoneNo } = formData;
-        try {
-            // Client-side validation for better UX
-            const clientValidation = clientSchema.safeParse({ name, email, phoneNo });
-            if (!clientValidation.success) {
-                const fieldErrors: Record<string, string> = {};
-                for (const issue of clientValidation.error.issues) {
-                    const key = String(issue.path[0]);
-                    fieldErrors[key] = issue.message;
-                }
-                setErrors(fieldErrors);
-                setIsSubmitting(false);
-                return;
-            }
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Full Name</Label>
+            <Input
+              value={formData.name}
+              onChange={(e) =>
+                handleInputChange("name", e.target.value)
+              }
+            />
+            {errors.name && (
+              <p className="text-sm text-red-600">{errors.name}</p>
+            )}
+          </div>
 
-            // Build payload expected by API
-            const payload = {
-                serviceId,
-                startTime: start.toISOString(),
-                name,
-                email,
-                phoneNo: phoneNo || undefined,
-            };
+          <div>
+            <Label>Email</Label>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                handleInputChange("email", e.target.value)
+              }
+            />
+            {errors.email && (
+              <p className="text-sm text-red-600">{errors.email}</p>
+            )}
+          </div>
 
-            // Validate payload before sending (guards against malformed params)
-            const parsed = bookingSchema.safeParse(payload);
-            if (!parsed.success) {
-                const fieldErrors: Record<string, string> = {};
-                for (const issue of parsed.error.issues) {
-                    const key = String(issue.path[0]);
-                    if (key in formData) fieldErrors[key] = issue.message;
-                }
-                setErrors(fieldErrors);
-                setIsSubmitting(false);
-                return;
-            }
+          <div>
+            <Label>Phone Number</Label>
+            <Input
+              type="tel"
+              value={formData.phoneNo}
+              onChange={(e) =>
+                handleInputChange("phoneNo", e.target.value)
+              }
+            />
+          </div>
 
-            const res = await fetch('/api/public/bookings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                if (res.status === 400 && data?.details) {
-                    const fieldErrors: Record<string, string> = {};
-                    for (const d of data.details) {
-                        if (d?.path) fieldErrors[d.path] = d.message;
-                    }
-                    setErrors(fieldErrors);
-                    toast.error('Please correct the highlighted fields.', { position: "top-right", autoClose: 4000, theme: "dark", transition: Bounce });
-                } else if (res.status === 409) {
-                    toast.error('Selected slot was just booked. Please pick another.', { position: "top-right", autoClose: 5000, theme: "dark", transition: Bounce });
-                } else if (res.status === 404) {
-                    toast.error('Service not found. Try again.', { position: "top-right", autoClose: 5000, theme: "dark", transition: Bounce });
-                } else {
-                    toast.error('Booking failed. Please try again later.', { position: "top-right", autoClose: 5000, theme: "dark", transition: Bounce });
-                }
-                return;
-            }
-            const cancellationId = data.cancellationLinkUuid;
-            console.log(cancellationId)
+          <div>
+            <Label>Payment Screenshot</Label>
+            <input
+              type="file"
+              accept="image/*"
+              required
+              onChange={(e) =>
+                setFile(e.target.files?.[0] || null)
+              }
+              className="w-full border p-2"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-            toast.success('Booking confirmed!', { position: "top-right", autoClose: 4000, theme: "dark", transition: Bounce });
-            router.push(`/checkout/booking-summary/${cancellationId}`)
-        } catch (error) {
-            console.log('Booking Submit error:', error);
-            toast.error('Booking Not Confirmed', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                transition: Bounce,
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full bg-black text-white"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Submitting…
+          </>
+        ) : (
+          "Confirm Booking"
+        )}
+      </Button>
 
-    return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-black">Contact Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="name" className="text-black">Full Name</Label>
-                        <Input
-                            id="name"
-                            type="text"
-                            placeholder="Enter your full name"
-                            value={formData.name}
-                            onChange={(e) => handleInputChange('name', e.target.value)}
-                            aria-invalid={!!errors.name}
-                            className="border-gray-300 focus:border-black"
-                        />
-                        {errors.name && (
-                            <p className="text-sm text-red-600">{errors.name}</p>
-                        )}
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="email" className="text-black">Email Address</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="Enter your email address"
-                            value={formData.email}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
-                            aria-invalid={!!errors.email}
-                            className="border-gray-300 focus:border-black"
-                        />
-                        {errors.email && (
-                            <p className="text-sm text-red-600">{errors.email}</p>
-                        )}
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="phone" className="text-black">Phone Number</Label>
-                        <Input
-                            id="phone"
-                            type="tel"
-                            placeholder="Enter your phone number"
-                            value={formData.phoneNo}
-                            onChange={(e) => handleInputChange('phoneNo', e.target.value)}
-                            aria-invalid={!!errors.phoneNo}
-                            className="border-gray-300 focus:border-black"
-                        />
-                        {errors.phoneNo && (
-                            <p className="text-sm text-red-600">{errors.phoneNo}</p>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
-            {/* Confirm Button */}
-            <div className="text-center">
-
-                <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-black text-white hover:bg-gray-800 px-8 py-3 text-lg"
-                    size="lg"
-                    
-                >
-                    {isSubmitting ?(<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Confirming...</>)  : ('Confirm Booking')}
-                </Button>
-
-                <p className="text-sm text-gray-500 mt-4">
-                    You will receive a confirmation email shortly after booking.
-                </p>
-            </div>
-            <ToastContainer />
-        </form>
-
-    )
+      <ToastContainer />
+    </form>
+  );
 }
