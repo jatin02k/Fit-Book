@@ -1,11 +1,10 @@
-
-
 import { fetchAdminBookings } from "@/lib/fetchAdminBookings";
 import { sendEmail } from "@/lib/mail";
+import { adminConfirmedTemplate } from "@/lib/mail/templates/adminConfirmed";
+import { customerConfirmedTemplate } from "@/lib/mail/templates/customerConfirmed";
 import { createClient } from "@/lib/supabase/server";
+import { render } from "@react-email/render";
 import { NextResponse } from "next/server";
-
-
 
 export async function GET() {
     try {
@@ -30,7 +29,7 @@ export async function PATCH(request: Request) {
 
   const { data: appointment, error: updateError } = await supabase
       .from("appointments")
-      .update({ status })
+      .update({ status, payment_url: "" })
       .eq("id", id)
       .select("*, services(name)") // Join with services to get the name for the email
       .single();
@@ -39,51 +38,46 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Failed to update status" }, { status: 500 });
     }
     if (status === "confirmed") {
-      try {
-  const customerEmailPromise = sendEmail({
-    to: appointment.email, // Customer email
-    subject: "✅ Appointment Confirmed - FitBook",
-    html: `
-            <h1>Your Booking is Confirmed!</h1>
-            <p>Hi ${appointment.customer_name},</p>
-            <p>Your session for <strong>${appointment.services.name}</strong> is now confirmed.</p>
-            <p><strong>Time:</strong> ${new Date(appointment.start_time).toLocaleString()}</p>
-            <br/>
-            <p>See you there!</p>
-          `,
-  });
+    try {
+      const start = new Date(appointment.start_time);
+      const dateStr = start.toLocaleDateString('en-IN');
+      const timeStr = start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
-  const adminEmailPromise = sendEmail({
-    to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!, // Your admin email
-    subject: `✅ NEW BOOKING CONFIRMED: ${appointment.customer_name}`,
-    html: `<p>A new booking came in from ${appointment.customer_name} has been confirmed.</p>`,
-    // Add your payment screenshot attachment here if needed
-  });
+      // 1. Render both templates to HTML strings
+      const customerHtml =customerConfirmedTemplate({
+          name: appointment.customer_name,
+          service: appointment.services.name,
+          date: dateStr,
+          time: timeStr,
+        })
 
-  // Await both emails to ensure they are both sent
-  await Promise.all([customerEmailPromise, adminEmailPromise]);
+      const adminHtml = adminConfirmedTemplate({
+          customer: appointment.customer_name,
+          email: appointment.email,
+          service: appointment.services.name,
+          date: dateStr,
+          time: timeStr,
+        })
 
-} catch (emailError) {
-  console.error("One or more emails failed to send:", emailError);
-}
-      try {
-        await sendEmail({
-          to: appointment.email,
-          subject: "✅ Appointment Confirmed - FitBook",
-          html: `
-            <h1>Your Booking is Confirmed!</h1>
-            <p>Hi ${appointment.customer_name},</p>
-            <p>Your session for <strong>${appointment.services.name}</strong> is now confirmed.</p>
-            <p><strong>Time:</strong> ${new Date(appointment.start_time).toLocaleString()}</p>
-            <br/>
-            <p>See you there!</p>
-          `,
-        });
-      } catch (mailError) {
-        console.error("Mail Delivery Failed:", mailError);
-        // We don't return error here because the DB update was successful
-      }
+
+      // 2. Send both emails simultaneously
+  await Promise.all([
+    sendEmail({
+      to: appointment.email,
+      subject: "✅ Appointment Confirmed - FitBook",
+      html: customerHtml,
+    }),
+    sendEmail({
+      to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
+      subject: `✅ BOOKING CONFIRMED: ${appointment.customer_name}`,
+      html: adminHtml,
+    })
+  ]);
+
+    } catch (emailError) {
+      console.error("Confirmation emails failed:", emailError);
     }
+  }
     return NextResponse.json({ message: "Status updated successfully" });
 }
 

@@ -3,9 +3,20 @@ import { NextResponse } from "next/server";
 import * as crypto from "crypto";
 import { bookingSchema } from "@/lib/validation/bookingSchema";
 import { sendEmail } from "@/lib/mail";
+import { customerPendingTemplate } from "@/lib/mail/templates/customerPending";
+import { render } from "@react-email/render"; // IMPORTANT: Needs this to convert React to HTML
+import { adminPendingTemplate } from "@/lib/mail/templates/adminPending";
 
 const BUFFER_MINUTES = 15;
-
+type Props = {
+  customer: string;
+  email: string;
+  phone?: string;
+  service: string;
+  date: string;
+  time: string;
+  paymentUrl: string;
+};
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -15,7 +26,7 @@ export async function POST(request: Request) {
     // 1. Get Service Duration
     const { data: service } = await supabase
       .from("services")
-      .select("duration_minutes")
+      .select("*")
       .eq("id", validatedData.serviceId)
       .single();
 
@@ -24,6 +35,8 @@ export async function POST(request: Request) {
     // 2. Calculate Times
     const start = new Date(validatedData.startTime);
     const end = new Date(start.getTime() + (service.duration_minutes + BUFFER_MINUTES) * 60000);
+    const dateStr = start.toLocaleDateString('en-IN');
+    const timeStr = start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
     // 3. Simple Conflict Check
     const { data: conflicts } = await supabase
@@ -56,12 +69,43 @@ export async function POST(request: Request) {
 
     if (insertError) throw insertError;
 
-    // 5. Async Email (Don't await if you want max speed, or await for reliability)
-    await sendEmail({
-        to: validatedData.email,
-        subject: "Booking Received",
-        html: `<p>We are reviewing your payment.</p>`
-    });
+    // e. SEND BOTH EMAILS SIMULTANEOUSLY
+try {
+  const customerHtml = customerPendingTemplate({
+          name: validatedData.name,
+          service: service.name,
+          date: dateStr,
+          time: timeStr,
+        })
+
+
+      // Render Admin HTML
+      const adminHtml = adminPendingTemplate({
+          customer: validatedData.name,
+          email: validatedData.email,
+          phone: validatedData.phoneNo || "Not provided",
+          service: service.name,
+          date: dateStr,
+          time: timeStr,
+          paymentUrl: validatedData.paymentProofUrl, // The public URL from Supabase storage
+        })
+
+  const customerEmailPromise = sendEmail({
+    to: validatedData.email,
+    subject: "⏳ Appointment Request Received — FitBook",
+    html: customerHtml,
+  });
+
+  const adminEmailPromise = sendEmail({
+    to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!, // must exist in env
+    subject: `🔴New Pending Booking by ${validatedData.name} — Action Required`,
+    html:adminHtml,
+  });
+
+  await Promise.all([customerEmailPromise, adminEmailPromise]);
+} catch (emailError) {
+  console.error("Email sending failed:", emailError);
+}
 
     return NextResponse.json({ cancellationLinkUuid: cancellationUuid }, { status: 201 });
 

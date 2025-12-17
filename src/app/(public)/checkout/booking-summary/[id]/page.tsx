@@ -71,11 +71,21 @@ export default async function BookingSummary({
           </div>
 
           <h1 className="text-3xl md:text-4xl text-black mb-2 tracking-tight">
-            Booking Confirmed!
+            Booking Recieved!
           </h1>
           <p className="text-xl text-gray-600">
             Your appointment has been successfully scheduled.
+            {/* <br />
+            Status: Pending, Once confirmed you'll get confirmation email
+            <br />
+            Thank you for booking our service! */}
           </p>
+          <br />
+
+          <h1 className="text-2xl">Payment is being verified!</h1>
+          <p className="text-xl text-gray-600">You will recieve a confirmation mail once verified.</p>
+
+          
         </div>
 
         {/* BOOKING DETAILS */}
@@ -137,7 +147,7 @@ export default async function BookingSummary({
                 <div>
                   <p className="text-black">Check your email</p>
                   <p className="text-sm text-gray-600">
-                    A confirmation email has been sent to {appointment.email}
+                    Once payment is verified, A confirmation email will be sent to {appointment.email}
                   </p>
                 </div>
               </li>

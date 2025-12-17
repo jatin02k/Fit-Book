@@ -1,32 +1,20 @@
-import nodemailer from 'nodemailer';
+// lib/mail.ts
+import nodemailer from "nodemailer";
 
-// Create the transporter using Gmail's SMTP settings
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASS,
-  },
-});
+export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASS,
+    },
+  });
 
-interface EmailPayload {
-  to: string;
-  subject: string;
-  html: string;
-}
-
-export const sendEmail = async ({ to, subject, html }: EmailPayload) => {
-  try {
-    const mailOptions = {
-      from: `"FitBook Admin" <${process.env.GMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    };
-
-    return await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Nodemailer Error:", error);
-    throw new Error("Failed to send email");
-  }
+  const mailOptions = {
+  from: `"FitBook" <${process.env.GMAIL_USER}>`,
+  to: to,
+  subject: subject,
+  html: html, // Ensure no JSON.stringify(html) or similar here
 };
+  return await transporter.sendMail(mailOptions);
+}
