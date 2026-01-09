@@ -55,10 +55,13 @@ export default async function AdminDashboardPage() {
     .eq("organization_id", org.id)
     .order("start_time", { ascending: true });
 
-  // Correct URL generation for Subdomains
-  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-  const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-  const publicLink = org ? `${protocol}://${org.slug}.${domain}` : "#";
+  // Correct URL generation for Path-Based Tenancy
+  // Since we are Server Component, we can't use window.location. But for display we can just show the relative path or construct best guess.
+  // Actually, for "Your Public Booking Link", a relative path is clickable. 
+  // If we want full URL:
+  // We can try to get host from headers, or just use a relative path like `/gym/${org.slug}`
+  
+  const publicLink = org ? `/gym/${org.slug}` : "#"; // Relative path is safest and works everywhere
 
   if (error) {
     console.error("Dashboard Fetch Error:", error);

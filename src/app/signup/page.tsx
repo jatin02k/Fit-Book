@@ -98,8 +98,11 @@ export default function SignupPage() {
 
       // 3. Success! Redirect to Tenant Dashboard
       const protocol = window.location.protocol;
-      const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-      const targetUrl = `${protocol}//${formData.orgSlug}.${domain}/admin/dashboard`;
+      const host = window.location.host; // e.g. fitbook.vercel.app or localhost:3000
+      
+      // Path-Based Redirection
+      // targetUrl = protocol + // + host + /gym/ + slug + /admin/dashboard
+      const targetUrl = `${protocol}//${host}/gym/${formData.orgSlug}/admin/dashboard`;
       
       console.log("Signup Complete. Redirecting to:", targetUrl);
       window.location.href = targetUrl;

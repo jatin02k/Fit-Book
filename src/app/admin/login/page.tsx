@@ -41,19 +41,15 @@ export default function AdminLoginPage() {
 
           if (org) {
              const protocol = window.location.protocol;
-             const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-             // e.g. "gold.localhost:3000"
-             const targetHost = `${org.slug}.${domain}`;
-             const currentHost = window.location.host;
+             const host = window.location.host;
 
-             if (currentHost === targetHost) {
-                 console.log("Already on correct tenant domain, using router.replace");
-                 router.replace("/admin/dashboard");
-             } else {
-                 const targetUrl = `${protocol}//${targetHost}/admin/dashboard`;
-                 console.log("Redirecting to Tenant Dashboard:", targetUrl);
-                 window.location.href = targetUrl; 
-             }
+             // Path-Based Redirection
+             // Target: /gym/[slug]/admin/dashboard
+             const targetPath = `/gym/${org.slug}/admin/dashboard`;
+             const targetUrl = `${protocol}//${host}${targetPath}`;
+
+             console.log("Redirecting to Tenant Dashboard:", targetUrl);
+             window.location.href = targetUrl; 
              return;
           }
       }

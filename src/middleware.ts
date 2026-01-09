@@ -58,88 +58,58 @@ export async function middleware(request: NextRequest) {
     searchParams.length > 0 ? `?${searchParams}` : ''
   }`;
 
-  // Identify if it's a subdomain (e.g. "test-gym.localhost:3000" -> "test-gym")
-  // Adjust logic to handle "localhost:3000" vs "test-gym.localhost:3000"
-  let currentHost;
-  if (process.env.NODE_ENV === 'production') {
-     // Production logic (e.g., app.fitbook.com)
-     const baseDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'fitbook.app';
-     
-     // FIX: Check if hostname matches baseDomain exactly
-     if (hostname === baseDomain || hostname === `www.${baseDomain}`) {
-         currentHost = 'app';
-     } else {
-         const replaced = hostname.replace(`.${baseDomain}`, '');
-         // If replacement didn't change anything (e.g. fit-book-smoky.vercel.app vs fitbook.app)
-         // then it's NOT a subdomain of our custom domain. Treat it as ROOT app (e.g. Vercel Preview).
-         if (replaced === hostname) {
-             currentHost = 'app'; 
-         } else {
-             currentHost = replaced;
-         }
-     }
-  } else {
-     // Localhost logic
-     // hostname is something like "test-gym.localhost:3000"
-     // We want to extract "test-gym"
-     currentHost = hostname.replace(`.localhost:3000`, '');
-  }
+  // PATH-BASED TENANCY LOGIC (For Single Domain / Vercel Free Tier)
+  // Format: domain.com/gym/[slug]/...
   
-  // FIX: If it is an API route, let it pass through!
-  // We do NOT want to rewrite /api to /site/[slug]/api
-  if (request.nextUrl.pathname.startsWith('/api')) {
-      return supabaseResponse;
-  }
+  // Regex to detect /gym/[slug]
+  // Matches: /gym/iron-gym, /gym/iron-gym/admin, /gym/iron-gym/services
+  const gymMatch = request.nextUrl.pathname.match(/^\/gym\/([^/]+)(.*)/);
 
-  // Check if it's the Root Domain (Landing Page or Admin)
-  if (currentHost === 'app' || currentHost === 'www' || currentHost === 'localhost:3000') {
-      // Normal Next.js routing applies (Admin, Public Marketing, etc.)
-       // Protect Admin Routes (dashboard, bookings, etc.) but allow LOGIN
-       if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login') && !user) {
-          return NextResponse.redirect(new URL('/admin/login', request.url));
+  if (gymMatch) {
+      const slug = gymMatch[1]; // e.g. "iron-gym"
+      const remainingPath = gymMatch[2] || ''; // e.g. "/admin/dashboard" or ""
+
+      // 1. Handle Admin Routes inside Gym Path
+      // URL: /gym/iron-gym/admin/dashboard -> Internal: /admin/iron-gym/dashboard
+      if (remainingPath.startsWith('/admin')) {
+          // Check Auth for Admin Routes
+          if (!remainingPath.startsWith('/admin/login') && !user) {
+             // Redirect to global login, preserving return URL?
+             // For now, just global login.
+             return NextResponse.redirect(new URL('/admin/login', request.url));
+          }
+          
+          // Rewrite to src/app/admin/[slug]/...
+          // We need to strip the first "/admin" from remainingPath if standard route is /admin/[slug]/dashboard
+          // Actually, let's check folder structure: src/app/admin/[slug]/dashboard
+          // So we want /admin/iron-gym/dashboard
+          // remainingPath is "/admin/dashboard"
+          // We want: /admin/iron-gym/dashboard
+          
+          // Construct new path:
+          // /admin/[slug] + /dashboard (from /admin/dashboard)
+          const adminInternalPath = remainingPath.replace(/^\/admin/, `/admin/${slug}`);
+          return NextResponse.rewrite(new URL(adminInternalPath, request.url));
       }
-      // If already logged in and trying to go to Login, send to Dashboard
-      // If already logged in and trying to go to Login, *let it pass* to the login page
-      // The login page will handle the "already logged in" state and redirect to the correct tenant dashboard.
-      // if (request.nextUrl.pathname === '/admin/login' && user) {
-      //    return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-      // }
-      return supabaseResponse;
+
+      // 2. Handle Public Site Routes inside Gym Path
+      // URL: /gym/iron-gym/services -> Internal: /site/iron-gym/services
+      // URL: /gym/iron-gym -> Internal: /site/iron-gym
+      return NextResponse.rewrite(new URL(`/site/${slug}${remainingPath}`, request.url));
   }
 
-  // 4. It is a Tenant Subdomain (e.g. "gold.localhost:3000")
+  // Handle Root Domain (Landing Page, Global Login)
+  // No re-writes needed, just standard routing.
+  // / -> src/app/page.tsx
+  // /admin/login -> src/app/admin/login/page.tsx
   
-  // FIX: Allow Admin Access on Subdomains with Tenant Context!
-  if (path.startsWith('/admin')) {
-      // 1. Check Auth
-      if (!path.startsWith('/admin/login') && !user) {
-          return NextResponse.redirect(new URL('/admin/login', request.url));
-      }
-      if (request.nextUrl.pathname === '/admin/login' && user) {
-          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-      }
-      
-      // 2. Rewrite to the Tenant-Specific Admin Route
-      // If path is /admin/dashboard on host "gold", rewrite to /admin/gold/dashboard
-      // Users still see "gold.localhost:3000/admin/dashboard"
-      if (!path.startsWith('/admin/login')) {
-         const newPath = path.replace('/admin', `/admin/${currentHost}`);
-         return NextResponse.rewrite(new URL(newPath, request.url));
-      }
-      
-      // For Login, keep it as is (Global Login Page)
-      return NextResponse.rewrite(new URL(path, request.url));
-  }
-  // Rewrite the URL to point to the dynamic logic
-  // e.g. /services -> /site/gold/services
+  // Protect /admin routes if accessed directly with a slug (though strictly they should be via /gym/...)
+  // If someone accesses /admin/iron-gym/dashboard directly, it might work if not rewritten?
+  // Next.js file routing usually handles folders directly. 
+  // But we want to ENFORCE /gym structure for consistency perhaps?
+  // For now, let's allow standard routing to fall through.
 
-  // Rewrite the URL to point to the dynamic logic
-  // e.g. /services -> /site/gold/services
-
-  // Rewrite to the "site" folder
-  return NextResponse.rewrite(
-    new URL(`/site/${currentHost}${path}`, request.url)
-  );
+  return supabaseResponse;
 }
 
 export const config = {
