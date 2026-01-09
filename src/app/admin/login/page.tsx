@@ -221,7 +221,7 @@ export default function AdminLoginPage() {
         </CardContent>
       </Card>
       
-      <div className="absolute bottom-6 text-center text-white/40 text-xs z-10">
+      <div className="absolute bottom-6 text-center text-white/40 text-xs z-10 p-2">
          &copy; {new Date().getFullYear()} FitBook. All rights reserved.
       </div>
     </div>

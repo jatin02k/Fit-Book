@@ -51,6 +51,8 @@ export default function SignupPage() {
     setError(null);
 
     try {
+      let user = null;
+
       // 1. Sign Up User
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
@@ -63,27 +65,56 @@ export default function SignupPage() {
       });
 
       if (authError) {
-          if (authError.message.includes("already registered")) {
-              throw new Error("This email is already registered. Please Log In.");
-          }
-          throw authError;
-      }
-      
-      if (!authData.user) throw new Error("No user created");
-      
-      // DEBUG: Check if we have a session
-      console.log("Signup Info:", { 
-         user_id: authData.user.id, 
-         has_session: !!authData.session,
-         session_user: authData.session?.user?.id 
-      });
+          // RECOVERY MECHANISM: If user exists, try to log them in.
+          // If they log in successfully and HAVE NO ORG, we should let them finish signup (create org).
+          if (authError.message.includes("already registered") || authError.message.includes("User already registered")) {
+              console.log("User exists. Attempting recovery login...");
+              const { data: signinData, error: signinError } = await supabase.auth.signInWithPassword({
+                  email: formData.email,
+                  password: formData.password
+              });
 
-      if (!authData.session) {
-         // This happens if Email Confirmation is enabled on Supabase.
-         // We cannot Insert the Organization because we are not "authenticated" yet.
-         setError("Please check your email to confirm your account before we can create your Dashboard.");
-         return; 
+              if (signinError) {
+                   // If password wrong or other error, fallback to standard error
+                   throw new Error("This email is already registered. Please Log In.");
+              }
+              
+              user = signinData.user;
+          } else {
+              throw authError;
+          }
+      } else {
+         user = authData.user;
       }
+      
+      if (!user) throw new Error("Authentication failed");
+      
+      // Check if we have a valid session (required for RLS)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+          setError("Please check your email to confirm your account before we can create your Dashboard.");
+          return;
+      }
+
+      // Check if Org already exists (Duplicate check)
+      const { data: existingOrg } = await supabase
+        .from("organizations")
+        .select("slug")
+        .eq("owner_id", user.id)
+        .single();
+
+      if (existingOrg) {
+           // User has an account AND an Org. Just redirect them.
+           console.log("User and Org already exist. Redirecting...");
+           const protocol = window.location.protocol;
+           const host = window.location.host;
+           const targetUrl = `${protocol}//${host}/gym/${existingOrg.slug}/admin/dashboard`;
+           window.location.href = targetUrl;
+           return;
+      }
+
+      // 2. Create Organization (If we reached here, User is Authed, but Org is missing)
+      console.log("Creating Organization for user:", user.id);
 
       // 2. Create Organization
       // Note: We need to use a public API route or ensure RLS allows INSERT for authenticated users.
@@ -92,7 +123,7 @@ export default function SignupPage() {
         {
           name: formData.orgName,
           slug: formData.orgSlug,
-          owner_id: authData.user.id,
+          owner_id: user.id,
           type: "gym", // Default type
           email: formData.email,
           phone: formData.orgPhone,
