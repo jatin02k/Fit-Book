@@ -4,6 +4,16 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   // 1. Initialize Supabase
   // ... (keep existing supabase createServerClient code) ...
+  // Determine Cookie Domain dynamically
+  const hostname = request.headers.get('host') || '';
+  let cookieDomain: string | undefined = undefined;
+  if (process.env.NODE_ENV === 'production') {
+      const root = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+      if (root && hostname.endsWith(root)) {
+          cookieDomain = `.${root}`;
+      }
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -20,7 +30,7 @@ export async function middleware(request: NextRequest) {
         },
       },
       cookieOptions: {
-        domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` : undefined,
+        domain: cookieDomain,
         path: '/',
         sameSite: 'lax',
         secure: process.env.NODE_ENV === 'production',
@@ -29,7 +39,7 @@ export async function middleware(request: NextRequest) {
   );
 
   // 3. Subdomain Logic
-  const hostname = request.headers.get('host') || '';
+  // hostname is already defined above
 
   // 2. Auth Check (OPTIMIZED: Only run for Protected Routes)
   let user = null;
