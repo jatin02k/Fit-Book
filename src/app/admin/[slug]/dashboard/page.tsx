@@ -28,7 +28,7 @@ export default async function AdminDashboardPage() {
   // 2. Get User's Organization
   const { data: org } = await supabase
     .from("organizations")
-    .select("slug, id, name, phone") 
+    .select("slug, id, name, phone, qr_code_url") 
     .eq("owner_id", user.id)
     .single();
 
@@ -45,90 +45,59 @@ export default async function AdminDashboardPage() {
       start_time,
       end_time,
       customer_name,
-      cancellation_link_uuid,
-      status,
       services (
         name,
         duration_minutes
-      )
+      ),
+      cancellation_link_uuid,
+      status
     `)
-    .eq("organization_id", org.id)
-    .order("start_time", { ascending: true });
-
-  // Correct URL generation for Path-Based Tenancy
-  // Since we are Server Component, we can't use window.location. But for display we can just show the relative path or construct best guess.
-  // Actually, for "Your Public Booking Link", a relative path is clickable. 
-  // If we want full URL:
-  // We can try to get host from headers, or just use a relative path like `/gym/${org.slug}`
-  
-  const publicLink = org ? `/gym/${org.slug}` : "#"; // Relative path is safest and works everywhere
+    .eq("organization_id", org.id);
 
   if (error) {
-    console.error("Dashboard Fetch Error:", error);
-    return (
-      <div className="p-8 text-center">
-        <h2 className="text-xl text-red-600">Error loading data</h2>
-        <p className="text-gray-600">{error.message}</p>
-      </div>
-    );
+    console.error("Error fetching appointments:", JSON.stringify(error, null, 2));
+    // Handle error appropriately, maybe return an error message to the user
+    return <div>Error loading appointments.</div>;
   }
 
-  // 3. Map to Interface
-  interface RawAppointment {
-    id: string;
-    start_time: string;
-    end_time: string;
-    customer_name: string;
-    cancellation_link_uuid: string;
-    status: string;
-    services: { name: string; duration_minutes: number }[] | { name: string; duration_minutes: number } | null;
-  }
-
-  const appointments: Appointment[] = (rawAppointments || []).map((appt: RawAppointment) => {
-    // Handle the joined data safely
-    const serviceData = Array.isArray(appt.services) ? appt.services[0] : appt.services;
-    
-    return {
-      id: appt.id,
-      start: appt.start_time,
-      end: appt.end_time,
-      customerName: appt.customer_name,
-      serviceName: serviceData?.name || "Unknown Service",
-      serviceDuration: serviceData?.duration_minutes || 60,
-      cancellationLink: `/admin/cancel/${appt.cancellation_link_uuid}`,
-      status: (appt.status as "pending" | "confirmed" | "upcoming") || "pending",
-    };
-  });
-
-  console.log("appointments length", appointments.length);
+  const appointments: Appointment[] = (rawAppointments || []).map((appt) => ({
+    id: appt.id,
+    start: appt.start_time,
+    end: appt.end_time,
+    customerName: appt.customer_name,
+    // Safely access service details, handling array or single object response
+    serviceName: Array.isArray(appt.services) ? appt.services[0]?.name : appt.services?.name,
+    serviceDuration: Array.isArray(appt.services) ? appt.services[0]?.duration_minutes : appt.services?.duration_minutes,
+    cancellationLink: appt.cancellation_link_uuid,
+    // Explicitly cast status to the specific union type expected by Appointment
+    status: (appt.status as Appointment["status"]) || "pending",
+  }));
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="md:ml-64 p-4 md:p-8 mt-16 md:mt-0">
-        <div className="mb-8 flex justify-between items-end">
-           <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-500">Welcome back, here is what is happening today.</p>
-           </div>
-           {org && (
-               <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 flex items-center gap-3">
-                  <div className="text-sm text-indigo-800">
-                     <p className="font-semibold">Your Public Booking Link:</p>
-                     <a href={publicLink} target="_blank" className="hover:underline text-indigo-600 break-all">
-                        {publicLink}
-                     </a>
-                  </div>
-               </div>
-           )}
-        </div>
-      </div>
-      <div className="flex-1 space-y-8">
-        <CalendarComponent appointments={appointments} />
-        
-        <div className="max-w-4xl mx-auto px-4 md:px-8 pb-12">
+    <div className="min-h-screen bg-gray-100">
+      <div className="py-10">
+        <header>
+          <div className="max-w-7xl mx-auto px-10 sm:px-10 lg:px-10">
+            <h1 className="px-55 text-3xl font-bold leading-tight text-gray-900">
+              Admin Dashboard for {org.name}
+            </h1>
+          </div>
+        </header>
+        <main>
+          <div className="max-w-7xl mx-auto">
+            <div className="px-4 py-8 sm:px-0">
+              
+                <CalendarComponent appointments={appointments} />
+              
+            </div>
+          </div>
+        </main>
+
+        <div className="max-w-4xl mx-auto px-16 md:px-16 pb-12">
            <BusinessDetailsForm 
               initialName={org.name || ""} 
               initialPhone={org.phone || ""} 
+              initialQrCode={org.qr_code_url}
               orgId={org.id} 
            />
         </div>

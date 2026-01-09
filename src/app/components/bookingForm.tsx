@@ -18,6 +18,7 @@ type BookingFormProps = {
   date: string; // YYYY-MM-DD
   time: string; // HH:mm
   slug: string;
+  qrCodeUrl?: string;
 };
 
 export default function BookingForm({
@@ -25,6 +26,7 @@ export default function BookingForm({
   date,
   time,
   slug,
+  qrCodeUrl,
 }: BookingFormProps) {
   const router = useRouter();
 
@@ -194,6 +196,9 @@ export default function BookingForm({
 
           <div>
             <Label>Payment Screenshot</Label>
+            
+            
+
             <input
               type="file"
               accept="image/*"
@@ -201,8 +206,11 @@ export default function BookingForm({
               onChange={(e) =>
                 setFile(e.target.files?.[0] || null)
               }
-              className="w-full border p-2"
+              className="w-full border p-2 rounded-md"
             />
+             <p className="text-xs text-gray-500 mt-1">
+                Upload a screenshot of your successful payment.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -210,7 +218,7 @@ export default function BookingForm({
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-black text-white"
+        className="w-full bg-black text-white py-6 text-lg hover:bg-gray-800"
       >
         {isSubmitting ? (
           <>

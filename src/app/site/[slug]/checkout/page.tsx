@@ -37,13 +37,23 @@ export default async function CheckoutPage({
   const supabase = await createClient();
   const { data: serviceData, error: serviceError } = await supabase
     .from("services")
-    .select("name, price, duration_minutes")
+    .select(`
+      name, 
+      price, 
+      duration_minutes,
+      organizations (
+        qr_code_url
+      )
+    `)
     .eq("id", serviceId)
     .single();
 
   if (!serviceId || !serviceData || serviceError) {
     notFound();
   }
+
+  // Extract QR Code URL safely
+  const qrCodeUrl = serviceData.organizations?.qr_code_url || undefined;
 
   return (
     <div className="min-h-screen pt-20 pb-16 bg-gray-50">
@@ -107,13 +117,22 @@ export default async function CheckoutPage({
                   </span>
                 </div>
               </div>
-              <div className="">
-                <ImageWithFallback
-                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/fitbook/payment.jpeg`}
-                  alt={serviceData.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
+              {/* QR Code Display Section */}
+            {qrCodeUrl && (
+              <div className="mb-4 p-4 bg-gray-50 border rounded-lg flex flex-col items-center text-center">
+                 <p className="text-sm font-semibold text-gray-700 mb-2">Scan to Pay</p>
+                 <div className="bg-white p-2 rounded-lg shadow-sm w-48 h-48 mb-2">
+                    <img 
+                      src={qrCodeUrl} 
+                      alt="Payment QR Code" 
+                      className="w-full h-full object-contain"
+                    />
+                 </div>
+                 <p className="text-xs text-gray-500">
+                    Use your preferred payment app (Venmo, UPI, Bank App) to scan and pay.
+                 </p>
               </div>
+            )}
             </CardContent>
           </Card>
 
@@ -124,6 +143,7 @@ export default async function CheckoutPage({
             time={String(bookingTime)}
             date={String(bookingDate)}
             slug={slug}
+            qrCodeUrl={qrCodeUrl}
           />
         </div>
       </div>
