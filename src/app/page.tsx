@@ -88,7 +88,7 @@ export default function LandingPage() {
                 <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Management Platform</span>
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                FitBook streamlines your entire manufacturing process. From setting up your services to managing daily bookings, we've got you covered.
+                FitBook streamlines your entire manufacturing process. From setting up your services to managing daily bookings, we have got you covered.
               </p>
             </div>
 

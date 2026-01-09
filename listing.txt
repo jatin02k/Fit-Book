@@ -1,0 +1,21 @@
+total 468
+drwxr-xr-x.   8 jatin jatin   4096 Jan  9 17:40 .
+drwxr-xr-x.   3 jatin jatin   4096 Dec 16 10:52 ..
+-rw-r--r--.   1 jatin jatin   6557 Jan  9 17:36 build.log
+-rw-r--r--.   1 jatin jatin    895 Dec 18 01:23 .env.local
+-rw-r--r--.   1 jatin jatin    524 Oct 10 22:09 eslint.config.mjs
+drwxr-xr-x.   7 jatin jatin   4096 Jan  9 17:23 .git
+-rw-r--r--.   1 jatin jatin    632 Oct 11 03:37 .gitignore
+-rw-r--r--.   1 jatin jatin      0 Jan  9 17:40 listing.txt
+drwxr-xr-x.   7 jatin jatin   4096 Jan  9 17:38 .next
+-rw-r--r--.   1 jatin jatin    133 Oct 10 22:09 next.config.ts
+-rw-r--r--.   1 jatin jatin    262 Oct 10 22:09 next-env.d.ts
+drwxr-xr-x. 414 jatin jatin  20480 Jan  9 16:17 node_modules
+-rw-r--r--.   1 jatin jatin   1345 Jan  9 16:17 package.json
+-rw-r--r--.   1 jatin jatin 384441 Jan  9 16:17 package-lock.json
+-rw-r--r--.   1 jatin jatin     81 Oct 10 22:09 postcss.config.mjs
+drwxr-xr-x.   2 jatin jatin   4096 Oct 15 15:41 public
+-rw-r--r--.   1 jatin jatin   2353 Dec 15 16:10 README.md
+drwxr-xr-x.   5 jatin jatin   4096 Dec 17 15:22 src
+drwxr-xr-x.   3 jatin jatin   4096 Oct 11 03:13 supabase
+-rw-r--r--.   1 jatin jatin    682 Dec  6 15:57 tsconfig.json
