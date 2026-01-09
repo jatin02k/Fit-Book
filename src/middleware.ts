@@ -43,7 +43,9 @@ export async function middleware(request: NextRequest) {
 
   // 2. Auth Check (OPTIMIZED: Only run for Protected Routes)
   let user = null;
-  const isProtectedPath = request.nextUrl.pathname.startsWith('/admin');
+  // Check for standard /admin paths OR path-based /gym/.../admin paths
+  const isProtectedPath = request.nextUrl.pathname.startsWith('/admin') || 
+                          request.nextUrl.pathname.match(/^\/gym\/[^/]+\/admin/);
 
   if (isProtectedPath) {
       const { data: authData, error } = await supabase.auth.getUser();
@@ -95,7 +97,9 @@ export async function middleware(request: NextRequest) {
       // 2. Handle Public Site Routes inside Gym Path
       // URL: /gym/iron-gym/services -> Internal: /site/iron-gym/services
       // URL: /gym/iron-gym -> Internal: /site/iron-gym
-      return NextResponse.rewrite(new URL(`/site/${slug}${remainingPath}`, request.url));
+      const searchParams = request.nextUrl.searchParams.toString();
+      const queryString = searchParams.length > 0 ? `?${searchParams}` : '';
+      return NextResponse.rewrite(new URL(`/site/${slug}${remainingPath}${queryString}`, request.url));
   }
 
   // Handle Root Domain (Landing Page, Global Login)

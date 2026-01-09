@@ -34,7 +34,7 @@ async function createManualBooking(formData: FormData) {
     // 2. Fetch Organization ID (Security Layer)
     const { data: org } = await supabase
         .from('organizations')
-        .select('id')
+        .select('id, slug') // Fetch Slug too
         .eq('owner_id', user.id)
         .single();
     
@@ -91,7 +91,8 @@ async function createManualBooking(formData: FormData) {
         throw new Error("Failed to create manual booking.");
     }
 
-    revalidatePath('/admin/dashboard'); 
+    // Revalidate the Path-Based Dashboard URL
+    revalidatePath(`/gym/${org.slug}/admin/dashboard`); 
     return { success: true, cancellationUuid };
 }
 

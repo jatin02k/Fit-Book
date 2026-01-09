@@ -135,7 +135,7 @@ export default async function ServiceSelectionPage({ params }: ServicePageProps)
                 {/* Important: Link is relative to the current subdomain! */}
                 {/* Visiting /book/123 on gold.localhost stays on gold.localhost */}
                 <Link
-                  href={`/book/${service.id}`}
+                  href={`/gym/${slug}/book/${service.id}`}
                   className="w-full"
                   passHref
                 >

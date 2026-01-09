@@ -30,8 +30,10 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
   if (slug !== org.slug) {
       // Wrong Tenant! Redirect to their own dashboard.
       const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-      const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-      const correctUrl = `${protocol}://${org.slug}.${rootDomain}/admin/dashboard`;
+      // const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"; // No longer needed for path-based check
+      // We can just use relative path redirect in Server Actions/Components usually, but since we are doing a hard redirect in layout:
+      // Actually `redirect` from next/navigation handles relative paths.
+      const correctUrl = `/gym/${org.slug}/admin/dashboard`;
       
       console.log(`Mismatch! URL: ${slug}, Org: ${org.slug}. Redirecting to ${correctUrl}`);
       redirect(correctUrl);

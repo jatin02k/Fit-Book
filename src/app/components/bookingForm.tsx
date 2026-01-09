@@ -17,12 +17,14 @@ type BookingFormProps = {
   serviceName: string;
   date: string; // YYYY-MM-DD
   time: string; // HH:mm
+  slug: string;
 };
 
 export default function BookingForm({
   serviceId,
   date,
   time,
+  slug,
 }: BookingFormProps) {
   const router = useRouter();
 
@@ -133,7 +135,7 @@ export default function BookingForm({
 
       toast.success("Booking submitted!");
       router.push(
-        `/checkout/booking-summary/${data.cancellationLinkUuid}`
+        `/gym/${slug}/checkout/booking-summary/${data.cancellationLinkUuid}`
       );
     } catch (err: unknown) {
       console.error(err);

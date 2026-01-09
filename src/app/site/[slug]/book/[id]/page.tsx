@@ -13,7 +13,7 @@ interface BookingPageProps {
 }
 
 export default async function SlotSelectionPage({ params }: BookingPageProps) {
-  const { id } = await params; // Await params in Next 15
+  const { id, slug } = await params; // Await params in Next 15
   
   const supabase = await createClient();
   const { data: service, error } = await supabase
@@ -28,7 +28,7 @@ export default async function SlotSelectionPage({ params }: BookingPageProps) {
     <div className="min-h-screen pt-20 pb-16 bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Helper Link: Middleware keeps us on the same subdomain */}
-        <Link href="/services">
+        <Link href={`/gym/${slug}/services`}>
           <Button variant="outline" className="mb-4 border-black text-black hover:bg-black hover:text-white">
             ← Back to Services
           </Button>
@@ -45,6 +45,7 @@ export default async function SlotSelectionPage({ params }: BookingPageProps) {
           serviceName={service.name}
           durationMinutes={service.duration_minutes}
           price={service.price}
+          slug={slug}
         />
       </div>
     </div>

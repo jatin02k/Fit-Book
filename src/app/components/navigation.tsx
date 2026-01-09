@@ -13,11 +13,15 @@ export default function Navigation() {
   const pathname = usePathname(); // Get the current path
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Map your links to your folder structure (e.g., create /services/page.js)
+  // Extract the gym base path (e.g., "/gym/iron-gym") if present
+  const match = pathname.match(/^\/gym\/[^/]+/);
+  const basePath = match ? match[0] : '';
+
+  // Map your links to your folder structure
   const navItems = [
-    { name: 'Services', href: '/services' },
-    { name: 'Contact', href: '/#contact' }, 
-    { name: 'FAQ', href: '/faq' },
+    { name: 'Services', href: `${basePath}/services` },
+    { name: 'Contact', href: `${basePath}/#contact` }, 
+    { name: 'FAQ', href: `${basePath}/faq` },
   ];
   
   return (
@@ -26,7 +30,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           
           {/* Logo/Home Link */}
-          <Link href="/" className="cursor-pointer group">
+          <Link href={basePath || '/'} className="cursor-pointer group">
             <h2 className="text-black tracking-tight flex items-center gap-2 text-2xl">
               <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Fit</span>
               <span>Book</span>
@@ -53,7 +57,7 @@ export default function Navigation() {
             ))}
             
             {/* Book Now Button (Goes to services) */}
-             <Link href="/services" passHref>
+             <Link href={`${basePath}/services`} passHref>
               <Button
                 className="bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105"
               >
@@ -101,7 +105,7 @@ export default function Navigation() {
               </Link>
             ))}
              <div className="pt-4 pb-2">
-                <Link href="/services" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link href={`${basePath}/services`} onClick={() => setIsMobileMenuOpen(false)}>
                   <Button className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white">
                     Book Now
                   </Button>

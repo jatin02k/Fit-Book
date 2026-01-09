@@ -55,7 +55,7 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
           </p>
 
           <div className="mt-10">
-            <Link href="/services">
+            <Link href={`/gym/${slug}/services`}>
               <Button size="lg" className="bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600 px-8 py-6 text-lg shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 border-0 rounded-xl">
                 <Zap className="mr-2 h-5 w-5" />
                 Book a Session

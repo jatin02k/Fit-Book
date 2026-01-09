@@ -24,9 +24,10 @@ interface AvailabilitySelectorProps {
     serviceName: string;
     durationMinutes: number; // Critical for Crux Logic API call
     price: number;
+    slug: string;
 };
 
-export function AvailabilitySelector({ serviceId, serviceName }: AvailabilitySelectorProps) {
+export function AvailabilitySelector({ serviceId, serviceName, slug }: AvailabilitySelectorProps) {
 
     // DATE selection
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -202,7 +203,7 @@ export function AvailabilitySelector({ serviceId, serviceName }: AvailabilitySel
                                     </p>
                                 </div>
                                 <Link
-                                    href={`/checkout?serviceId=${serviceId}&date=${dateString}&time=${timeParam}`}
+                                    href={`/gym/${slug}/checkout?serviceId=${serviceId}&date=${dateString}&time=${timeParam}`}
                                     className="ml-auto"
                                 >
                                     <Button

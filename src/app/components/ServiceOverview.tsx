@@ -115,14 +115,17 @@ export default function ServiceOverview({
     const featuresArray = stringToArray(editFeatures);
     if (featuresArray.length === 0) return;
     // FIX 4: Call PUT API
+    const cleanDuration = Number(editDuration.replace(/[^0-9]/g, ""));
+    const cleanPrice = Number(editPrice.replace(/[^0-9.]/g, ""));
+
     const response = await fetch("/api/admin/services", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id: editingService.id,
         name: editName,
-        duration_minutes: Number(editDuration), // Send as number
-        price: editPrice,
+        duration_minutes: cleanDuration,
+        price: cleanPrice,
         description: editDescription,
         features: featuresArray,
       }),
@@ -158,13 +161,16 @@ export default function ServiceOverview({
     const featuresArray = stringToArray(newFeatures);
     if (featuresArray.length === 0) return;
     // FIX 5: Call POST API
+    const cleanDuration = Number(newDuration.replace(/[^0-9]/g, ""));
+    const cleanPrice = Number(newPrice.replace(/[^0-9.]/g, ""));
+
     const response = await fetch("/api/admin/services", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: newName,
-        duration_minutes: Number(newDuration), // Send as number
-        price: newPrice,
+        duration_minutes: cleanDuration, 
+        price: cleanPrice,
         description: newDescription,
         features: featuresArray,
       }),

@@ -18,38 +18,36 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    const protocol = window.location.protocol;
-    const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-    window.location.href = `${protocol}//${rootDomain}/`;
+    window.location.href = "/";
   };
 
   const staffNavItems = [
     {
-      href: "/admin/dashboard",
+      href: `/gym/${slug}/admin/dashboard`,
       label: "Appointments Calendar",
       icon: Calendar,
       gradient: "from-orange-500 to-pink-500",
     },
     {
-      href: "/admin/dashboard/bookings",
+      href: `/gym/${slug}/admin/dashboard/bookings`,
       label: "Manual Booking",
       icon: UserPlus,
       gradient: "from-cyan-500 to-blue-500",
     },
     {
-      href: "/admin/dashboard/appointments",
+      href: `/gym/${slug}/admin/dashboard/appointments`,
       label: "Upcoming Appointments",
       icon: List,
       gradient: "from-green-500 to-emerald-500",
     },
     {
-      href: "/admin/dashboard/services",
+      href: `/gym/${slug}/admin/dashboard/services`,
       label: "Services & Hours",
       icon: Users,
       gradient: "from-purple-500 to-blue-500",
     },
     {
-      href: "/",
+      href: `/gym/${slug}`,
       label: "Back to Customer Site",
       icon: Home,
       gradient: "from-gray-600 to-gray-800",

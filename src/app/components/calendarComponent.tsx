@@ -4,8 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Calendar } from "./ui/calendar";
 import { Clock, Dumbbell, User } from "lucide-react";
 import { Badge } from "./ui/badge";
-import { Appointment } from "../admin/[slug]/dashboard/page";
+// Removed circular import
+// import { Appointment } from "../admin/[slug]/dashboard/page";
 
+
+export interface Appointment {
+  id: string;
+  start: string;
+  end: string;
+  customerName: string;
+  serviceName: string;
+  serviceDuration: number;
+  cancellationLink: string;
+  status: "pending" | "confirmed" | "upcoming";
+}
 
 interface CalendarComponentProps {
   appointments: Appointment[];

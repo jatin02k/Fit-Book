@@ -13,18 +13,21 @@ import BookingForm from "@/app/components/bookingForm";
 import { ImageWithFallback } from "../figma/imageWithFallback";
 
 export default async function CheckoutPage({
+  params,
   searchParams,
 }: {
-  searchParams: { serviceId?: string; date?: string; time?: string };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ serviceId?: string; date?: string; time?: string }>;
 }) {
+  const { slug } = await params;
   const paramsSchema = z.object({
     serviceId: z.uuid().optional(),
     date: z.string().optional(), // YYYY-MM-DD (we will pass-through to client validation)
     time: z.string().optional(), // HH:mm (24h)
   });
-  const params = await searchParams; // Await the promise
+  const resolvedSearchParams = await searchParams; // Await params in Next 15promise
 
-  const parsed = paramsSchema.safeParse(params);
+  const parsed = paramsSchema.safeParse(resolvedSearchParams);
 
   // Create a CLEAN object that only contains plain strings/values
   const serviceId = parsed.success ? parsed.data.serviceId ?? "" : "";
@@ -46,7 +49,7 @@ export default async function CheckoutPage({
     <div className="min-h-screen pt-20 pb-16 bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Link href={`/book/${serviceId}`}>
+          <Link href={`/gym/${slug}/book/${serviceId}`}>
             <Button
               variant="outline"
               className="mb-4 border-black text-black hover:bg-black hover:text-white"
@@ -120,6 +123,7 @@ export default async function CheckoutPage({
             serviceName={serviceData.name}
             time={String(bookingTime)}
             date={String(bookingDate)}
+            slug={slug}
           />
         </div>
       </div>

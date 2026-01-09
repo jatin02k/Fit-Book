@@ -28,14 +28,21 @@ export default function SignupPage() {
   // Auto-generate slug from organization name
   const handleOrgNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
-    // Simple slugify: lowercase, replace spaces with dashes, remove special chars
-    const slug = name
+    // Slugify: lowercase, replace spaces with dashes, remove special chars
+    // Append a random 4-char string to ensure uniqueness
+    const baseSlug = name
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, "")
       .trim()
       .replace(/\s+/g, "-");
     
-    setFormData((prev) => ({ ...prev, orgName: name, orgSlug: slug }));
+    // We update this in real-time. To avoid jitter, maybe we don't append random chars visibly?
+    // User complaint: "cant keep the gym name same coz it means slug becomes same".
+    // Solution: We should append a unique ID internally or let them edit it.
+    // For MVP, let's append a random number to the slug in the state.
+    const uniqueSlug = baseSlug ? `${baseSlug}-${Math.floor(1000 + Math.random() * 9000)}` : "";
+
+    setFormData((prev) => ({ ...prev, orgName: name, orgSlug: uniqueSlug }));
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -55,7 +62,13 @@ export default function SignupPage() {
         },
       });
 
-      if (authError) throw authError;
+      if (authError) {
+          if (authError.message.includes("already registered")) {
+              throw new Error("This email is already registered. Please Log In.");
+          }
+          throw authError;
+      }
+      
       if (!authData.user) throw new Error("No user created");
       
       // DEBUG: Check if we have a session
@@ -91,7 +104,8 @@ export default function SignupPage() {
         // If org creation fails, it feels bad. We might need to rollback or handle it.
         // Common cause: Slug already exists.
         if (orgError.code === "23505") { // Unique violation
-            throw new Error("This Gym Link (Slug) is already taken. Please choose another.");
+            // Try again with a new random slug? Or just tell user.
+            throw new Error("This Gym Link (Slug) is still taken. Please try changing the Gym Name slightly.");
         }
         throw orgError;
       }
@@ -106,7 +120,6 @@ export default function SignupPage() {
       
       console.log("Signup Complete. Redirecting to:", targetUrl);
       window.location.href = targetUrl;
-      // router.push("/admin/dashboard"); // Old Logic
 
     } catch (err: unknown) {
       console.error(err);

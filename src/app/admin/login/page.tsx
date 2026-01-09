@@ -31,45 +31,71 @@ export default function AdminLoginPage() {
   const supabase = createClient();
 
   const handleRedirect = async (user: User) => {
-      // 4. Success! Fetch Slug + Redirect
-      if(user){
-          const { data: org } = await supabase
-            .from("organizations")
-            .select("slug")
-            .eq("owner_id", user.id)
-            .single();
+      try {
+          // 4. Success! Fetch Slug + Redirect
+          if (user) {
+              const { data: org, error } = await supabase
+                  .from("organizations")
+                  .select("slug")
+                  .eq("owner_id", user.id)
+                  .single();
+              
+              if (error || !org) {
+                  console.error("No Organization found for user:", user.id);
+                  setError("No Gym account found for this user. Please contact support.");
+                  setIsCheckingSession(false);
+                  return;
+              }
 
-          if (org) {
-             const protocol = window.location.protocol;
-             const host = window.location.host;
+              if (org) {
+                  const protocol = window.location.protocol;
+                  const host = window.location.host;
 
-             // Path-Based Redirection
-             // Target: /gym/[slug]/admin/dashboard
-             const targetPath = `/gym/${org.slug}/admin/dashboard`;
-             const targetUrl = `${protocol}//${host}${targetPath}`;
+                  // Path-Based Redirection
+                  const targetPath = `/gym/${org.slug}/admin/dashboard`;
+                  const targetUrl = `${protocol}//${host}${targetPath}`;
 
-             console.log("Redirecting to Tenant Dashboard:", targetUrl);
-             window.location.href = targetUrl; 
-             return;
+                  console.log("Redirecting to Tenant Dashboard:", targetUrl);
+                  // Use window.location.replace to avoid back-button loops
+                  window.location.replace(targetUrl); 
+                  return;
+              }
           }
+      } catch (err) {
+          console.error("Redirect Error:", err);
+          setError("Failed to redirect to dashboard.");
+          setIsCheckingSession(false);
       }
-
-      // Fallback if something fails (shouldn't happen for valid users)
-      router.refresh(); 
-      router.push("/admin/dashboard");
   };
 
   useEffect(() => {
+    let mounted = true;
     const checkSession = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        console.log("User already logged in, redirecting...");
-        await handleRedirect(user);
-      } else {
-        setIsCheckingSession(false);
+      // Failsafe: If check takes too long (e.g. slow network or weird loop), show login form
+      const timer = setTimeout(() => {
+          if (mounted) setIsCheckingSession(false);
+      }, 4000);
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user && mounted) {
+          console.log("User already logged in, redirecting...");
+          // We don't await here to allow the timeout/cleanup to work if needed? 
+          // Actually, we want to try redirecting.
+          await handleRedirect(user);
+        } else if (mounted) {
+          setIsCheckingSession(false);
+        }
+      } catch (err) {
+        console.error("Session check error:", err);
+        if (mounted) setIsCheckingSession(false);
+      } finally {
+        clearTimeout(timer);
       }
     };
     checkSession();
+    
+    return () => { mounted = false; };
   }, [supabase, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
