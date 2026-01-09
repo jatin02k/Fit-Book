@@ -54,7 +54,20 @@ export async function middleware(request: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
      // Production logic (e.g., app.fitbook.com)
      const baseDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'fitbook.app';
-     currentHost = hostname.replace(`.${baseDomain}`, '');
+     
+     // FIX: Check if hostname matches baseDomain exactly
+     if (hostname === baseDomain || hostname === `www.${baseDomain}`) {
+         currentHost = 'app';
+     } else {
+         const replaced = hostname.replace(`.${baseDomain}`, '');
+         // If replacement didn't change anything (e.g. fit-book-smoky.vercel.app vs fitbook.app)
+         // then it's NOT a subdomain of our custom domain. Treat it as ROOT app (e.g. Vercel Preview).
+         if (replaced === hostname) {
+             currentHost = 'app'; 
+         } else {
+             currentHost = replaced;
+         }
+     }
   } else {
      // Localhost logic
      // hostname is something like "test-gym.localhost:3000"
