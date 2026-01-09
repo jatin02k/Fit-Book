@@ -30,7 +30,7 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
       {/* PREMIUM HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/50 z-10"></div>
+          <div className="absolute inset-0 bg-black/70 z-10"></div>
           <img
             src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=2075&auto=format&fit=crop"
             alt="Gym Background"
@@ -44,7 +44,7 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
             <span className="text-sm text-white/90">Premium Fitness Experience</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-8">
+          <h1 className="text-3xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-8">
             Welcome to <br />
             <span className="bg-gradient-to-r from-orange-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
               {org.name}
@@ -66,92 +66,96 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
       </section>
 
       {/* HOW TO BOOK SECTION (ROADMAP) */}
-      <section className="py-24 bg-white relative">
+      <section className="py-12 md:py-24 bg-white relative">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-20">
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+            <div className="text-center mb-12 md:mb-20">
+              <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-6">
                 Simple <br />
                 <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Booking Process</span>
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
                 Get started with your fitness journey in just a few clicks. Follow these simple steps to book your session.
               </p>
             </div>
-
+            
+            {/* ... (Roadmap steps ommitted for brevity, assume unchanged or separate edit if needed) ... */
+             /* Actually, I should probably include the whole section or at least the start to be safe, but let's target specific blocks if possible. 
+                Wait, I can replace the whole sections to be safe on spacing. */
+            }
             <div className="relative max-w-5xl mx-auto">
                {/* Central Line */}
                <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-orange-500 via-pink-500 to-purple-500 opacity-30"></div>
 
                {/* Step 1 */}
-               <div className="relative flex items-center mb-20">
+               <div className="relative flex items-center mb-12 md:mb-20">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-orange-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <MousePointerClick className="h-5 w-5" />
                      </div>
                   </div>
                   <div className="ml-24 md:ml-0 md:w-1/2 md:pr-16 md:text-right">
-                     <h3 className="text-2xl font-bold text-gray-900 mb-3">1. Select Service</h3>
-                     <p className="text-gray-600 leading-relaxed">
+                     <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">1. Select Service</h3>
+                     <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                         Choose from our wide range of classes and personal training sessions that suit your goals.
                      </p>
                   </div>
                </div>
 
                {/* Step 2 */}
-               <div className="relative flex items-center mb-20 justify-end md:justify-start">
+               <div className="relative flex items-center mb-12 md:mb-20 justify-end md:justify-start">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-pink-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <CalendarCheck className="h-5 w-5" />
                      </div>
                   </div>
                   <div className="ml-24 md:ml-auto md:w-1/2 md:pl-16 text-left">
-                     <h3 className="text-2xl font-bold text-gray-900 mb-3">2. Select Date</h3>
-                     <p className="text-gray-600 leading-relaxed">
+                     <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">2. Select Date</h3>
+                     <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                         Pick a convenient date from our real-time availability calendar.
                      </p>
                   </div>
                </div>
 
                {/* Step 3 */}
-               <div className="relative flex items-center mb-20">
+               <div className="relative flex items-center mb-12 md:mb-20">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-purple-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <Clock className="h-5 w-5" />
                      </div>
                   </div>
                   <div className="ml-24 md:ml-0 md:w-1/2 md:pr-16 md:text-right">
-                     <h3 className="text-2xl font-bold text-gray-900 mb-3">3. Choose Time Slot</h3>
-                     <p className="text-gray-600 leading-relaxed">
+                     <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">3. Choose Time Slot</h3>
+                     <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                         Select a time slot that fits perfectly into your daily schedule.
                      </p>
                   </div>
                </div>
 
                {/* Step 4 */}
-               <div className="relative flex items-center mb-20 justify-end md:justify-start">
+               <div className="relative flex items-center mb-12 md:mb-20 justify-end md:justify-start">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-blue-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <UserCheck className="h-5 w-5" />
                      </div>
                   </div>
                   <div className="ml-24 md:ml-auto md:w-1/2 md:pl-16 text-left">
-                     <h3 className="text-2xl font-bold text-gray-900 mb-3">4. Personal Details</h3>
-                     <p className="text-gray-600 leading-relaxed">
+                     <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">4. Personal Details</h3>
+                     <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                         Fill in your contact information so we can confirm your booking.
                      </p>
                   </div>
                </div>
 
                {/* Step 5 */}
-               <div className="relative flex items-center mb-20">
+               <div className="relative flex items-center mb-12 md:mb-20">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-green-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <CreditCard className="h-5 w-5" />
                      </div>
                   </div>
                   <div className="ml-24 md:ml-0 md:w-1/2 md:pr-16 md:text-right">
-                     <h3 className="text-2xl font-bold text-gray-900 mb-3">5. Payment & Upload</h3>
-                     <p className="text-gray-600 leading-relaxed">
+                     <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-3">5. Payment & Upload</h3>
+                     <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                         Complete the payment securely and upload the screenshot for verification.
                      </p>
                   </div>
@@ -165,8 +169,8 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
                      </div>
                   </div>
                   <div className="ml-24 md:ml-auto md:w-1/2 md:pl-16 text-left">
-                     <h3 className="text-2xl font-bold text-gray-900 mb-3">6. Confirmation</h3>
-                     <p className="text-gray-600 leading-relaxed">
+                     <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">6. Confirmation</h3>
+                     <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                         Receive an instant confirmation email with all your booking details.
                      </p>
                   </div>
@@ -177,48 +181,48 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
       </section>
 
       {/* TENANT CONTACT SECTION */}
-      <section id="contact" className="py-24 bg-gray-50 border-t border-gray-100">
+      <section id="contact" className="py-12 md:py-24 bg-gray-50 border-t border-gray-100">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-               <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+            <div className="text-center mb-12 md:mb-16">
+               <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-6">
                   Get in <br />
                   <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Touch</span>
                </h2>
-               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+               <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
                   Have questions? Contact {org.name} directly.
                </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8 text-center">
                {/* Email */}
-               <div className="bg-white p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300">
+               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300">
                   <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
                      <Mail className="h-8 w-8 text-orange-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Email</h3>
-                  <a href={`mailto:${org.email || `contact@${org.slug}.fitbook.app`}`} className="text-gray-600 text-lg hover:text-orange-500 transition-colors">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Email</h3>
+                  <a href={`mailto:${org.email || `contact@${org.slug}.fitbook.app`}`} className="text-gray-600 text-base md:text-lg hover:text-orange-500 transition-colors">
                      {org.email || `contact@${org.slug}.fitbook.app`}
                   </a>
                </div>
 
                {/* Phone */}
-               <div className="bg-white p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300">
+               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300">
                   <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
                      <Phone className="h-8 w-8 text-pink-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Phone</h3>
-                  <a href={`tel:${org.phone || "+15551234567"}`} className="text-gray-600 text-lg hover:text-pink-500 transition-colors">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Phone</h3>
+                  <a href={`tel:${org.phone || "+15551234567"}`} className="text-gray-600 text-base md:text-lg hover:text-pink-500 transition-colors">
                      {org.phone || "+1 (555) 123-4567"}
                   </a>
                </div>
 
                {/* Hours */}
-               <div className="bg-white p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300">
+               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300">
                   <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
                      <Clock className="h-8 w-8 text-purple-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Opening Hours</h3>
-                  <div className="text-gray-600">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Opening Hours</h3>
+                  <div className="text-gray-600 text-sm md:text-base">
                      <p>Mon - Fri: 9:00 AM - 9:00 PM</p>
                      <p>Sat - Sun: 10:00 AM - 6:00 PM</p>
                   </div>

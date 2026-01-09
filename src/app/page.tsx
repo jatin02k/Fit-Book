@@ -54,7 +54,7 @@ export default function LandingPage() {
             <span className="text-sm text-white/90">The Operating System for Modern Gyms</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-8">
+          <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight text-white mb-8">
             Transform Your <br />
             <span className="bg-gradient-to-r from-orange-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
               Fitness Business
@@ -80,9 +80,9 @@ export default function LandingPage() {
       </section>
 
       {/* ABOUT FITBOOK & STEPS (ROADMAP) */}
-      <section id="features" className="py-24 bg-white relative overflow-hidden">
+      <section id="features" className="py-12 md:py-24 bg-white relative overflow-hidden">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-20">
+            <div className="text-center mb-12 md:mb-20">
               <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
                 All-in-One <br />
                 <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Management Platform</span>
@@ -97,7 +97,7 @@ export default function LandingPage() {
                <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-orange-500 via-pink-500 to-purple-500 opacity-30"></div>
 
                {/* Step 1 */}
-               <div className="relative flex items-center mb-20">
+               <div className="relative flex items-center mb-12 md:mb-20">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-orange-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <Users className="h-5 w-5" />
@@ -112,7 +112,7 @@ export default function LandingPage() {
                </div>
 
                {/* Step 2 */}
-               <div className="relative flex items-center mb-20 justify-end md:justify-start">
+               <div className="relative flex items-center mb-12 md:mb-20 justify-end md:justify-start">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-pink-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <Settings className="h-5 w-5" />
@@ -127,7 +127,7 @@ export default function LandingPage() {
                </div>
 
                {/* Step 3 */}
-               <div className="relative flex items-center mb-20">
+               <div className="relative flex items-center mb-12 md:mb-20">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-purple-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <Calendar className="h-5 w-5" />
@@ -142,7 +142,7 @@ export default function LandingPage() {
                </div>
 
                {/* Step 4 */}
-               <div className="relative flex items-center mb-20 justify-end md:justify-start">
+               <div className="relative flex items-center mb-12 md:mb-20 justify-end md:justify-start">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-blue-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <PlusCircle className="h-5 w-5" />
@@ -157,7 +157,7 @@ export default function LandingPage() {
                </div>
 
                {/* Step 5 */}
-               <div className="relative flex items-center mb-20">
+               <div className="relative flex items-center mb-12 md:mb-20">
                   <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-green-50 rounded-full flex items-center justify-center z-10 shadow-sm">
                      <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white shadow-inner">
                         <Eye className="h-5 w-5" />

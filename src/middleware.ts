@@ -19,15 +19,30 @@ export async function middleware(request: NextRequest) {
           cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options));
         },
       },
+      cookieOptions: {
+        domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` : undefined,
+        path: '/',
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+      },
     }
   );
 
-  // 2. Auth Check
-  // ... (keep existing auth check) ...
-  const { data: { user } } = await supabase.auth.getUser();
-
   // 3. Subdomain Logic
   const hostname = request.headers.get('host') || '';
+
+  // 2. Auth Check (OPTIMIZED: Only run for Protected Routes)
+  let user = null;
+  const isProtectedPath = request.nextUrl.pathname.startsWith('/admin');
+
+  if (isProtectedPath) {
+      const { data: authData, error } = await supabase.auth.getUser();
+      user = authData.user;
+      
+       console.log(`[Middleware] ${request.nextUrl.pathname} | Host: ${hostname} | User: ${!!user} | Cookies: ${request.cookies.getAll().length}`);
+       if (error) console.log("[Middleware] Auth Error:", error.message);
+  }
+
   const searchParams = request.nextUrl.searchParams.toString();
   const path = `${request.nextUrl.pathname}${
     searchParams.length > 0 ? `?${searchParams}` : ''
@@ -61,9 +76,11 @@ export async function middleware(request: NextRequest) {
           return NextResponse.redirect(new URL('/admin/login', request.url));
       }
       // If already logged in and trying to go to Login, send to Dashboard
-      if (request.nextUrl.pathname === '/admin/login' && user) {
-          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-      }
+      // If already logged in and trying to go to Login, *let it pass* to the login page
+      // The login page will handle the "already logged in" state and redirect to the correct tenant dashboard.
+      // if (request.nextUrl.pathname === '/admin/login' && user) {
+      //    return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      // }
       return supabaseResponse;
   }
 
@@ -75,7 +92,7 @@ export async function middleware(request: NextRequest) {
       if (!path.startsWith('/admin/login') && !user) {
           return NextResponse.redirect(new URL('/admin/login', request.url));
       }
-      if (path === '/admin/login' && user) {
+      if (request.nextUrl.pathname === '/admin/login' && user) {
           return NextResponse.redirect(new URL('/admin/dashboard', request.url));
       }
       

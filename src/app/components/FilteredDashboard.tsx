@@ -227,20 +227,20 @@ export function FilteredDashboard({
     }, [appointments, serviceFilter, statusFilter, dateRange, isDefaultView]);
 
   return (
-    <div className="ml-64 p-8 bg-gray-50 min-h-screen">
+    <div className="md:ml-64 p-4 md:p-8 mt-16 md:mt-0 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl text-black mb-2">Upcoming Appointments</h1>
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl text-black mb-2">Upcoming Appointments</h1>
           <p className="text-gray-600">
             View and manage all scheduled appointments
           </p>
         </div>
 
         {/* Quick Stats Block (The component on the top of the image) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 md:p-6">
               <div className="flex items-center gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Upcoming</p>
@@ -250,7 +250,7 @@ export function FilteredDashboard({
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 md:p-6">
               <div className="flex items-center gap-4">
                 <div className="bg-green-100 p-3 rounded-full">
                   <User className="h-6 w-6 text-green-600" />
@@ -263,7 +263,7 @@ export function FilteredDashboard({
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 md:p-6">
               <div className="flex items-center gap-4">
                 <div className="bg-yellow-100 p-3 rounded-full">
                   <Clock className="h-6 w-6 text-yellow-600" />

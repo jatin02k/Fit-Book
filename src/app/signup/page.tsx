@@ -7,7 +7,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle, Home } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -105,161 +105,191 @@ export default function SignupPage() {
       window.location.href = targetUrl;
       // router.push("/admin/dashboard"); // Old Logic
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || "Something went wrong.");
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Start your 14-day free trial
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Or{" "}
-          <Link href="/admin/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-            sign in to your existing account
+    <div className="min-h-screen flex bg-white relative">
+      <Link href="/" className="absolute top-6 right-6 z-50 p-2.5 rounded-full shadow-lg hover:scale-110 transition-all duration-300 lg:bg-black lg:text-white lg:border-gray-200 lg:backdrop-blur-md border border-gray-200 bg-white text-gray-700 lg:border-transparent lg:hover:bg-white/20 group">
+          <Home className="w-5 h-5 group-hover:text-orange-500 lg:group-hover:text-red transition-colors" />
+      </Link>
+
+      {/* BRAND PANEL (LEFT) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 relative overflow-hidden flex-col justify-between p-12 text-white">
+        <div className="relative z-10">
+          <Link href="/" className="flex items-center gap-2 mb-8">
+             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
+                <span className="font-bold text-white">F</span>
+             </div>
+             <span className="text-2xl font-bold tracking-tight">FitBook</span>
           </Link>
-        </p>
+          <h1 className="text-5xl font-extrabold tracking-tight mb-6 leading-tight">
+            Manage your <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">
+              fitness empire
+            </span>
+          </h1>
+          <p className="text-lg text-gray-400 max-w-md">
+             Join thousands of gym owners who trust FitBook to automate bookings, payments, and member management.
+          </p>
+        </div>
+
+        {/* Decorative Circles */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-orange-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[500px] h-[500px] bg-pink-500/20 rounded-full blur-3xl"></div>
+
+        {/* Testimonial / Footer */}
+        <div className="relative z-10">
+           <blockquote className="space-y-2">
+              <p className="text-lg font-medium">
+                &ldquo;FitBook transformed how we run our studio. The booking experience is flawless for our clients.&rdquo;
+              </p>
+              <footer className="text-sm text-gray-500">
+                — Sarah Jenkins, Founder of CoreFlow Yoga
+              </footer>
+           </blockquote>
+        </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSignup}>
-            
-            {/* Full Name */}
-            <div>
-              <Label htmlFor="name">Full Name</Label>
-              <div className="mt-1">
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-            </div>
+      {/* FORM SIDER (RIGHT) - COMPACT LAYOUT */}
+      <div className="flex-1 flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-20 xl:px-24 bg-gray-50 h-screen overflow-y-auto">
+        <div className="mx-auto w-full max-w-lg lg:max-w-2xl">
+          <div className="lg:hidden mb-4 text-center">
+             <Link href="/" className="inline-flex items-center gap-2">
+                 <span className="text-2xl font-bold tracking-tight text-gray-900">FitBook</span>
+             </Link>
+          </div>
 
-            {/* Email */}
-            <div>
-              <Label htmlFor="email">Email address</Label>
-              <div className="mt-1">
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-            </div>
+          <div className="mb-6 text-center lg:text-left">
+            <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-gray-900">
+              Create account
+            </h2>
+            <p className="mt-1 text-sm text-gray-600">
+              Start your 14-day free trial. {" "}
+              <Link href="/admin/login" className="font-medium text-orange-600 hover:text-orange-500">
+                Already have an account?
+              </Link>
+            </p>
+          </div>
 
-            {/* Password */}
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <div className="mt-1">
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div className="w-full border-t border-gray-300" />
+          <form className="space-y-4" onSubmit={handleSignup}>
+            {/* Personal Details */}
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                    Personal Details
                 </div>
-                <div className="relative flex justify-center">
-                    <span className="px-2 bg-white text-sm text-gray-500">Business Details</span>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                       <Label htmlFor="name" className="text-gray-700 text-xs uppercase font-semibold">Full Name</Label>
+                       <Input
+                          id="name"
+                          name="name"
+                          type="text"
+                          required
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
+                          placeholder="John Doe"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                       />
+                    </div>
+                    <div>
+                       <Label htmlFor="email" className="text-gray-700 text-xs uppercase font-semibold">Email</Label>
+                       <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          required
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
+                          placeholder="john@example.com"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                       />
+                    </div>
+                </div>
+                 <div>
+                   <Label htmlFor="password" className="text-gray-700 text-xs uppercase font-semibold">Password</Label>
+                   <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      required
+                      className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
+                      placeholder="••••••••"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                   />
                 </div>
             </div>
 
-            {/* Organization Name */}
-            <div>
-              <Label htmlFor="orgName">Gym / Studio Name</Label>
-              <div className="mt-1">
-                <Input
-                  id="orgName"
-                  name="orgName"
-                  type="text"
-                  required
-                  placeholder="e.g. Iron Pumpers Gym"
-                  value={formData.orgName}
-                  onChange={handleOrgNameChange}
-                />
-              </div>
-            </div>
-
-            {/* Organization Phone */}
-             <div>
-              <Label htmlFor="orgPhone">Business Phone Number</Label>
-              <div className="mt-1">
-                <Input
-                  id="orgPhone"
-                  name="orgPhone"
-                  type="tel"
-                  required
-                  placeholder="e.g. +1 (555) 000-0000"
-                  value={formData.orgPhone}
-                  onChange={(e) => setFormData({ ...formData, orgPhone: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Organization Slug (Auto-generated & Read-only) */}
-            <div>
-                <Label>Your Public Booking Link</Label>
-                <div className="mt-1 flex rounded-md shadow-sm bg-gray-50 border border-gray-300">
-                  <span className="inline-flex items-center px-3 rounded-l-md border-r border-gray-300 bg-gray-100 text-gray-500 sm:text-sm">
-                    fitbook.app/
-                  </span>
-                  <div className="flex-1 px-3 py-2 text-gray-700 sm:text-sm truncate">
-                     {formData.orgSlug || "your-gym-name"}
-                  </div>
+            {/* Business Details */}
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    <div className="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
+                    Business Info
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
-                  This link is automatically generated for your customers.
-                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                       <Label htmlFor="orgName" className="text-gray-700 text-xs uppercase font-semibold">Gym Name</Label>
+                       <Input
+                          id="orgName"
+                          name="orgName"
+                          type="text"
+                          required
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
+                          placeholder="Iron Pumpers"
+                          value={formData.orgName}
+                          onChange={handleOrgNameChange}
+                       />
+                    </div>
+                     <div>
+                       <Label htmlFor="orgPhone" className="text-gray-700 text-xs uppercase font-semibold">Phone</Label>
+                       <Input
+                          id="orgPhone"
+                          name="orgPhone"
+                          type="tel"
+                          required
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
+                          placeholder="+1 (555) 000-0000"
+                          value={formData.orgPhone}
+                          onChange={(e) => setFormData({ ...formData, orgPhone: e.target.value })}
+                       />
+                    </div>
+                </div>
             </div>
 
             {error && (
-              <div className="rounded-md bg-red-50 p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
+               <div className="rounded-xl bg-red-50 p-3 border border-red-100">
+                  <div className="flex items-center">
+                     <AlertCircle className="h-4 w-4 text-red-500 mr-2" aria-hidden="true" />
+                     <p className="text-sm font-medium text-red-800">{error}</p>
                   </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">Registration Failed</h3>
-                    <div className="mt-2 text-sm text-red-700">
-                      <p>{error}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+               </div>
             )}
 
-            <div>
-              <Button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                disabled={isLoading}
-              >
-                {isLoading ? "Creating Account..." : "Create Account & Dashboard"}
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-orange-500/20 text-sm font-bold tracking-wide text-white bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200 transform hover:scale-[1.02]"
+            >
+              {isLoading ? "Creating..." : "Start Free Trial"}
+            </Button>
           </form>
+           
+           <p className="mt-4 text-center text-xs text-gray-400">
+              By joining, you agree to our <a href="#" className="underline hover:text-gray-600">Terms</a>.
+           </p>
         </div>
       </div>
     </div>

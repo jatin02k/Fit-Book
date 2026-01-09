@@ -117,7 +117,7 @@ export default async function CreateBookingPage() {
         .eq('organization_id', org.id)
         .order("name", { ascending: true });
         
-    const services: Service[] = (servicesRaw || []).map((s: any) => ({
+    const services: Service[] = (servicesRaw || []).map((s: { id: string; name: string; price: number; duration_minutes: number }) => ({
         id: s.id,
         name: s.name,
         price: String(s.price),
@@ -138,16 +138,19 @@ export default async function CreateBookingPage() {
         .select('*')
         .eq('organization_id', org.id);
 
-    const businessHours: BusinessHour[] = (businessHoursRaw || []).map((bh: any) => ({
-        id: bh.id,
+    const businessHours: BusinessHour[] = (businessHoursRaw || []).map((bh: { id: number; day_of_week: number; open_time: string; close_time: string }) => ({
+        id: String(bh.id),
         day_of_week: bh.day_of_week,
         start_time: bh.open_time,
         end_time: bh.close_time, 
     }));
 
     return (
-        <div className="p-8 ml-64">
+        <div className="flex flex-col min-h-screen">
+        <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0">
             <h1 className="text-3xl font-bold text-gray-900 mb-8">Manual Booking</h1>
+        </div>
+        <div className="flex-1">
             <div className="bg-white p-6 rounded-lg shadow">
                 <ManualBookingForm
                     services={services} 
@@ -156,6 +159,7 @@ export default async function CreateBookingPage() {
                     fetchSlotsAction={fetchBookedSlots}
                 />
             </div>
+        </div>
         </div>
     );
 }

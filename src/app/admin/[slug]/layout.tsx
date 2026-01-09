@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { StaffSidebar } from "@/app/components/StaffSidebar";
 
 interface AdminLayoutProps {

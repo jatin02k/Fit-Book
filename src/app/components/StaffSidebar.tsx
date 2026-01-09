@@ -1,9 +1,9 @@
-"use client";
-
+'use client'
+import { useState } from "react"; // Add useState
 import { createClient } from "@/lib/supabase/client";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Calendar, UserPlus, List, Users, Home, Sparkles, LogOut } from "lucide-react";
+import { Calendar, UserPlus, List, Users, Home, Sparkles, LogOut, Menu, X } from "lucide-react"; // Add Menu, X
 import { Button } from "./ui/button";
 
 interface StaffSidebarProps {
@@ -14,14 +14,12 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-  
+  const [isOpen, setIsOpen] = useState(false); // Mobile state
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    
-    // Force redirect to Root Domain (remove subdomain)
     const protocol = window.location.protocol;
     const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-    
     window.location.href = `${protocol}//${rootDomain}/`;
   };
 
@@ -33,19 +31,19 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
       gradient: "from-orange-500 to-pink-500",
     },
     {
-      href: "/admin/dashboard/bookings", // Matches src/app/admin/[slug]/dashboard/bookings
+      href: "/admin/dashboard/bookings",
       label: "Manual Booking",
       icon: UserPlus,
       gradient: "from-cyan-500 to-blue-500",
     },
     {
-      href: "/admin/dashboard/appointments", // Matches src/app/admin/[slug]/dashboard/appointments
+      href: "/admin/dashboard/appointments",
       label: "Upcoming Appointments",
       icon: List,
       gradient: "from-green-500 to-emerald-500",
     },
     {
-      href: "/admin/dashboard/services", // Matches src/app/admin/[slug]/dashboard/services
+      href: "/admin/dashboard/services",
       label: "Services & Hours",
       icon: Users,
       gradient: "from-purple-500 to-blue-500",
@@ -58,33 +56,39 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
     },
   ];
 
-  return (
-    <div className="w-64 bg-gradient-to-b from-gray-900 to-black border-r border-gray-800 h-screen fixed left-0 top-0 shadow-xl flex flex-col">
-      <div className="p-6 border-b border-gray-800">
-        <div className="flex items-center gap-2 mb-1">
-          <h2 className="text-lg bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
-            Staff Dashboard
-          </h2>
-          <Sparkles className="h-4 w-4 text-orange-400" />
+  // Helper Content Component
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-black border-r border-gray-800 text-white">
+      <div className="p-6 border-b border-gray-800 flex justify-between items-center">
+        <div>
+           <div className="flex items-center gap-2 mb-1">
+             <h2 className="text-lg bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
+               Staff Dashboard
+             </h2>
+             <Sparkles className="h-4 w-4 text-orange-400" />
+           </div>
+           <p className="text-sm text-gray-400">FitBook Gym Management</p>
         </div>
-        <p className="text-sm text-gray-400">FitBook Gym Management</p>
+        {/* Close Button for Mobile */}
+        <button onClick={() => setIsOpen(false)} className="md:hidden text-gray-400 hover:text-white">
+          <X className="h-6 w-6" />
+        </button>
       </div>
-      
-      <nav className="p-4 space-y-2 flex-1">
 
+      <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
         {staffNavItems.map((item) => {
           const Icon = item.icon; 
-          // Simple active check
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
               passHref
+              onClick={() => setIsOpen(false)} // Close on click (mobile)
             >
               <Button 
                 variant={isActive ? "default" : "ghost"}
-                className={`w-full justify-start transition-all duration-300 group ${
+                className={`w-full justify-start transition-all duration-300 group mb-1 ${
                   isActive
                     ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg hover:shadow-xl hover:scale-105`
                     : "text-gray-300 hover:bg-gray-800 hover:text-white"
@@ -100,10 +104,8 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
             </Link>
           );
         })}
-
       </nav>
 
-      {/* Logout Button Area */}
       <div className="p-4 border-t border-gray-800">
          <Button 
             variant="ghost" 
@@ -121,5 +123,38 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
         </p>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {/* Mobile Trigger Button (Visible only on mobile) */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 border-b border-gray-800 p-4 flex items-center justify-between">
+         <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-orange-400" />
+            <span className="text-white font-bold">FitBook Admin</span>
+         </div>
+         <button onClick={() => setIsOpen(true)} className="text-white p-2">
+            <Menu className="h-6 w-6" />
+         </button>
+      </div>
+
+      {/* Desktop Sidebar (Fixed, always visible on MD+) */}
+      <div className="hidden md:block w-64 fixed left-0 top-0 h-screen shadow-xl z-40">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Drawer (Overlay, visible when Open) */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+           {/* Backdrop */}
+           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)}></div>
+           
+           {/* SidebarContent Drawer */}
+           <div className="relative w-4/5 max-w-xs h-full shadow-2xl animate-in slide-in-from-left duration-200">
+              <SidebarContent />
+           </div>
+        </div>
+      )}
+    </>
   );
 }

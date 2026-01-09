@@ -26,6 +26,12 @@ export const createClient = async (): Promise<ReturnType<typeof createServerClie
                     }
                 },
             },
+            cookieOptions: {
+                domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` : undefined,
+                path: '/',
+                sameSite: 'lax',
+                secure: process.env.NODE_ENV === 'production',
+            },
         }
     );
 };  

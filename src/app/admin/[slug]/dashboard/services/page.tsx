@@ -68,7 +68,7 @@ export default async function ServicesPage() {
   }
 
   return (
-    <div className="p-8 ml-64 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Service Management</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

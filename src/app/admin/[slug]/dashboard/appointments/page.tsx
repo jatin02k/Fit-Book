@@ -31,13 +31,27 @@ export default async function AppointmentsListPage() {
   }
 
   // Transform data to match FilteredDashboardProps
-  const appointmentsInput = (rawAppointments || []).map((appt: any) => ({
+  // Transform data to match FilteredDashboardProps
+  interface RawAppointment {
+    id: string;
+    customer_name: string;
+    services: { name: string; duration_minutes: number }[] | { name: string; duration_minutes: number } | null;
+    start_time: string;
+    end_time: string;
+    status: string;
+    email: string;
+    phone_number: string;
+    service_id: string;
+    cancellation_link_uuid: string;
+  }
+
+  const appointmentsInput = (rawAppointments || []).map((appt: RawAppointment) => ({
       id: appt.id,
       customerName: appt.customer_name || "Unknown",
       serviceName: Array.isArray(appt.services) ? appt.services[0]?.name : appt.services?.name || "General",
       date: new Date(appt.start_time).toLocaleDateString(), // Not strictly used by chart but good for debugging
       time: new Date(appt.start_time).toLocaleTimeString(),
-      status: appt.status || "pending",
+      status: (appt.status as "pending" | "confirmed" | "upcoming") || "pending",
       start_time: appt.start_time, // Crucial for sorting/filtering
       end_time: appt.end_time,
       email: appt.email || "",
