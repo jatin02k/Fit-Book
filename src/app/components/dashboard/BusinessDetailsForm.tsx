@@ -16,7 +16,7 @@ interface BusinessDetailsFormProps {
   orgId: string;
 }
 
-export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, orgId }: BusinessDetailsFormProps) {
+export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, orgId, slug }: BusinessDetailsFormProps & { slug: string }) {
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState(initialPhone);
   
@@ -26,8 +26,17 @@ export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, 
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  const bookingLink = typeof window !== 'undefined' ? `${window.location.origin}/gym/${slug}` : `/gym/${slug}`;
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(bookingLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -95,6 +104,24 @@ export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, 
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid gap-2">
+            <Label htmlFor="booking-link">Customer Booking Link</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="booking-link"
+                value={bookingLink}
+                readOnly
+                className="bg-gray-50 text-gray-500"
+              />
+              <Button type="button" variant="outline" size="icon" onClick={handleCopyLink}>
+                {copied ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <span className="text-xs font-bold">COPY</span>}
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500">
+              Share this link with your customers to let them book appointments.
+            </p>
+          </div>
+
           <div className="grid gap-2">
             <Label htmlFor="business-name">Business Name</Label>
             <Input

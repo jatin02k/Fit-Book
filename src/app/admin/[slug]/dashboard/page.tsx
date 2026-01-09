@@ -98,7 +98,8 @@ export default async function AdminDashboardPage() {
               initialName={org.name || ""} 
               initialPhone={org.phone || ""} 
               initialQrCode={org.qr_code_url}
-              orgId={org.id} 
+              orgId={org.id}
+              slug={org.slug}
            />
         </div>
       </div>
