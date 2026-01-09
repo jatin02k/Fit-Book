@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       admin: {
@@ -64,12 +39,13 @@ export type Database = {
           email: string
           end_time: string
           id: string
+          organization_id: string
+          payment_url: string | null
           phone_number: string
+          reminder_sent: boolean | null
           service_id: string
           start_time: string
           status: string
-          payment_url: string
-          reminder_sent: boolean
         }
         Insert: {
           cancellation_link_uuid?: string
@@ -77,12 +53,13 @@ export type Database = {
           email: string
           end_time: string
           id?: string
+          organization_id: string
+          payment_url?: string | null
           phone_number: string
+          reminder_sent?: boolean | null
           service_id: string
           start_time: string
-          status: string
-          payment_url: string
-          reminder_sent: boolean
+          status?: string
         }
         Update: {
           cancellation_link_uuid?: string
@@ -90,14 +67,22 @@ export type Database = {
           email?: string
           end_time?: string
           id?: string
+          organization_id?: string
+          payment_url?: string | null
           phone_number?: string
+          reminder_sent?: boolean | null
           service_id?: string
           start_time?: string
-          status: string
-          payment_url: string
-          reminder_sent: boolean
+          status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "appointments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "appointments_service_id_fkey"
             columns: ["service_id"]
@@ -113,18 +98,65 @@ export type Database = {
           day_of_week: number
           id: number
           open_time: string
+          organization_id: string
         }
         Insert: {
           close_time: string
           day_of_week: number
           id?: number
           open_time: string
+          organization_id: string
         }
         Update: {
           close_time?: string
           day_of_week?: number
           id?: number
           open_time?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_hours_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          owner_id: string | null
+          slug: string
+          type: string
+          email: string | null
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          owner_id?: string | null
+          slug: string
+          type?: string
+          email?: string | null
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          owner_id?: string | null
+          slug?: string
+          type?: string
+          email?: string | null
+          phone?: string | null
         }
         Relationships: []
       }
@@ -135,6 +167,7 @@ export type Database = {
           features: string[] | null
           id: string
           name: string
+          organization_id: string
           price: number
         }
         Insert: {
@@ -143,6 +176,7 @@ export type Database = {
           features?: string[] | null
           id?: string
           name: string
+          organization_id: string
           price: number
         }
         Update: {
@@ -151,9 +185,18 @@ export type Database = {
           features?: string[] | null
           id?: string
           name?: string
+          organization_id?: string
           price?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "services_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -289,9 +332,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

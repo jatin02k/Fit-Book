@@ -1,35 +1,53 @@
 import { createClient } from "@/lib/supabase/server";
 import { Check, ArrowRight } from "lucide-react";
-import { ImageWithFallback } from "@/app/(public)/figma/imageWithFallback";
+import { ImageWithFallback } from "@/app/components/ui/imageWithFallback";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
+import { notFound } from "next/navigation"; // 1. Add notFound
 
+// 2. Define Props for Params
+interface ServicePageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
 
-// The main Server Component function
-export default async function ServiceSelectionPage() {
+export default async function ServiceSelectionPage({ params }: ServicePageProps) {
+  const { slug } = await params; // 3. Await Params
   const supabase = await createClient();
 
-  // 1. Fetch Services (A-2 Data) securely on the server
+  // 4. Find the Organization first
+  const { data: org, error: orgError } = await supabase
+    .from("organizations")
+    .select("id, name")
+    .eq("slug", slug)
+    .single();
+
+  if (orgError || !org) {
+    return notFound();
+  }
+
+  // 5. Fetch Services ONLY for this Organization
   const { data: services, error } = await supabase
     .from("services")
     .select("id, name, price, duration_minutes, description, features")
+    .eq("organization_id", org.id) // <--- CRITICAL FILTER
     .order("duration_minutes", { ascending: true });
 
   if (error) {
-    // Handle database fetch errors
     return (
       <div className="text-center text-red-500 mt-20">
-        Error loading services. Please check the database connection and keys.
+        Error loading services. Please check the database connection.
       </div>
     );
   }
+
   if (!services || services.length === 0) {
-    // Handle the case where the admin has not set up any services
     return (
       <div className="text-center mt-20 p-8">
         <h1 className="text-2xl font-semibold">
-          No services available for booking.
+          No services available for {org.name}.
         </h1>
       </div>
     );
@@ -39,17 +57,16 @@ export default async function ServiceSelectionPage() {
     { gradient: "from-orange-500 to-pink-500", shadow: "shadow-pink-500/20" },
     { gradient: "from-blue-500 to-cyan-500", shadow: "shadow-cyan-500/20" },
     { gradient: "from-green-500 to-lime-500", shadow: "shadow-lime-500/20" },
-    { gradient: "from-green-500 to-lime-500", shadow: "shadow-lime-500/20" },
+    { gradient: "from-purple-500 to-indigo-500", shadow: "shadow-indigo-500/20" }, // Added 4th color
   ];
 
-  // 2. Render UI with Figma Styles and Real Data (C-1 Acceptance)
   return (
     <div className="min-h-screen pt-20 pb-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-100 to-pink-100 rounded-full px-4 py-2 mb-4">
             <span className="text-sm bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
-              Premium Services
+              {org.name} Services {/* Personalized Header */}
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl text-black mb-4 tracking-tight">
@@ -59,8 +76,7 @@ export default async function ServiceSelectionPage() {
             </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Choose from our range of expert-led fitness programs designed to
-            help you achieve your goals.
+            Choose from the range of programs at {org.name}.
           </p>
         </div>
 
@@ -68,16 +84,17 @@ export default async function ServiceSelectionPage() {
           {services.map((service, index) => (
             <Card
               key={service.id}
-              className={`overflow-hidden border-2 hover:border-transparent transition-all duration-300 hover:shadow-xl ${gradientClasses[index].shadow} group`}
+              className={`overflow-hidden border-2 hover:border-transparent transition-all duration-300 hover:shadow-xl ${gradientClasses[index % gradientClasses.length].shadow} group`}
             >
               <div className="aspect-video relative overflow-hidden">
+                 {/* Note: In real setup, images should be dynamic per service or placeholders */}
                 <ImageWithFallback
-                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/fitbook/image${index}.jpeg`}
+                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/fitbook/image${index % 4}.jpeg`} 
                   alt={service.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div
-                  className={`absolute top-4 right-4 bg-gradient-to-r ${gradientClasses[index].gradient} text-white px-3 py-1 rounded-full text-sm shadow-lg`}
+                  className={`absolute top-4 right-4 bg-gradient-to-r ${gradientClasses[index % gradientClasses.length].gradient} text-white px-3 py-1 rounded-full text-sm shadow-lg`}
                 >
                   ${service.price}/session
                 </div>
@@ -89,7 +106,7 @@ export default async function ServiceSelectionPage() {
                     {service.name}
                   </CardTitle>
                   <div className="text-sm text-gray-500">
-                    {service.duration_minutes}
+                    {service.duration_minutes} mins
                   </div>
                 </div>
                 <CardDescription className="text-gray-600">
@@ -99,13 +116,14 @@ export default async function ServiceSelectionPage() {
 
               <CardContent>
                 <ul className="space-y-2 mb-6">
-                  {service.features?.map((feature, idx) => (
+                  {/* Features often stored as JSON array in Supabase */}
+                  {(typeof service.features === 'string' ? JSON.parse(service.features) : service.features)?.map((feature: string, idx: number) => (
                     <li
                       key={idx}
                       className="flex items-center text-sm text-gray-600"
                     >
                       <div
-                        className={`p-0.5 rounded-full bg-gradient-to-r ${gradientClasses[index].gradient} mr-3 flex-shrink-0`}
+                        className={`p-0.5 rounded-full bg-gradient-to-r ${gradientClasses[index % gradientClasses.length].gradient} mr-3 flex-shrink-0`}
                       >
                         <Check className="h-3 w-3 text-white" />
                       </div>
@@ -114,6 +132,8 @@ export default async function ServiceSelectionPage() {
                   ))}
                 </ul>
 
+                {/* Important: Link is relative to the current subdomain! */}
+                {/* Visiting /book/123 on gold.localhost stays on gold.localhost */}
                 <Link
                   href={`/book/${service.id}`}
                   className="w-full"
@@ -121,8 +141,8 @@ export default async function ServiceSelectionPage() {
                 >
                   <Button
                     className={`
-                    w-full text-white bg-gradient-to-r ${gradientClasses[index].gradient} 
-                    hover:shadow-lg ${gradientClasses[index].shadow} transition-all duration-300 group-hover:scale-105
+                    w-full text-white bg-gradient-to-r ${gradientClasses[index % gradientClasses.length].gradient} 
+                    hover:shadow-lg ${gradientClasses[index % gradientClasses.length].shadow} transition-all duration-300 group-hover:scale-105
                   `}
                   >
                     Select {service.name}
@@ -132,25 +152,6 @@ export default async function ServiceSelectionPage() {
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        <div className="text-center mt-16 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-8 border border-gray-200">
-          <p className="text-gray-600 mb-4">
-            Not sure which service is right for you?
-          </p>
-          <Link 
-          href={'/contact'}
-          className="w-full"
-          passHref
-          >
-          <Button
-            variant="outline"
-            className="border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-300 hover:scale-105"
-          >
-            Contact Us for Guidance
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-          </Link>
         </div>
       </div>
     </div>

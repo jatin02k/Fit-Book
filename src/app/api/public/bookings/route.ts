@@ -14,10 +14,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = bookingSchema.parse(body);
 
-    // 1. Get Service Duration
+    // 1. Get Service Duration & Organization ID
     const { data: service } = await supabase
       .from("services")
-      .select("*")
+      .select("*, organization_id")
       .eq("id", validatedData.serviceId)
       .single();
 
@@ -29,10 +29,11 @@ export async function POST(request: Request) {
     const dateStr = start.toLocaleDateString('en-IN');
     const timeStr = start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
-    // 3. Simple Conflict Check
+    // 3. Simple Conflict Check (Scoped to Organization)
     const { data: conflicts } = await supabase
       .from("appointments")
       .select("id")
+      .eq("organization_id", service.organization_id) 
       .filter("start_time", "lt", end.toISOString())
       .filter("end_time", "gt", start.toISOString());
 
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
       .from("appointments")
       .insert([{
         service_id: validatedData.serviceId,
+        organization_id: service.organization_id, // <--- CRITICAL FIX
         start_time: start.toISOString(),
         end_time: end.toISOString(),
         customer_name: validatedData.name,

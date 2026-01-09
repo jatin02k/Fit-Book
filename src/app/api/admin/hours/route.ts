@@ -13,6 +13,7 @@ interface FormattedBusinessHour {
   day_of_week: number;
   open_time: string;
   close_time: string;
+  organization_id?: string;
 }
 
 // (The GET function remains the same)
@@ -57,12 +58,55 @@ export async function POST(request: Request) {
       });
     }
 
-    // 4. Supabase Upsert Operation
+    // 4. Get User and Organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: org } = await supabase
+        .from("organizations")
+        .select("id")
+        .eq("owner_id", user.id)
+        .single();
+
+    if (!org) {
+        return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+    }
+
+    // 5. Supabase Upsert Operation
+    // Add organization_id to each record
+    const dataToUpsert = formattedData.map(item => ({
+        ...item,
+        organization_id: org.id
+    }));
+
+    // 5. Delete-then-Insert Strategy
+    // Since we don't have a guaranteed unique constraint on (organization_id, day_of_week),
+    // and we want to overwrite whatever is there for these days,
+    // we first DELETE the existing records for these days for this org.
+    
+    const daysToUpdate = dataToUpsert.map(d => d.day_of_week);
+
+    const { error: deleteError } = await supabase
+        .from('business_hours')
+        .delete()
+        .eq('organization_id', org.id)
+        .in('day_of_week', daysToUpdate);
+
+    if (deleteError) {
+        console.error('Error clearing old business hours:', deleteError);
+         return NextResponse.json(
+            { error: `Failed to update hours: ${deleteError.message}` }, 
+            { status: 500 }
+        );
+    }
+
+    // 6. Insert new records
+    // Now we can safely insert without conflict
     const { data, error } = await supabase
       .from('business_hours')
-      .upsert(formattedData, { 
-          onConflict: 'day_of_week' 
-      })
+      .insert(dataToUpsert)
       .select('*');
 
     if (error) {

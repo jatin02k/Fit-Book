@@ -1,54 +1,109 @@
-// middleware.ts
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { jwtVerify } from "jose";
 
-export async function middleware(req: NextRequest) {
-  const token = req.cookies.get("admin_token")?.value;
-  const path = req.nextUrl.pathname;
-
-  const isLoginPage = path === "/admin/login";
-  const isProtected = path.startsWith("/admin") && !isLoginPage;
-
-  // 1. Check Protected Routes
-  if (isProtected) {
-    if (!token) {
-      // No token found, redirect to login
-      return NextResponse.redirect(new URL("/admin/login", req.url));
+export async function middleware(request: NextRequest) {
+  // 1. Initialize Supabase
+  // ... (keep existing supabase createServerClient code) ...
+  let supabaseResponse = NextResponse.next({
+    request,
+  });
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return request.cookies.getAll(); },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value));
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options));
+        },
+      },
     }
+  );
 
-    try {
-    await jwtVerify(
-        token,
-        new TextEncoder().encode(process.env.JWT_SECRET!),
-        {
-            // 💡 FIX: Include the exact claims used in the jwt.sign call
-            issuer: 'urn:fitbook:issuer',
-            audience: 'urn:fitbook:audience',
-        }
-    );
-    
-    // Token is valid, allow access
-    return NextResponse.next();
-    } catch (err) {
-      // 2. Verification FAILED (token is bad or expired)
-      console.error("JWT Verification failed in middleware:", err);
-      // Redirect to login and clear the bad cookie
-      const response = NextResponse.redirect(new URL("/admin/login", req.url));
-      response.cookies.delete("admin_token");
-      return response;
-    }
+  // 2. Auth Check
+  // ... (keep existing auth check) ...
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // 3. Subdomain Logic
+  const hostname = request.headers.get('host') || '';
+  const searchParams = request.nextUrl.searchParams.toString();
+  const path = `${request.nextUrl.pathname}${
+    searchParams.length > 0 ? `?${searchParams}` : ''
+  }`;
+
+  // Identify if it's a subdomain (e.g. "test-gym.localhost:3000" -> "test-gym")
+  // Adjust logic to handle "localhost:3000" vs "test-gym.localhost:3000"
+  let currentHost;
+  if (process.env.NODE_ENV === 'production') {
+     // Production logic (e.g., app.fitbook.com)
+     const baseDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'fitbook.app';
+     currentHost = hostname.replace(`.${baseDomain}`, '');
+  } else {
+     // Localhost logic
+     // hostname is something like "test-gym.localhost:3000"
+     // We want to extract "test-gym"
+     currentHost = hostname.replace(`.localhost:3000`, '');
+  }
+  
+  // FIX: If it is an API route, let it pass through!
+  // We do NOT want to rewrite /api to /site/[slug]/api
+  if (request.nextUrl.pathname.startsWith('/api')) {
+      return supabaseResponse;
   }
 
-  // 3. If logged in and tries to access login page, redirect to dashboard
-  if (isLoginPage && token) {
-    // If we reach this point, we assume the token is valid since it was just set,
-    // or verification will handle it on the next protected page access.
-    return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+  // Check if it's the Root Domain (Landing Page or Admin)
+  if (currentHost === 'app' || currentHost === 'www' || currentHost === 'localhost:3000') {
+      // Normal Next.js routing applies (Admin, Public Marketing, etc.)
+       // Protect Admin Routes (dashboard, bookings, etc.) but allow LOGIN
+       if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login') && !user) {
+          return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+      // If already logged in and trying to go to Login, send to Dashboard
+      if (request.nextUrl.pathname === '/admin/login' && user) {
+          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      }
+      return supabaseResponse;
   }
 
-  return NextResponse.next();
+  // 4. It is a Tenant Subdomain (e.g. "gold.localhost:3000")
+  
+  // FIX: Allow Admin Access on Subdomains with Tenant Context!
+  if (path.startsWith('/admin')) {
+      // 1. Check Auth
+      if (!path.startsWith('/admin/login') && !user) {
+          return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+      if (path === '/admin/login' && user) {
+          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      }
+      
+      // 2. Rewrite to the Tenant-Specific Admin Route
+      // If path is /admin/dashboard on host "gold", rewrite to /admin/gold/dashboard
+      // Users still see "gold.localhost:3000/admin/dashboard"
+      if (!path.startsWith('/admin/login')) {
+         const newPath = path.replace('/admin', `/admin/${currentHost}`);
+         return NextResponse.rewrite(new URL(newPath, request.url));
+      }
+      
+      // For Login, keep it as is (Global Login Page)
+      return NextResponse.rewrite(new URL(path, request.url));
+  }
+  // Rewrite the URL to point to the dynamic logic
+  // e.g. /services -> /site/gold/services
+
+  // Rewrite the URL to point to the dynamic logic
+  // e.g. /services -> /site/gold/services
+
+  // Rewrite to the "site" folder
+  return NextResponse.rewrite(
+    new URL(`/site/${currentHost}${path}`, request.url)
+  );
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

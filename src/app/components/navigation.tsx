@@ -8,13 +8,13 @@ import { Sparkles } from "lucide-react";
 // interface NavigationProps { currentPage: string; onPageChange: (page: string) => void; } 
 // <-- NO LONGER NEEDED
 
-export function Navigation() {
+export default function Navigation() {
   const pathname = usePathname(); // Get the current path
 
   // Map your links to your folder structure (e.g., create /services/page.js)
   const navItems = [
     { name: 'Services', href: '/services' },
-    { name: 'Contact', href: '/contact' }, 
+    { name: 'Contact', href: '/#contact' }, 
     { name: 'FAQ', href: '/faq' },
   ];
   
@@ -49,11 +49,6 @@ export function Navigation() {
                 </span>
               </Link>
             ))}
-
-            {/* Admin Login Link (A-1) */}
-            <Link href="/admin/login" className="text-gray-600 hover:text-black transition-colors text-sm">
-                Admin Dashboard
-            </Link>
           </div>
 
           {/* Book Now Button (Goes to services) */}

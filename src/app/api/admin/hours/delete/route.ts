@@ -18,13 +18,30 @@ export async function POST(request:Request) {
     return new NextResponse(null, { status: 200 });
   }
   
+  // 1. Get User and Organization
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!org) {
+    return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+  }
+
   // Ensure the IDs are numbers, as the DB expects integer IDs (1-7)
   const numericDaysToDelete = daysToDelete.map(Number);
 
-  // Delete all rows where the day_of_week is in the provided array
+  // Delete all rows where the day_of_week is in the provided array AND matches Org ID
   const { error } = await supabase
     .from('business_hours')
     .delete()
+    .eq('organization_id', org.id) // <--- CRITICAL SECURITY FIX
     .in('day_of_week', numericDaysToDelete);
 
   if (error) {

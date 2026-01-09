@@ -29,7 +29,7 @@ interface RawService {
   name: string;
   duration_minutes: number | string;
   price: number | string;
-  description: string;
+  description: string | null;
   features: string | string[] | null | undefined;
   // Add other properties if they exist in the raw data
 }
@@ -44,7 +44,7 @@ interface Service {
 }
 
 interface ServiceOverviewProps {
-  initialServices: Service[];
+  initialServices: RawService[];
 }
 
 const stringToArray = (s: string): string[] => {
@@ -63,11 +63,12 @@ export default function ServiceOverview({
   initialServices,
 }: ServiceOverviewProps) {
   const [services, setServices] = useState<Service[]>(
-    (initialServices as RawService[]).map((s: RawService) => ({
+    (initialServices).map((s: RawService) => ({
       ...s,
       id: String(s.id), // Ensure id is string
       duration_minutes: Number(s.duration_minutes),
       price: Number(s.price),
+      description: s.description || "",
       features: Array.isArray(s.features)
         ? s.features
         : s.features

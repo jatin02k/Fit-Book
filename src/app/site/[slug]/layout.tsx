@@ -1,5 +1,4 @@
-import { Navigation } from "../components/navigation";
-
+import Navigation from "@/app/components/navigation";
 
 interface PublicLayoutProps {
   children: React.ReactNode;

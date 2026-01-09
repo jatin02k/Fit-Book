@@ -3,18 +3,30 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+
+  // Explicitly filter by Organization ID
   const { data: services, error } = await supabase
     .from("services")
     .select("*")
-    .single();
+    .eq("organization_id", org.id) // <--- CRITICAL
+    .order("created_at", { ascending: false });
 
-  console.log("service data on dashboard", services);
-
-  if (!services || error) {
-    return NextResponse.json({ message: "Service not found" }, { status: 500 });
+  if (error) {
+     console.error("Error fetching services:", error);
+    return NextResponse.json({ message: "Failed to fetch services" }, { status: 500 });
   }
 
-  return NextResponse.json(services);
+  return NextResponse.json(services || []);
 }
 
 export async function POST(request: Request) {
@@ -28,6 +40,20 @@ export async function POST(request: Request) {
     );
   }
 
+  // 1. Get Current User
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // 2. Get User's Organization
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+
+  // 3. Insert Service with Organization ID
   const { data, error } = await supabase
     .from("services")
     .insert([
@@ -37,6 +63,7 @@ export async function POST(request: Request) {
         price,
         description,
         features,
+        organization_id: org.id, // <--- CRITICAL
       },
     ])
     .select()

@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-// Define the type for the new API response structure
 interface TimeSlot {
-    time: string; // e.g., "09:00 AM"
+    time: string;
     isAvailable: boolean;
 }
 
@@ -17,58 +16,48 @@ export async function GET(request: Request) {
   const dateString = searchParams.get("date");
 
   if (!serviceId || !dateString) {
-    return NextResponse.json(
-      { error: "Missing req paramets. serviceId and date" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Missing params." }, { status: 400 });
   }
 
-  // Convert inputs from string to object and get dayOfWeek
   const targetDate = new Date(dateString);
   if (isNaN(targetDate.getTime())) {
-    return NextResponse.json(
-      { error: "Invalid Date format. Use: YYYY-MM-DD" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid Date." }, { status: 400 });
   }
   const dayOfWeek = targetDate.getDay();
 
-  // --- Fetching Data ---
   try {
-    // a. fetch service duration from service table
+    // 1. Fetch Service AND its Organization ID
+    // CRITICAL FIX: We need organization_id to know WHICH gym's hours to check
     const { data: serviceData, error: serviceError } = await supabase
       .from("services")
-      .select("duration_minutes")
+      .select("duration_minutes, organization_id")
       .eq("id", serviceId)
       .single(); 
 
     if (!serviceData || serviceError) {
-      // Return 404 if service ID is invalid
-      return NextResponse.json(
-        { error: "Service Not Found or Database Error." },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Service Not Found." }, { status: 404 });
     }
 
-    const serviceDuration = serviceData.duration_minutes;
-    // The total time block consumed by a single service booking
-    const slotDuration = serviceDuration + BUFFER_MINUTES; 
+    const { duration_minutes, organization_id } = serviceData;
+    const slotDuration = duration_minutes + BUFFER_MINUTES; 
     const slotDurationMs = slotDuration * 60 * 1000;
 
 
-    // b. fetch business Hours from business_hours table
+    // 2. Fetch Business Hours for THIS Organization
+    // CRITICAL FIX: Added .eq('organization_id', organization_id)
     const { data: hoursData, error: hoursError } = await supabase
       .from("business_hours")
       .select("open_time, close_time")
       .eq("day_of_week", dayOfWeek)
+      .eq("organization_id", organization_id) 
       .single();
 
     if (!hoursData || hoursError) {
-      // Business closed on this day.
+      // Gym is closed today
       return NextResponse.json({ fullTimeBlock: [] }, { status: 200 });
     }
 
-    // c. fetch existing booking from appointments table
+    // 3. Fetch Appointments for the SAME Organization (Safe side)
     const startOfDayObject = new Date(dateString);
     startOfDayObject.setHours(0, 0, 0, 0);
     const startOfDay = startOfDayObject.toISOString();
@@ -77,20 +66,18 @@ export async function GET(request: Request) {
     endOfDayObject.setHours(23, 59, 59, 999);
     const endOfDay = endOfDayObject.toISOString();
 
+    // CRITICAL FIX: Added .eq('organization_id', organization_id)
     const { data: appointments, error: appointmentsError } = await supabase
       .from("appointments")
       .select("start_time, end_time")
+      .eq("organization_id", organization_id) 
       .or(`and(start_time.lt.${endOfDay},end_time.gt.${startOfDay})`);
 
     if (appointmentsError) {
-      return NextResponse.json(
-        { error: "Error checking existing appointments." },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Database Error." }, { status: 500 });
     }
 
-    // --- Time Calculation (CRUX LOGIC) ---
-    
+    // --- Time Calculation Logic (Same as before) ---
     const createDateTime = (timeString: string): Date => {
       return new Date(`${dateString}T${timeString}`);
     };
@@ -98,37 +85,27 @@ export async function GET(request: Request) {
     const businessOpen = createDateTime(hoursData.open_time);
     const businessClose = createDateTime(hoursData.close_time);
 
-    const bookedSlots: { start: Date; end: Date }[] = appointments.map(
-      (appt) => ({
+    const bookedSlots = appointments.map((appt) => ({
         start: new Date(appt.start_time),
         end: new Date(appt.end_time),
-      })
-    );
+    }));
 
-    // 💡 NEW OUTPUT ARRAY: Will hold all slots (available and unavailable)
     const fullTimeBlock: TimeSlot[] = [];
-    
-    // 💡 Logic Correction: Iterate through every potential slot at a fixed interval
     let currentTime = businessOpen;
-    const now = new Date(); // Current time for "past slot" check
+    const now = new Date(); 
 
     while (currentTime.getTime() + slotDurationMs <= businessClose.getTime()) {
-      const potentialSlotStart = new Date(currentTime); // Use a copy
-      const potentialSlotEnd = new Date(
-        potentialSlotStart.getTime() + slotDurationMs
-      );
+      const potentialSlotStart = new Date(currentTime);
+      const potentialSlotEnd = new Date(potentialSlotStart.getTime() + slotDurationMs);
       
       let isConflict = false;
       
-      // 1. Check if the slot is in the past
       if (potentialSlotStart.getTime() < now.getTime()) {
-          isConflict = true; // Treat past slots as unavailable
+          isConflict = true; 
       }
       
-      // 2. Conflict Check against existing bookings
       if (!isConflict) {
         for (const booked of bookedSlots) {
-          // Conflict if the new slot overlaps with the booked slot
           if (
             potentialSlotStart.getTime() < booked.end.getTime() &&
             potentialSlotEnd.getTime() > booked.start.getTime()
@@ -139,31 +116,18 @@ export async function GET(request: Request) {
         }
       }
       
-      // 3. Store the slot status in the new array
-      const timeString = potentialSlotStart.toLocaleTimeString('en-US', { 
-          hour: '2-digit', 
-          minute: '2-digit', 
-          hour12: true 
-      });
-
       fullTimeBlock.push({
-          time: timeString,
+          time: potentialSlotStart.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
           isAvailable: !isConflict,
       });
 
-      // Move to the next potential start time by the full slot duration
       currentTime = potentialSlotEnd; 
     }
     
-    // 5. Return the result
-    // 💡 CHANGE: Return the fullTimeBlock instead of just availableSlots
     return NextResponse.json({ fullTimeBlock }, { status: 200 });
     
   } catch (error) {
-    console.log("Internal Server Error in Crux Logic:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error." },
-      { status: 500 }
-    );
+    console.error("API Error:", error);
+    return NextResponse.json({ error: "Server Error." }, { status: 500 });
   }
 }
