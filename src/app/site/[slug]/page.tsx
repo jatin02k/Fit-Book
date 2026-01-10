@@ -30,35 +30,36 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
       {/* PREMIUM HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/70 z-10"></div>
+          <div className="absolute inset-0 bg-black/60 z-10"></div>
+          {/* Generic Service Environment */}
           <img
-            src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=2075&auto=format&fit=crop"
-            alt="Gym Background"
+            src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2071&auto=format&fit=crop"
+            alt="Service Background"
             className="w-full h-full object-cover"
           />
         </div>
 
         <div className="relative z-30 text-center px-4 max-w-5xl pt-20">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-8 animate-fade-in-up">
-            <Sparkles className="h-4 w-4 text-orange-400" />
-            <span className="text-sm text-white/90">Premium Fitness Experience</span>
+            <Sparkles className="h-4 w-4 text-blue-400" />
+            <span className="text-sm text-white/90">Premium Service Experience</span>
           </div>
 
           <h1 className="text-3xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-8">
             Welcome to <br />
-            <span className="bg-gradient-to-r from-orange-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
               {org.name}
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto mb-10">
-            Your journey to a better you starts here. Book your sessions online and manage your fitness schedule with ease.
+            Professional services tailored to your needs. Book online and manage your appointments with ease.
           </p>
 
           <div className="mt-10">
             <Link href={`/gym/${slug}/services`}>
-              <Button size="lg" className="bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600 px-8 py-6 text-lg shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 border-0 rounded-xl">
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 px-8 py-6 text-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105 border-0 rounded-xl">
                 <Zap className="mr-2 h-5 w-5" />
-                Book a Session
+                Book Now
               </Button>
             </Link>
           </div>
@@ -236,18 +237,18 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
            <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Train With <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Us</span>?
+              Why Choose <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Us</span>?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Experience premium fitness with personalized training, expert instructors, and flexible scheduling.
+              Experience premium service with personalized attention, expert professionals, and seamless booking.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
             
             {/* Feature 1 */}
-            <div className="group bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 hover:-translate-y-1 text-center">
-              <div className="bg-gradient-to-br from-purple-500 to-blue-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform duration-500">
+            <div className="group bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-1 text-center">
+              <div className="bg-gradient-to-br from-indigo-500 to-blue-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-500">
                 <Clock className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Easy Scheduling</h3>
@@ -257,24 +258,24 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
             </div>
 
             {/* Feature 2 */}
-            <div className="group bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 hover:-translate-y-1 text-center">
-              <div className="bg-gradient-to-br from-orange-500 to-pink-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-500">
+            <div className="group bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-1 text-center">
+              <div className="bg-gradient-to-br from-blue-500 to-cyan-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-500">
                 <MapPin className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Visit Us</h3>
               <p className="text-gray-600 leading-relaxed">
-                We are located in the heart of the city. Come visit our state-of-the-art facility.
+                We are conveniently located. Come visit our facility to learn more.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="group bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-500 hover:-translate-y-1 text-center">
-              <div className="bg-gradient-to-br from-green-500 to-emerald-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform duration-500">
+            <div className="group bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 hover:shadow-2xl hover:shadow-violet-500/10 transition-all duration-500 hover:-translate-y-1 text-center">
+              <div className="bg-gradient-to-br from-violet-500 to-purple-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform duration-500">
                 <Phone className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Contact Support</h3>
               <p className="text-gray-600 leading-relaxed">
-                Have questions? Our team is here to help you get started on your path.
+                Have questions? Our team is here to help you get started.
               </p>
             </div>
 

@@ -6,8 +6,8 @@ import NextTopLoader from 'nextjs-toploader';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'FitBook | Appointment Scheduling MVP',
-  description: 'Single-vendor appointment booking system built with Next.js and Supabase.',
+  title: 'Appointor | Service Management System',
+  description: 'The all-in-one operating system for service businesses. Manage bookings, schedule staff, and scale your operations.',
 };
 
 export default function RootLayout({

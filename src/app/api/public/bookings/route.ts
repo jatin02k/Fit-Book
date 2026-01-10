@@ -86,7 +86,7 @@ try {
 
   const customerEmailPromise = sendEmail({
     to: validatedData.email,
-    subject: "⏳ Appointment Request Received — FitBook",
+    subject: "⏳ Appointment Request Received — Appointor",
     html: customerHtml,
   });
 

@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
               
               if (error || !org) {
                   console.error("No Organization found for user:", user.id);
-                  setError("No Gym account found for this user. Please contact support.");
+                  setError("No Business account found for this user. Please contact support.");
                   setIsCheckingSession(false);
                   return;
               }
@@ -157,7 +157,7 @@ export default function AdminLoginPage() {
             Welcome back
           </CardTitle>
           <CardDescription className="text-base text-gray-500 mt-2">
-            Sign in to manage your fitness business
+            Sign in to manage your business
           </CardDescription>
         </CardHeader>
         <CardContent className="p-8 pt-6">
@@ -215,14 +215,14 @@ export default function AdminLoginPage() {
           <div className="mt-8 text-center text-sm">
             <span className="text-gray-500">Don&apos;t have an account? </span>
             <Link href="/signup" className="font-semibold text-orange-600 hover:text-orange-500">
-              Start your 14-day free trial
+              Start your 7-day free trial
             </Link>
           </div>
         </CardContent>
       </Card>
       
       <div className="absolute bottom-6 text-center text-white/40 text-xs z-10 p-2">
-         &copy; {new Date().getFullYear()} FitBook. All rights reserved.
+         &copy; {new Date().getFullYear()} Appointor. All rights reserved.
       </div>
     </div>
   );

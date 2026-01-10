@@ -32,8 +32,7 @@ export default function Navigation() {
           {/* Logo/Home Link */}
           <Link href={basePath || '/'} className="cursor-pointer group">
             <h2 className="text-black tracking-tight flex items-center gap-2 text-2xl">
-              <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Fit</span>
-              <span>Book</span>
+              <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Appointor</span>
               <Sparkles className="h-4 w-4 text-orange-500 group-hover:animate-pulse" />
             </h2>
           </Link>

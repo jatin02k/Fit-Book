@@ -14,11 +14,11 @@ export function baseLayout({ title, content }: { title: string; content: string 
       </head>
       <body>
         <div class="container">
-          <h1 style="margin-bottom: 16px;">FitBook</h1>
+          <h1 style="margin-bottom: 16px;">Appointor</h1>
           <h2 style="color: #111827;">${title}</h2>
           <div>${content}</div>
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" />
-          <p class="footer">This is an automated message from FitBook. Please do not reply.</p>
+          <p class="footer">This is an automated message from Appointor. Please do not reply.</p>
         </div>
       </body>
     </html>

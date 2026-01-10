@@ -1,7 +1,7 @@
 'use client'
 import { useState } from "react"; // Add useState
 import { createClient } from "@/lib/supabase/client";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Calendar, UserPlus, List, Users, Home, Sparkles, LogOut, Menu, X } from "lucide-react"; // Add Menu, X
 import { Button } from "./ui/button";
@@ -12,7 +12,6 @@ interface StaffSidebarProps {
 
 export function StaffSidebar({ slug }: StaffSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const supabase = createClient();
   const [isOpen, setIsOpen] = useState(false); // Mobile state
 
@@ -29,10 +28,10 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
       gradient: "from-orange-500 to-pink-500",
     },
     {
-      href: `/gym/${slug}/admin/dashboard/bookings`,
-      label: "Manual Booking",
-      icon: UserPlus,
-      gradient: "from-cyan-500 to-blue-500",
+      href: `/gym/${slug}/admin/dashboard/services`,
+      label: "Services & Hours",
+      icon: Users,
+      gradient: "from-purple-500 to-blue-500",
     },
     {
       href: `/gym/${slug}/admin/dashboard/appointments`,
@@ -41,10 +40,10 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
       gradient: "from-green-500 to-emerald-500",
     },
     {
-      href: `/gym/${slug}/admin/dashboard/services`,
-      label: "Services & Hours",
-      icon: Users,
-      gradient: "from-purple-500 to-blue-500",
+      href: `/gym/${slug}/admin/dashboard/bookings`,
+      label: "Manual Booking",
+      icon: UserPlus,
+      gradient: "from-cyan-500 to-blue-500",
     },
     {
       href: `/gym/${slug}`,
@@ -61,11 +60,11 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
         <div>
            <div className="flex items-center gap-2 mb-1">
              <h2 className="text-lg bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
-               Staff Dashboard
+               Admin Dashboard
              </h2>
              <Sparkles className="h-4 w-4 text-orange-400" />
            </div>
-           <p className="text-sm text-gray-400">FitBook Gym Management</p>
+           <p className="text-sm text-gray-400">Appointor Management</p>
         </div>
         {/* Close Button for Mobile */}
         <button onClick={() => setIsOpen(false)} className="md:hidden text-gray-400 hover:text-white">
@@ -117,7 +116,7 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
 
       <div className="p-4 bg-gradient-to-r from-orange-500/10 to-pink-500/10 border-t border-orange-500/20">
         <p className="text-xs text-gray-400 text-center">
-          Manage your gym with ease ✨
+          Manage your business with ease ✨
         </p>
       </div>
     </div>
@@ -129,7 +128,7 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 border-b border-gray-800 p-4 flex items-center justify-between">
          <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-orange-400" />
-            <span className="text-white font-bold">FitBook Admin</span>
+            <span className="text-white font-bold">Appointor Admin</span>
          </div>
          <button onClick={() => setIsOpen(true)} className="text-white p-2">
             <Menu className="h-6 w-6" />

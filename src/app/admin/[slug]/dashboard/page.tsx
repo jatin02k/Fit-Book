@@ -77,8 +77,8 @@ export default async function AdminDashboardPage() {
     <div className="min-h-screen bg-gray-100">
       <div className="py-10">
         <header>
-          <div className="max-w-7xl mx-auto px-10 sm:px-10 lg:px-10">
-            <h1 className="px-55 text-3xl font-bold leading-tight text-gray-900">
+          <div className="max-w-7xl mx-auto px-10 sm:px-10 lg:px-10 underline">
+            <h1 className="px-55 text-3xl font-bold leading-tight bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
               Admin Dashboard for {org.name}
             </h1>
           </div>

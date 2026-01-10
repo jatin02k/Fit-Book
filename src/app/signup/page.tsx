@@ -175,18 +175,18 @@ export default function SignupPage() {
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-2 mb-8">
              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
-                <span className="font-bold text-white">F</span>
+                <span className="font-bold text-white">A</span>
              </div>
-             <span className="text-2xl font-bold tracking-tight">FitBook</span>
+             <span className="text-2xl font-bold tracking-tight">Appointor</span>
           </Link>
           <h1 className="text-5xl font-extrabold tracking-tight mb-6 leading-tight">
             Manage your <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">
-              fitness empire
+              business empire
             </span>
           </h1>
           <p className="text-lg text-gray-400 max-w-md">
-             Join thousands of gym owners who trust FitBook to automate bookings, payments, and member management.
+             Join thousands of business owners who trust Appointor to automate bookings, payments, and member management.
           </p>
         </div>
 
@@ -198,7 +198,7 @@ export default function SignupPage() {
         <div className="relative z-10">
            <blockquote className="space-y-2">
               <p className="text-lg font-medium">
-                &ldquo;FitBook transformed how we run our studio. The booking experience is flawless for our clients.&rdquo;
+                &ldquo;Appointor transformed how we run our studio. The booking experience is flawless for our clients.&rdquo;
               </p>
               <footer className="text-sm text-gray-500">
                 — Sarah Jenkins, Founder of CoreFlow Yoga
@@ -212,7 +212,7 @@ export default function SignupPage() {
         <div className="mx-auto w-full max-w-lg lg:max-w-2xl">
           <div className="lg:hidden mb-4 text-center">
              <Link href="/" className="inline-flex items-center gap-2">
-                 <span className="text-2xl font-bold tracking-tight text-gray-900">FitBook</span>
+                 <span className="text-2xl font-bold tracking-tight text-gray-900">Appointor</span>
              </Link>
           </div>
 
@@ -221,7 +221,7 @@ export default function SignupPage() {
               Create account
             </h2>
             <p className="mt-1 text-sm text-gray-600">
-              Start your 14-day free trial. {" "}
+              Start your 7-day free trial. {" "}
               <Link href="/admin/login" className="font-medium text-orange-600 hover:text-orange-500">
                 Already have an account?
               </Link>
@@ -288,7 +288,7 @@ export default function SignupPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                       <Label htmlFor="orgName" className="text-gray-700 text-xs uppercase font-semibold">Gym Name</Label>
+                       <Label htmlFor="orgName" className="text-gray-700 text-xs uppercase font-semibold">Business Name</Label>
                        <Input
                           id="orgName"
                           name="orgName"

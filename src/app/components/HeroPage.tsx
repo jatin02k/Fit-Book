@@ -61,7 +61,7 @@ export function HeroPage() {
             <h2 className="text-3xl md:text-4xl text-black mb-4">
               Why Choose{" "}
               <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
-                FitBook
+                Appointor
               </span>
               ?
             </h2>

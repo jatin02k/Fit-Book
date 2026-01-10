@@ -64,7 +64,7 @@ export async function PATCH(request: Request) {
   await Promise.all([
     sendEmail({
       to: appointment.email,
-      subject: "✅ Appointment Confirmed - FitBook",
+      subject: "✅ Appointment Confirmed - Appointor",
       html: customerHtml,
     }),
     sendEmail({

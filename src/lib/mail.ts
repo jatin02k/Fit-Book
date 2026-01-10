@@ -11,7 +11,7 @@ export async function sendEmail({ to, subject, html }: { to: string; subject: st
   });
 
   const mailOptions = {
-  from: `"FitBook" <${process.env.GMAIL_USER}>`,
+  from: `"Appointor" <${process.env.GMAIL_USER}>`,
   to: to,
   subject: subject,
   html: html, // Ensure no JSON.stringify(html) or similar here
