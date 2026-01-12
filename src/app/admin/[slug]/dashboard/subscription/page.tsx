@@ -6,6 +6,53 @@ import { Sparkles, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import Script from 'next/script';
 import { useRouter } from 'next/navigation';
 
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_subscription_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayError {
+  error: {
+    description: string;
+    code: string;
+    source: string;
+    step: string;
+    reason: string;
+    metadata: Record<string, unknown>;
+  };
+}
+
+interface RazorpayOptions {
+  key: string;
+  subscription_id: string;
+  name: string;
+  description: string;
+  handler: (response: RazorpayResponse) => void;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  theme: {
+    color: string;
+  };
+  modal?: {
+    ondismiss: () => void;
+  };
+}
+
+interface RazorpayInstance {
+  open: () => void;
+  on: (event: string, callback: (response: RazorpayError) => void) => void;
+}
+
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
+  }
+}
+
 interface SubscriptionPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -57,12 +104,13 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
         return;
       }
 
-      const options = {
+      const options: RazorpayOptions = {
         key: data.key_id,
         subscription_id: data.subscription_id,
         name: "Appointor Premium",
         description: "Monthly Subscription",
-        handler: async function (response: any) {
+        handler: async function (response: RazorpayResponse) {
+             console.log("Payment successful", response);
              // Payment successful
              // We can optimistically set status or reload
              setStatus('active');
@@ -84,8 +132,8 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
         }
       };
 
-      const rzp1 = new (window as any).Razorpay(options);
-      rzp1.on('payment.failed', function (response: any){
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response: RazorpayError){
               alert(response.error.description);
               setProcessing(false);
       });
