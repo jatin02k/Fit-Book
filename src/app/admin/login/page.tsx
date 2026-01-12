@@ -42,9 +42,11 @@ export default function AdminLoginPage() {
               
               if (error || !org) {
                   console.error("No Organization found for user:", user.id);
+                  // Sign out so that on next refresh, we don't hit this error lookup again
+                  await supabase.auth.signOut();
                   setError("No Business account found for this user. Please contact support.");
                   setIsCheckingSession(false);
-                  setIsLoading(false); // <--- Added reset here
+                  setIsLoading(false); 
                   return;
               }
 
