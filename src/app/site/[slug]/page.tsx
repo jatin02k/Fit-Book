@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
-import { ArrowRight, MapPin, Clock, Phone, Sparkles, Zap, CalendarCheck, CreditCard, UserCheck, Mail, MousePointerClick, CheckCircle2 } from "lucide-react";
+import { MapPin, Clock, Phone, Sparkles, Zap, CalendarCheck, CreditCard, UserCheck, Mail, MousePointerClick } from "lucide-react";
+import Image from "next/image";
 
 interface TenantPageProps {
   params: Promise<{
@@ -47,10 +48,12 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/60 z-10"></div>
           {/* Generic Service Environment */}
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2071&auto=format&fit=crop"
             alt="Service Background"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            priority
           />
         </div>
 

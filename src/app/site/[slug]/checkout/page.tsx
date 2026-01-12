@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import z from "zod";
+import Image from "next/image";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -122,10 +123,12 @@ export default async function CheckoutPage({
               <div className="mb-4 p-4 bg-gray-50 border rounded-lg flex flex-col items-center text-center">
                  <p className="text-sm font-semibold text-gray-700 mb-2">Scan to Pay</p>
                  <div className="bg-white p-2 rounded-lg shadow-sm w-48 h-48 mb-2">
-                    <img 
+                    <Image 
                       src={qrCodeUrl} 
                       alt="Payment QR Code" 
-                      className="w-full h-full object-contain"
+                      className="object-contain"
+                      fill
+                      unoptimized
                     />
                  </div>
                  <p className="text-xs text-gray-500">
