@@ -44,6 +44,7 @@ export default function AdminLoginPage() {
                   console.error("No Organization found for user:", user.id);
                   setError("No Business account found for this user. Please contact support.");
                   setIsCheckingSession(false);
+                  setIsLoading(false); // <--- Added reset here
                   return;
               }
 
