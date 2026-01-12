@@ -136,6 +136,8 @@ export type Database = {
           email: string | null
           phone: string | null
           qr_code_url: string | null
+          subscription_id: string | null
+          subscription_status: string | null
         }
         Insert: {
           created_at?: string | null
@@ -148,6 +150,8 @@ export type Database = {
           email?: string | null
           phone?: string | null
           qr_code_url?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
         }
         Update: {
           created_at?: string | null
@@ -160,6 +164,8 @@ export type Database = {
           email?: string | null
           phone?: string | null
           qr_code_url?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
         }
         Relationships: []
       }

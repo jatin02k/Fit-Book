@@ -92,7 +92,7 @@ async function createManualBooking(formData: FormData) {
     }
 
     // Revalidate the Path-Based Dashboard URL
-    revalidatePath(`/gym/${org.slug}/admin/dashboard`); 
+    revalidatePath(`/app/${org.slug}/admin/dashboard`); 
     return { success: true, cancellationUuid };
 }
 
@@ -105,11 +105,13 @@ export default async function CreateBookingPage() {
 
     const { data: org } = await supabase
         .from("organizations")
-        .select("id")
+        .select("id, slug, subscription_status")
         .eq("owner_id", user.id)
         .single();
     
     if (!org) return <div>Error: Organization not found</div>;
+
+    const isSubscribed = org.subscription_status === 'active';
 
     // 2. Fetch Services (Secure)
     const { data: servicesRaw } = await supabase
@@ -126,14 +128,6 @@ export default async function CreateBookingPage() {
     }));
 
     // 3. Fetch Business Hours (Secure)
-    // Assuming business_hours table exists and has organization_id. 
-    // If not, we might default or skip. Checking previous code implications... 
-    // Wait, the table might be `business_hours` linked to org?
-    // Let's assume standard implementation or fetch from where it was before.
-    // Previous code imported `getBusinessHours`. Steps 639/644 didn't show Business Hours API.
-    // Let's assume standard default hours if fetch fails or just empty for now to unblock.
-    // Actually, I'll try to fetch it securely.
-    
     const { data: businessHoursRaw } = await supabase
         .from('business_hours')
         .select('*')
@@ -150,8 +144,21 @@ export default async function CreateBookingPage() {
         <div className="flex flex-col min-h-screen">
         <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0">
             <h1 className="text-3xl font-bold text-gray-900 mb-8">Manual Booking</h1>
+            
+             {!isSubscribed && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between shadow-sm">
+                <div className="flex items-center gap-2">
+                    <span className="font-bold">Subscription Inactive:</span>
+                    <span>You must be subscribed to create manual bookings.</span>
+                </div>
+                <a href={`/app/${org.slug}/admin/dashboard/subscription`} className="text-sm font-semibold bg-red-100 hover:bg-red-200 px-4 py-2 rounded-md transition-colors">
+                    Subscribe Now
+                </a>
+              </div>
+            )}
+
         </div>
-        <div className="flex-1">
+        <div className={`flex-1 ${!isSubscribed ? 'opacity-30 pointer-events-none blur-[1px]' : ''}`}>
             <div className="bg-white p-6 rounded-lg shadow">
                 <ManualBookingForm
                     services={services} 

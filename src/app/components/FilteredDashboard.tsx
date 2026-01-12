@@ -31,7 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { List, User, Clock, X, Filter, CalendarIcon } from "lucide-react";
+import { List, User, Clock, X, Filter, CalendarIcon, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
@@ -280,20 +280,20 @@ export function FilteredDashboard({
         {/* Filters and Table */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <CardTitle className="flex items-center gap-2 self-start md:self-center">
                 <List className="h-5 w-5" />
                 All Appointments
               </CardTitle>
               {/* Filter Selects */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-gray-500" />
+              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  <Filter className="h-4 w-4 text-gray-500 flex-shrink-0" />
                   <Select
                     value={serviceFilter}
                     onValueChange={setServiceFilter}
                   >
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="w-full md:w-40">
                       <SelectValue placeholder="Filter by service" />
                     </SelectTrigger>
                     <SelectContent>
@@ -307,7 +307,7 @@ export function FilteredDashboard({
                   </Select>
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full md:w-40">
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -317,14 +317,14 @@ export function FilteredDashboard({
                   </SelectContent>
                 </Select>
                 {/* Date Range Filter */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full md:w-auto">
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         id="date"
                         variant={"outline"}
                         className={cn(
-                          "w-[250px] justify-start text-left font-normal",
+                          "w-full md:w-[250px] justify-start text-left font-normal",
                           !dateRange && "text-muted-foreground"
                         )}
                       >
@@ -377,6 +377,94 @@ export function FilteredDashboard({
             </div>
           </CardHeader>
           <CardContent>
+            {/* Mobile View: Cards */}
+            <div className="md:hidden space-y-4">
+               {sortedAppointments.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                     No appointments found.
+                  </div>
+               ) : (
+                  sortedAppointments.map((appointment) => {
+                     const { date, time } = formatDateTime(appointment.start_time);
+                     return (
+                        <div key={appointment.id} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm space-y-3">
+                           <div className="flex justify-between items-start">
+                              <div>
+                                 <p className="font-semibold text-black">{appointment.customerName}</p>
+                                 <p className="text-sm text-gray-500">{appointment.serviceName}</p>
+                              </div>
+                              <Badge className={getStatusColor(appointment.status)}>
+                                 {appointment.status}
+                              </Badge>
+                           </div>
+                           
+                           <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <CalendarIcon className="w-4 h-4" />
+                              <span>{date} at {time}</span>
+                           </div>
+                           
+                           <div className="text-sm text-gray-600 space-y-1 pt-2 border-t border-gray-100">
+                              <div className="flex items-center gap-2">
+                                <Mail className="w-3 h-3" /> {appointment.email}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <User className="w-3 h-3" /> {appointment.phone_number}
+                              </div>
+                           </div>
+
+                           <div className="pt-2 flex justify-end gap-2">
+                              {/* Mobile Actions */}
+                              <Button 
+                                 size="sm" 
+                                 variant="outline"
+                                 onClick={() => handleToggleStatus(appointment.id, appointment.status)}
+                              >
+                                 Toggle Status
+                              </Button>
+                              
+                               <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                              >
+                                Cancel
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Cancel Appointment
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to cancel the
+                                  appointment for {appointment.customerName}?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                  Keep
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() =>
+                                    handleCancelAppointment(appointment.id)
+                                  }
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  Cancel
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                           </div>
+                        </div>
+                     );
+                  })
+               )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -503,6 +591,7 @@ export function FilteredDashboard({
                 )}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

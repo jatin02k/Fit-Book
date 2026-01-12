@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
                   const host = window.location.host;
 
                   // Path-Based Redirection
-                  const targetPath = `/gym/${org.slug}/admin/dashboard`;
+                  const targetPath = `/app/${org.slug}/admin/dashboard`;
                   const targetUrl = `${protocol}//${host}${targetPath}`;
 
                   console.log("Redirecting to Tenant Dashboard:", targetUrl);

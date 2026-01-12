@@ -10,11 +10,13 @@ export default async function AppointmentsListPage() {
 
   const { data: org } = await supabase
     .from("organizations")
-    .select("id, slug")
+    .select("id, slug, subscription_status")
     .eq("owner_id", user.id)
     .single();
 
   if (!org) return <div>Organization not found</div>;
+
+  const isSubscribed = org.subscription_status === 'active';
 
   const { data: rawAppointments, error } = await supabase
     .from("appointments")
@@ -30,7 +32,6 @@ export default async function AppointmentsListPage() {
        return <div>Error loading appointments</div>;
   }
 
-  // Transform data to match FilteredDashboardProps
   // Transform data to match FilteredDashboardProps
   interface RawAppointment {
     id: string;
@@ -62,6 +63,24 @@ export default async function AppointmentsListPage() {
   }));
 
   return (
-      <FilteredDashboard appointmentsList={appointmentsInput} />
+    <div className="min-h-screen">
+      <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0">
+         {!isSubscribed && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2">
+                <span className="font-bold">Subscription Inactive:</span>
+                <span>You must be subscribed to view specific appointment details.</span>
+            </div>
+            <a href={`/app/${org.slug}/admin/dashboard/subscription`} className="text-sm font-semibold bg-red-100 hover:bg-red-200 px-4 py-2 rounded-md transition-colors">
+                Subscribe Now
+            </a>
+          </div>
+        )}
+      </div>
+              
+        <div className={!isSubscribed ? 'opacity-30 pointer-events-none blur-[1px]' : ''}>
+           <FilteredDashboard appointmentsList={appointmentsInput} />
+        </div>
+    </div>
   );
 }

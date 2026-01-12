@@ -66,9 +66,17 @@ export async function POST(request: Request) {
 
     const { data: org } = await supabase
         .from("organizations")
-        .select("id")
+        .select("id, subscription_status")
         .eq("owner_id", user.id)
         .single();
+    
+    if (!org) {
+        return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+    }
+
+    if (org.subscription_status !== 'active') {
+        return NextResponse.json({ error: "Subscription inactive. Please upgrade to update business hours." }, { status: 403 });
+    }
 
     if (!org) {
         return NextResponse.json({ error: "Organization not found" }, { status: 404 });

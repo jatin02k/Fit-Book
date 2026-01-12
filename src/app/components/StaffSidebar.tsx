@@ -22,31 +22,43 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
 
   const staffNavItems = [
     {
-      href: `/gym/${slug}/admin/dashboard`,
+      href: `/app/${slug}/admin/dashboard`,
       label: "Appointments Calendar",
       icon: Calendar,
       gradient: "from-orange-500 to-pink-500",
     },
     {
-      href: `/gym/${slug}/admin/dashboard/services`,
+      href: `/app/${slug}/admin/dashboard/services`,
       label: "Services & Hours",
       icon: Users,
       gradient: "from-purple-500 to-blue-500",
     },
     {
-      href: `/gym/${slug}/admin/dashboard/appointments`,
+      href: `/app/${slug}/admin/dashboard/appointments`,
       label: "Upcoming Appointments",
       icon: List,
       gradient: "from-green-500 to-emerald-500",
     },
     {
-      href: `/gym/${slug}/admin/dashboard/bookings`,
+      href: `/app/${slug}/admin/dashboard/bookings`,
       label: "Manual Booking",
       icon: UserPlus,
       gradient: "from-cyan-500 to-blue-500",
     },
     {
-      href: `/gym/${slug}`,
+      href: `/app/${slug}/admin/dashboard/subscription`,
+      label: "Subscription",
+      icon: Sparkles,
+      gradient: "from-yellow-400 to-orange-500",
+    },
+    {
+       href: `/app/${slug}/admin/dashboard/profile`,
+       label: "Profile",
+       icon: UserPlus, // Or User if imported
+       gradient: "from-indigo-500 to-purple-500",
+    },
+    {
+      href: `/app/${slug}`,
       label: "Back to Customer Site",
       icon: Home,
       gradient: "from-gray-600 to-gray-800",

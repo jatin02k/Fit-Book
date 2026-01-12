@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
   const { data: upcoming } = await supabase
     .from('appointments')
-    .select('*, services(name)')
+    .select('*, services(name), organizations(name, email)') // Fetch Org details
     .eq('status', 'confirmed')
     .eq('reminder_sent', false) // Don't double-send
     .gte('start_time', startWindow)
@@ -37,7 +37,10 @@ export async function GET(request: Request) {
         <h1>See you soon, ${appt.customer_name}!</h1>
         <p>This is a friendly reminder that your <strong>${appt.services.name}</strong> starts in about 30 minutes.</p>
         <p><strong>Time:</strong> ${new Date(appt.start_time).toLocaleTimeString('en-IN')}</p>
-      `// Ensure lib/mail.ts uses the 'html' field
+        <br/>
+        <p>Regards,<br/>${appt.organizations.name}</p>
+      `,
+      replyTo: appt.organizations.email // <--- Customer replies to Business
     });
 
     await supabase.from('appointments').update({ reminder_sent: true }).eq('id', appt.id);

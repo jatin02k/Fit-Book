@@ -13,8 +13,8 @@ export default function Navigation() {
   const pathname = usePathname(); // Get the current path
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Extract the gym base path (e.g., "/gym/iron-gym") if present
-  const match = pathname.match(/^\/gym\/[^/]+/);
+  // Extract the app base path (e.g., "/app/iron-gym") if present
+  const match = pathname.match(/^\/app\/[^/]+/);
   const basePath = match ? match[0] : '';
 
   // Map your links to your folder structure

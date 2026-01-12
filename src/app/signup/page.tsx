@@ -108,7 +108,7 @@ export default function SignupPage() {
            console.log("User and Org already exist. Redirecting...");
            const protocol = window.location.protocol;
            const host = window.location.host;
-           const targetUrl = `${protocol}//${host}/gym/${existingOrg.slug}/admin/dashboard`;
+           const targetUrl = `${protocol}//${host}/app/${existingOrg.slug}/admin/dashboard`;
            window.location.href = targetUrl;
            return;
       }
@@ -146,8 +146,8 @@ export default function SignupPage() {
       const host = window.location.host; // e.g. fitbook.vercel.app or localhost:3000
       
       // Path-Based Redirection
-      // targetUrl = protocol + // + host + /gym/ + slug + /admin/dashboard
-      const targetUrl = `${protocol}//${host}/gym/${formData.orgSlug}/admin/dashboard`;
+      // targetUrl = protocol + // + host + /app/ + slug + /admin/dashboard
+      const targetUrl = `${protocol}//${host}/app/${formData.orgSlug}/admin/dashboard`;
       
       console.log("Signup Complete. Redirecting to:", targetUrl);
       window.location.href = targetUrl;

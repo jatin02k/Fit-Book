@@ -203,7 +203,7 @@ export function AvailabilitySelector({ serviceId, serviceName, slug }: Availabil
                                     </p>
                                 </div>
                                 <Link
-                                    href={`/gym/${slug}/checkout?serviceId=${serviceId}&date=${dateString}&time=${timeParam}`}
+                                    href={`/app/${slug}/checkout?serviceId=${serviceId}&date=${dateString}&time=${timeParam}`}
                                     className="ml-auto"
                                 >
                                     <Button

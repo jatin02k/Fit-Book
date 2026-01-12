@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     // 1. Get Service Duration & Organization ID
     const { data: service } = await supabase
       .from("services")
-      .select("*, organization_id")
+      .select("*, organizations(id, name, email)") // Fetch nested Organization
       .eq("id", validatedData.serviceId)
       .single();
 
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const { data: conflicts } = await supabase
       .from("appointments")
       .select("id")
-      .eq("organization_id", service.organization_id) 
+      .eq("organization_id", service.organizations.id) 
       .filter("start_time", "lt", end.toISOString())
       .filter("end_time", "gt", start.toISOString());
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       .from("appointments")
       .insert([{
         service_id: validatedData.serviceId,
-        organization_id: service.organization_id, // <--- CRITICAL FIX
+        organization_id: service.organizations.id, // <--- UPDATED: Accessing from joined table
         start_time: start.toISOString(),
         end_time: end.toISOString(),
         customer_name: validatedData.name,
@@ -84,19 +84,29 @@ try {
           paymentUrl: validatedData.paymentProofUrl, // The public URL from Supabase storage
         })
 
-  const customerEmailPromise = sendEmail({
+  const emailPromises = [];
+
+  // 1. Send to Customer
+  emailPromises.push(sendEmail({
     to: validatedData.email,
-    subject: "⏳ Appointment Request Received — Appointor",
+    subject: `⏳ Appointment Request Received — ${service.organizations.name}`,
     html: customerHtml,
-  });
+    replyTo: service.organizations.email || undefined,
+  }));
 
-  const adminEmailPromise = sendEmail({
-    to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!, // must exist in env
-    subject: `🔴New Pending Booking by ${validatedData.name} — Action Required`,
-    html:adminHtml,
-  });
+  // 2. Send to Admin (if email exists)
+  if (service.organizations.email) {
+    emailPromises.push(sendEmail({
+      to: service.organizations.email,
+      subject: `🔴 New Booking: ${validatedData.name} — ${service.name}`,
+      html: adminHtml,
+      replyTo: validatedData.email,
+    }));
+  } else {
+    console.warn(`Organization ${service.organizations.id} has no email, skipping admin notification.`);
+  }
 
-  await Promise.all([customerEmailPromise, adminEmailPromise]);
+  await Promise.all(emailPromises);
 } catch (emailError) {
   console.error("Email sending failed:", emailError);
 }

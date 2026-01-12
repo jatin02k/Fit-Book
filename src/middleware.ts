@@ -43,9 +43,9 @@ export async function middleware(request: NextRequest) {
 
   // 2. Auth Check (OPTIMIZED: Only run for Protected Routes)
   let user = null;
-  // Check for standard /admin paths OR path-based /gym/.../admin paths
+  // Check for standard /admin paths OR path-based /app/.../admin paths
   const isProtectedPath = request.nextUrl.pathname.startsWith('/admin') || 
-                          request.nextUrl.pathname.match(/^\/gym\/[^/]+\/admin/);
+                          request.nextUrl.pathname.match(/^\/app\/[^/]+\/admin/);
 
   if (isProtectedPath) {
       const { data: authData, error } = await supabase.auth.getUser();
@@ -61,18 +61,18 @@ export async function middleware(request: NextRequest) {
   }`;
 
   // PATH-BASED TENANCY LOGIC (For Single Domain / Vercel Free Tier)
-  // Format: domain.com/gym/[slug]/...
+  // Format: domain.com/app/[slug]/...
   
-  // Regex to detect /gym/[slug]
-  // Matches: /gym/iron-gym, /gym/iron-gym/admin, /gym/iron-gym/services
-  const gymMatch = request.nextUrl.pathname.match(/^\/gym\/([^/]+)(.*)/);
+  // Regex to detect /app/[slug]
+  // Matches: /app/iron-gym, /app/iron-gym/admin, /app/iron-gym/services
+  const gymMatch = request.nextUrl.pathname.match(/^\/app\/([^/]+)(.*)/);
 
   if (gymMatch) {
       const slug = gymMatch[1]; // e.g. "iron-gym"
       const remainingPath = gymMatch[2] || ''; // e.g. "/admin/dashboard" or ""
 
       // 1. Handle Admin Routes inside Gym Path
-      // URL: /gym/iron-gym/admin/dashboard -> Internal: /admin/iron-gym/dashboard
+      // URL: /app/iron-gym/admin/dashboard -> Internal: /admin/iron-gym/dashboard
       if (remainingPath.startsWith('/admin')) {
           // Check Auth for Admin Routes
           if (!remainingPath.startsWith('/admin/login') && !user) {
@@ -95,8 +95,8 @@ export async function middleware(request: NextRequest) {
       }
 
       // 2. Handle Public Site Routes inside Gym Path
-      // URL: /gym/iron-gym/services -> Internal: /site/iron-gym/services
-      // URL: /gym/iron-gym -> Internal: /site/iron-gym
+      // URL: /app/iron-gym/services -> Internal: /site/iron-gym/services
+      // URL: /app/iron-gym -> Internal: /site/iron-gym
       const searchParams = request.nextUrl.searchParams.toString();
       const queryString = searchParams.length > 0 ? `?${searchParams}` : '';
       return NextResponse.rewrite(new URL(`/site/${slug}${remainingPath}${queryString}`, request.url));
@@ -107,7 +107,7 @@ export async function middleware(request: NextRequest) {
   // / -> src/app/page.tsx
   // /admin/login -> src/app/admin/login/page.tsx
   
-  // Protect /admin routes if accessed directly with a slug (though strictly they should be via /gym/...)
+  // Protect /admin routes if accessed directly with a slug (though strictly they should be via /app/...)
   // If someone accesses /admin/iron-gym/dashboard directly, it might work if not rewritten?
   // Next.js file routing usually handles folders directly. 
   // But we want to ENFORCE /gym structure for consistency perhaps?

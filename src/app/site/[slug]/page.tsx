@@ -25,6 +25,21 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
     return notFound();
   }
 
+  // Feature Gating: Block access if subscription is inactive
+  if (org.subscription_status !== 'active') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
+        <div className="text-center max-w-md">
+          <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Bookings Unavailable</h1>
+          <p className="text-gray-600">
+            This business is currently unable to accept bookings. Please contact them directly.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* PREMIUM HERO SECTION */}
@@ -56,7 +71,7 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
           </p>
 
           <div className="mt-10">
-            <Link href={`/gym/${slug}/services`}>
+            <Link href={`/app/${slug}/services`}>
               <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 px-8 py-6 text-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105 border-0 rounded-xl">
                 <Zap className="mr-2 h-5 w-5" />
                 Book Now

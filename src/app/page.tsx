@@ -222,7 +222,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                       <p className="text-sm text-gray-400">Email Us</p>
-                      <p className="font-semibold text-white">hello@appointor.com</p>
+                      <p className="font-semibold text-white">jatin02kr@gmail.com</p>
                   </div>
               </div>
               <div className="flex items-center gap-4">
@@ -231,7 +231,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                       <p className="text-sm text-gray-400">Call Us</p>
-                      <p className="font-semibold text-white">+1 (555) 987-6543</p>
+                      <p className="font-semibold text-white">+91 9650584722</p>
                   </div>
               </div>
                <div className="flex items-center gap-4">
@@ -240,7 +240,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                       <p className="text-sm text-gray-400">Support Hours</p>
-                      <p className="font-semibold text-white">Mon-Fri, 9am - 6pm EST</p>
+                      <p className="font-semibold text-white">Mon-Fri, 9am - 6pm  IST</p>
                   </div>
               </div>
           </div>

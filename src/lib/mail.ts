@@ -1,7 +1,15 @@
 // lib/mail.ts
 import nodemailer from "nodemailer";
 
-export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+interface SendEmailParams {
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string; // Add replyTo
+  cc?: string;      // Add cc just in case
+}
+
+export async function sendEmail({ to, subject, html, replyTo, cc }: SendEmailParams) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -11,10 +19,12 @@ export async function sendEmail({ to, subject, html }: { to: string; subject: st
   });
 
   const mailOptions = {
-  from: `"Appointor" <${process.env.GMAIL_USER}>`,
-  to: to,
-  subject: subject,
-  html: html, // Ensure no JSON.stringify(html) or similar here
-};
+    from: `"Appointor System" <${process.env.GMAIL_USER}>`, // System keeps sending, but reply-to handles the flow
+    to: to,
+    cc: cc,
+    replyTo: replyTo, // <--- Key change
+    subject: subject,
+    html: html,
+  };
   return await transporter.sendMail(mailOptions);
 }

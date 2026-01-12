@@ -137,7 +137,7 @@ export default function BookingForm({
 
       toast.success("Booking submitted!");
       router.push(
-        `/gym/${slug}/checkout/booking-summary/${data.cancellationLinkUuid}`
+        `/app/${slug}/checkout/booking-summary/${data.cancellationLinkUuid}`
       );
     } catch (err: unknown) {
       console.error(err);

@@ -76,32 +76,29 @@ export default async function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="py-10">
-        <header>
-          <div className="max-w-7xl mx-auto px-10 sm:px-10 lg:px-10 underline">
-            <h1 className="px-55 text-3xl font-bold leading-tight bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
-              Admin Dashboard for {org.name}
-            </h1>
+        <header className="mb-8">
+          <div className="max-w-7xl mx-auto px-34 sm:px-50 lg:px-50">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                    Hello, {org.name} 👋
+                    </h1>
+                    <p className="text-gray-500 mt-1">Here is what&apos;s happening with your business today.</p>
+                </div>
+                <div className="text-right hidden md:block">
+                     <p className="text-sm font-medium text-gray-500">
+                        {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                     </p>
+                </div>
+            </div>
+            {/* Divider */}
+            <div className="h-px bg-gray-200 mt-6 md:ml-50 lg:ml-50" /> 
           </div>
         </header>
-        <main>
-          <div className="max-w-7xl mx-auto">
-            <div className="px-4 py-8 sm:px-0">
-              
-                <CalendarComponent appointments={appointments} />
-              
-            </div>
-          </div>
+        <main className="flex-1">
+             {/* The CalendarComponent handles its own layout and container centering */}
+             <CalendarComponent appointments={appointments} />
         </main>
-
-        <div className="max-w-4xl mx-auto px-16 md:px-16 pb-12">
-           <BusinessDetailsForm 
-              initialName={org.name || ""} 
-              initialPhone={org.phone || ""} 
-              initialQrCode={org.qr_code_url}
-              orgId={org.id}
-              slug={org.slug}
-           />
-        </div>
       </div>
     </div>
   );

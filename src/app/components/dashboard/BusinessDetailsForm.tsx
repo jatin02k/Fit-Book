@@ -30,7 +30,7 @@ export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, 
   const router = useRouter();
   const supabase = createClient();
 
-  const bookingLink = typeof window !== 'undefined' ? `${window.location.origin}/gym/${slug}` : `/gym/${slug}`;
+  const bookingLink = typeof window !== 'undefined' ? `${window.location.origin}/app/${slug}` : `/app/${slug}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(bookingLink);
