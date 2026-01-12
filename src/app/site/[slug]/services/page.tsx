@@ -86,28 +86,19 @@ export default async function ServiceSelectionPage({ params }: ServicePageProps)
               key={service.id}
               className={`overflow-hidden border-2 hover:border-transparent transition-all duration-300 hover:shadow-xl ${gradientClasses[index % gradientClasses.length].shadow} group`}
             >
-              <div className="aspect-video relative overflow-hidden">
-                 {/* Note: In real setup, images should be dynamic per service or placeholders */}
-                <ImageWithFallback
-                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/fitbook/image${index % 4}.jpeg`} 
-                  alt={service.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div
-                  className={`absolute top-4 right-4 bg-gradient-to-r ${gradientClasses[index % gradientClasses.length].gradient} text-white px-3 py-1 rounded-full text-sm shadow-lg`}
-                >
-                  ${service.price}/session
-                </div>
-              </div>
-
               <CardHeader>
-                <div className="mb-2">
+                <div className="mb-2 relative overflow-hidden">
                   <CardTitle className="text-xl text-black mb-1">
                     {service.name}
                   </CardTitle>
                   <div className="text-sm text-gray-500">
-                    {service.duration_minutes} mins
+                    <b>{service.duration_minutes} mins</b>
                   </div>
+                  <div
+                  className={`absolute top-4 right-4 bg-gradient-to-r ${gradientClasses[index % gradientClasses.length].gradient} text-white px-3 py-1 rounded-full text-sm shadow-lg`}
+                >
+                  ₹{service.price}/session
+                </div>
                 </div>
                 <CardDescription className="text-gray-600">
                   {service.description}

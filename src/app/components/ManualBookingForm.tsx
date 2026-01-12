@@ -218,8 +218,8 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
     const unavailableSlots = getUnavailableSlots();
 
     return (
-        <div className="ml-64 min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
+        <div className="w-full">
+      <div className="max-w-6xl mx-auto p-10">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -267,7 +267,7 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
                   <SelectContent>
                     {services.map((service) => (
                       <SelectItem key={service.id} value={service.id}>
-                        {service.name} - {service.price}
+                        {service.name} - ₹{service.price}
                       </SelectItem>
                     ))}
                   </SelectContent>

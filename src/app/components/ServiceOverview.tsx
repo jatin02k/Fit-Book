@@ -295,7 +295,7 @@ export default function ServiceOverview({
                       id="new-price"
                       value={newPrice}
                       onChange={(e) => setNewPrice(e.target.value)}
-                      placeholder="e.g., $80"
+                      placeholder="e.g., Rs. 80"
                     />
                   </div>
 
@@ -518,7 +518,7 @@ export default function ServiceOverview({
                   <br />
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <span>⏱️ {service.duration_minutes}min</span>
-                    <span>💰 ${String(service.price)}</span>
+                    <span>💰 ₹{String(service.price)}</span>
                   </div>
                   <br />
                   

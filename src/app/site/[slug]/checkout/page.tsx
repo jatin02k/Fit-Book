@@ -114,7 +114,7 @@ export default async function CheckoutPage({
                 <div className="flex justify-between border-t pt-3">
                   <span className="text-black">Total:</span>
                   <span className="text-xl text-black">
-                    ${serviceData.price}
+                    ₹{serviceData.price}
                   </span>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export default async function CheckoutPage({
             {qrCodeUrl && (
               <div className="mb-4 p-4 bg-gray-50 border rounded-lg flex flex-col items-center text-center">
                  <p className="text-sm font-semibold text-gray-700 mb-2">Scan to Pay</p>
-                 <div className="bg-white p-2 rounded-lg shadow-sm w-48 h-48 mb-2">
+                 <div className="relative bg-white p-2 rounded-lg shadow-sm w-48 h-48 mb-2">
                     <Image 
                       src={qrCodeUrl} 
                       alt="Payment QR Code" 

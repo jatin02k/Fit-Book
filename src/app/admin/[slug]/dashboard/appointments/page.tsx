@@ -62,6 +62,14 @@ export default async function AppointmentsListPage() {
       serviceDuration: String((Array.isArray(appt.services) ? appt.services[0]?.duration_minutes : appt.services?.duration_minutes) || 0)
   }));
 
+  // Fetch services for the filter dropdown
+  const { data: servicesData } = await supabase
+    .from("services")
+    .select("name")
+    .eq("organization_id", org.id);
+
+  const uniqueServices = Array.from(new Set(servicesData?.map(s => s.name) || []));
+
   return (
     <div className="min-h-screen">
       <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0">
@@ -79,7 +87,7 @@ export default async function AppointmentsListPage() {
       </div>
               
         <div className={!isSubscribed ? 'opacity-30 pointer-events-none blur-[1px]' : ''}>
-           <FilteredDashboard appointmentsList={appointmentsInput} />
+           <FilteredDashboard appointmentsList={appointmentsInput} services={uniqueServices} />
         </div>
     </div>
   );

@@ -141,33 +141,35 @@ export default async function CreateBookingPage() {
     }));
 
     return (
-        <div className="flex flex-col min-h-screen">
-        <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Manual Booking</h1>
-            
-             {!isSubscribed && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between shadow-sm">
-                <div className="flex items-center gap-2">
-                    <span className="font-bold">Subscription Inactive:</span>
-                    <span>You must be subscribed to create manual bookings.</span>
-                </div>
-                <a href={`/app/${org.slug}/admin/dashboard/subscription`} className="text-sm font-semibold bg-red-100 hover:bg-red-200 px-4 py-2 rounded-md transition-colors">
-                    Subscribe Now
-                </a>
-              </div>
-            )}
 
-        </div>
-        <div className={`flex-1 ${!isSubscribed ? 'opacity-30 pointer-events-none blur-[1px]' : ''}`}>
-            <div className="bg-white p-6 rounded-lg shadow">
-                <ManualBookingForm
-                    services={services} 
-                    businessHours={businessHours}
-                    createBookingAction={createManualBooking} 
-                    fetchSlotsAction={fetchBookedSlots}
-                />
+        <div className="min-h-screen bg-gray-50">
+            <div className="ml-0 md:ml-64 transition-all duration-300 ease-in-out">
+                <div className="max-w-6xl mx-auto">
+                    {/* <h1 className="text-3xl font-bold text-gray-900 mb-8">Manual Booking</h1> */}
+                    
+                    {!isSubscribed && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex flex-col sm:flex-row items-center justify-between shadow-sm gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="font-bold">Subscription Inactive:</span>
+                            <span>You must be subscribed to create manual bookings.</span>
+                        </div>
+                        <a href={`/app/${org.slug}/admin/dashboard/subscription`} className="text-sm font-semibold bg-red-100 hover:bg-red-200 px-4 py-2 rounded-md transition-colors whitespace-nowrap">
+                            Subscribe Now
+                        </a>
+                    </div>
+                    )}
+
+                    <div className={`transition-opacity duration-200 ${!isSubscribed ? 'opacity-30 pointer-events-none blur-[1px]' : ''}`}>
+                        <ManualBookingForm
+                            services={services} 
+                            businessHours={businessHours}
+                            createBookingAction={createManualBooking} 
+                            fetchSlotsAction={fetchBookedSlots}
+                        />
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
     );
+
 }

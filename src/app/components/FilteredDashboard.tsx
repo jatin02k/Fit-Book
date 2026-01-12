@@ -41,6 +41,7 @@ import { AppointmentList } from "@/lib/fetchAdminBookings";
 
 interface FilteredDashboardProps {
   appointmentsList: AppointmentList[];
+  services: string[];
 }
 
 const formatDateTime = (startTime: string) => {
@@ -61,16 +62,10 @@ const formatDateTime = (startTime: string) => {
 };
 
 const getServiceColor = (service: string) => {
-  switch (service) {
-    case "Personal Training":
-      return "bg-blue-100 text-blue-800";
-    case "MMA":
-      return "bg-red-100 text-red-800";
-    case "Yoga":
-      return "bg-green-100 text-green-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
+  // Simple hashing or cyclical selection for consistent colors could be better,
+  // but for now, let's keep it simple or default to gray/blue.
+  // We can't easily switch on dynamic strings without a known list.
+  return "bg-blue-100 text-blue-800";
 };
 
 const getStatusColor = (status: string) => {
@@ -88,6 +83,7 @@ const getStatusColor = (status: string) => {
 
 export function FilteredDashboard({
   appointmentsList,
+  services,
 }: FilteredDashboardProps) {
   const [appointments, setAppointments] = useState(appointmentsList);
   const [serviceFilter, setServiceFilter] = useState<string>("all");
@@ -298,11 +294,11 @@ export function FilteredDashboard({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Services</SelectItem>
-                      <SelectItem value="Personal Training">
-                        Personal Training
-                      </SelectItem>
-                      <SelectItem value="MMA">MMA</SelectItem>
-                      <SelectItem value="Yoga">Yoga</SelectItem>
+                      {services.map((service) => (
+                        <SelectItem key={service} value={service}>
+                          {service}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -412,7 +408,7 @@ export function FilteredDashboard({
                               </div>
                            </div>
 
-                           <div className="pt-2 flex justify-end gap-2">
+                           <div className="pt-2 flex justify-end gap-2 flex-wrap">
                               {/* Mobile Actions */}
                               <Button 
                                  size="sm" 
@@ -425,8 +421,8 @@ export function FilteredDashboard({
                                <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button
-                                variant="destructive"
                                 size="sm"
+                                className="bg-red-600 text-white hover:bg-red-700"
                               >
                                 Cancel
                               </Button>
