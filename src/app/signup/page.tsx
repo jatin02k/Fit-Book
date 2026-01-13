@@ -7,7 +7,8 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2, AlertCircle, Home } from "lucide-react";
+import { AlertCircle, Home } from "lucide-react";
+import Image from "next/image";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -174,9 +175,7 @@ export default function SignupPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-gray-900 relative overflow-hidden flex-col justify-between p-12 text-white">
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-2 mb-8">
-             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
-                <span className="font-bold text-white">A</span>
-             </div>
+                        <Image src="/logo.png" alt="Appointor" width={24} height={24} className="object-contain" />
              <span className="text-2xl font-bold tracking-tight">Appointor</span>
           </Link>
           <h1 className="text-5xl font-extrabold tracking-tight mb-6 leading-tight">
