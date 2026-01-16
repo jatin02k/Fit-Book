@@ -128,7 +128,7 @@ export default function SignupPage() {
           type: "gym", // Default type
           email: formData.email,
           phone: formData.orgPhone,
-          subscription_status: "trial",
+          subscription_status: "active",
         },
       ]);
 
@@ -157,6 +157,9 @@ export default function SignupPage() {
       console.error(err);
       if (err instanceof Error) {
         setError(err.message);
+      } else if (typeof err === "object" && err !== null && "message" in err) {
+         // Handle Supabase/Postgrest errors which conform to { message: string, ... }
+        setError((err as any).message); // eslint-disable-line @typescript-eslint/no-explicit-any
       } else {
         setError("Something went wrong.");
       }
