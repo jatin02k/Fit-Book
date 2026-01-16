@@ -46,7 +46,7 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
       {/* PREMIUM HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/60 z-10"></div>
+          <div className="absolute inset-0 bg-black/75 z-10"></div>
           {/* Generic Service Environment */}
           <Image
             src="/hero.png"
@@ -199,57 +199,6 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
          </div>
       </section>
 
-      {/* TENANT CONTACT SECTION */}
-      <section id="contact" className="py-12 md:py-24 bg-gray-50 border-t border-gray-100">
-         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 md:mb-16">
-               <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-6">
-                  Get in <br />
-                  <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Touch</span>
-               </h2>
-               <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-                  Have questions? Contact {org.name} directly.
-               </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6 md:gap-8 text-center">
-               {/* Email */}
-               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300">
-                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                     <Mail className="h-8 w-8 text-orange-600" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Email</h3>
-                  <a href={`mailto:${org.email || `contact@${org.slug}.fitbook.app`}`} className="text-gray-600 text-base md:text-lg hover:text-orange-500 transition-colors">
-                     {org.email || `contact@${org.slug}.fitbook.app`}
-                  </a>
-               </div>
-
-               {/* Phone */}
-               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300">
-                  <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                     <Phone className="h-8 w-8 text-pink-600" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Phone</h3>
-                  <a href={`tel:${org.phone || "+15551234567"}`} className="text-gray-600 text-base md:text-lg hover:text-pink-500 transition-colors">
-                     {org.phone || "+1 (555) 123-4567"}
-                  </a>
-               </div>
-
-               {/* Hours */}
-               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300">
-                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                     <Clock className="h-8 w-8 text-purple-600" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Opening Hours</h3>
-                  <div className="text-gray-600 text-sm md:text-base">
-                     <p>Mon - Fri: 9:00 AM - 9:00 PM</p>
-                     <p>Sat - Sun: 10:00 AM - 6:00 PM</p>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </section>
-
       {/* PREMIUM INFO SECTION */}
       <section className="py-24 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -299,6 +248,57 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
 
           </div>
         </div>
+      </section>
+      
+      {/* TENANT CONTACT SECTION */}
+      <section id="contact" className="py-12 md:py-24 bg-gray-50 border-t border-gray-100">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 md:mb-16">
+               <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-6">
+                  Get in <br />
+                  <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Touch</span>
+               </h2>
+               <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+                  Have questions? Contact {org.name} directly.
+               </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8 text-center">
+               {/* Email */}
+               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300">
+                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                     <Mail className="h-8 w-8 text-orange-600" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Email</h3>
+                  <a href={`mailto:${org.email || `contact@${org.slug}.fitbook.app`}`} className="text-gray-600 text-base md:text-lg hover:text-orange-500 transition-colors">
+                     {org.email || `contact@${org.slug}.fitbook.app`}
+                  </a>
+               </div>
+
+               {/* Phone */}
+               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300">
+                  <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                     <Phone className="h-8 w-8 text-pink-600" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Phone</h3>
+                  <a href={`tel:${org.phone || "+15551234567"}`} className="text-gray-600 text-base md:text-lg hover:text-pink-500 transition-colors">
+                     {org.phone || "+1 (555) 123-4567"}
+                  </a>
+               </div>
+
+               {/* Hours */}
+               <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300">
+                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                     <Clock className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Opening Hours</h3>
+                  <div className="text-gray-600 text-sm md:text-base">
+                     <p>Mon - Fri: 9:00 AM - 9:00 PM</p>
+                     <p>Sat - Sun: 10:00 AM - 6:00 PM</p>
+                  </div>
+               </div>
+            </div>
+         </div>
       </section>
     </div>
   );
