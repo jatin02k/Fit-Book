@@ -66,6 +66,8 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
   
   // Unwrap params safely
   const [slug, setSlug] = useState<string>('');
+  const [trialEndsAt, setTrialEndsAt] = useState<number | null>(null);
+  const [timeLeft, setTimeLeft] = useState<string>("");
 
   useEffect(() => {
     params.then((p) => setSlug(p.slug));
@@ -80,17 +82,45 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
 
       const { data: org } = await supabase
         .from('organizations')
-        .select('subscription_status')
+        .select('subscription_status, subscription_id, created_at')
         .eq('slug', slug)
         .single();
 
       if (org) {
         setStatus(org.subscription_status || 'inactive');
+        
+        // Check for trial
+        if (org.subscription_status === 'active' && !org.subscription_id && org.created_at) {
+             const trialEnds = new Date(new Date(org.created_at).getTime() + 7 * 24 * 60 * 60 * 1000).getTime();
+             setTrialEndsAt(trialEnds);
+        }
       }
       setLoading(false);
     }
     fetchStatus();
   }, [slug, supabase]);
+
+  useEffect(() => {
+    if (!trialEndsAt) return;
+    
+    const interval = setInterval(() => {
+        const now = Date.now();
+        const distance = trialEndsAt - now;
+        
+        if (distance < 0) {
+            setTimeLeft("Trial Expired");
+            clearInterval(interval);
+        } else {
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+        }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [trialEndsAt]);
 
   const handleSubscribe = async () => {
     setProcessing(true);
@@ -172,11 +202,20 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
 
         {/* Current Status Banner (only if active) */}
         {isActive && (
-           <div className="mb-8 flex justify-center">
+           <div className="mb-8 flex flex-col items-center gap-4">
              <div className="inline-flex items-center px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium border border-green-200 shadow-sm animate-in fade-in slide-in-from-bottom-4">
                <CheckCircle className="w-4 h-4 mr-2" />
                Your Pro Plan is Active
              </div>
+
+             {timeLeft && (
+                <div className="bg-white px-6 py-3 rounded-xl shadow-md border border-indigo-100 flex flex-col items-center animate-in zoom-in-95 duration-500">
+                    <span className="text-xs uppercase tracking-widest text-indigo-500 font-bold mb-1">Free Trial Ends In</span>
+                    <span className="text-2xl font-mono font-bold text-gray-900 tracking-wider text-center w-full">
+                        {timeLeft}
+                    </span>
+                </div>
+             )}
            </div>
         )}
 

@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { StaffSidebar } from "@/app/components/StaffSidebar";
+import Link from "next/link";
+import { Clock } from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function AdminLayout({ children, params }: AdminLayoutProps) {
@@ -18,7 +20,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
   // 2. Get User's Organization
   const { data: org } = await supabase
     .from("organizations")
-    .select("slug")
+    .select("slug, created_at, subscription_status, subscription_id")
     .eq("owner_id", user.id)
     .single();
 
@@ -28,24 +30,41 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
 
   // 3. Strict Check: Does URL Slug match User's Org Slug?
   if (slug !== org.slug) {
-      // Wrong Tenant! Redirect to their own dashboard.
-      const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-      // const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"; // No longer needed for path-based check
-      // We can just use relative path redirect in Server Actions/Components usually, but since we are doing a hard redirect in layout:
-      // Actually `redirect` from next/navigation handles relative paths.
       const correctUrl = `/app/${org.slug}/admin/dashboard`;
-      
       console.log(`Mismatch! URL: ${slug}, Org: ${org.slug}. Redirecting to ${correctUrl}`);
       redirect(correctUrl);
   }
 
+  // Trial Logic
+  // Trial = Status Active AND No Subscription ID (Razorpay sub ID)
+  // Assuming new signups get 'active' status but no sub ID.
+  const isTrial = org.subscription_status === "active" && !org.subscription_id;
+  
+  let daysLeft = 0;
+  if (isTrial && org.created_at) {
+      const trialEndsAt = new Date(new Date(org.created_at).getTime() + 7 * 24 * 60 * 60 * 1000);
+      daysLeft = Math.ceil((trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <StaffSidebar slug={org.slug} /> 
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      {isTrial && (
+        <div className="bg-indigo-600 text-white px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2">
+            <Clock className="w-4 h-4" />
+            <span>You are on the 7-day free trial. {Math.max(0, daysLeft)} days remaining.</span>
+            <Link href={`/app/${org.slug}/admin/dashboard/subscription`} className="underline hover:text-indigo-100">
+                Upgrade now to keep access
+            </Link>
+        </div>
+      )}
       
-      <main className="pt-16 p-4">
-        {children}
-      </main>
+      <div className="flex flex-1">
+        <StaffSidebar slug={org.slug} /> 
+        
+        <main className="flex-1 p-4">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
