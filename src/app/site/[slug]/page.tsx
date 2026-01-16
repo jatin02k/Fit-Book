@@ -49,7 +49,7 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
           <div className="absolute inset-0 bg-black/60 z-10"></div>
           {/* Generic Service Environment */}
           <Image
-            src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2071&auto=format&fit=crop"
+            src="/hero.png"
             alt="Service Background"
             fill
             className="object-cover"
