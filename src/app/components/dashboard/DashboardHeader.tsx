@@ -89,12 +89,12 @@ export function DashboardHeader({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <header className="mb-8 ml-0 mt-5 md:ml-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="mb-8 w-full">
+      <div className="w-full">
         {/* 1. Header with CTA */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="bg-white rounded-2xl p-3 md:p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 overflow-hidden">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900">
               Welcome to {org.name}
             </h1>
             <p className="text-slate-500 mt-1">
@@ -102,48 +102,48 @@ export function DashboardHeader({
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 items-center">
-            <Link
-              href={`/app/${org.slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-2"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Open as Patient
-            </Link>
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1 pr-4">
-              <div className="bg-white px-3 py-1.5 text-xs text-slate-500 font-mono rounded border border-slate-100 select-all">
+            <div className="flex flex-col gap-3 w-full sm:w-auto sm:flex-row sm:items-center">
+              <Link
+                href={`/app/${org.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-2 whitespace-nowrap"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Open as Patient
+              </Link>
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1 pr-2 sm:pr-4 w-full sm:w-auto overflow-hidden">
+              <div className="bg-white px-3 py-1.5 text-xs text-slate-500 font-mono rounded border border-slate-100 select-all truncate flex-1 sm:flex-none">
                 {prettyUrl}
               </div>
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 text-xs text-blue-600 hover:bg-blue-50 gap-1.5"
+                className="h-7 text-xs text-blue-600 hover:bg-blue-50 gap-1.5 sm:gap-2 shrink-0"
                 onClick={handleCopy}
               >
                 {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                {copied ? "Copied" : "Copy Link"}
+                <span className={copied ? "" : "hidden sm:inline"}>{copied ? "Copied" : "Copy Link"}</span>
               </Button>
             </div>
-            <Button
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 gap-2"
-              onClick={handleShare}
-            >
-              <Share2 className="w-4 h-4" />
-              Share Your Booking Page
-            </Button>
+              <Button
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 gap-2 whitespace-nowrap"
+                onClick={handleShare}
+              >
+                <Share2 className="w-4 h-4" />
+                Share Page
+              </Button>
+            </div>
           </div>
-        </div>
 
         {/* 2. Value-Driven Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="border-l-4 border-green-500 shadow-sm">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">
                 Time Saved
               </p>
-              <h3 className="text-3xl font-bold text-slate-900 mt-2">
+              <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mt-2">
                 {timeSavedMinutes === 0
                   ? "0 Minutes"
                   : timeSavedMinutes >= 60
@@ -158,11 +158,11 @@ export function DashboardHeader({
             </CardContent>
           </Card>
           <Card className="border-l-4 border-blue-500 shadow-sm">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">
                 Revenue Collected
               </p>
-              <h3 className="text-3xl font-bold text-slate-900 mt-2">
+              <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mt-2">
                 ₹{revenueCollected.toLocaleString()}
               </h3>
               <p className="text-xs text-blue-600 mt-1 font-medium">
@@ -176,7 +176,7 @@ export function DashboardHeader({
           {/* Onboarding Checklist - Minimizes when complete */}
           {allComplete && !isExpanded ? (
              <Card className="border-l-4 border-emerald-500 shadow-sm bg-emerald-50/50">
-                <CardContent className="p-6 flex items-center justify-between gap-4">
+                <CardContent className="p-3 md:p-6 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
                       <Check className="w-6 h-6" />
@@ -198,7 +198,7 @@ export function DashboardHeader({
              </Card>
           ) : (
             <Card className={`border-l-4 shadow-sm ${allComplete ? "border-emerald-500 bg-emerald-50/50" : "border-purple-500 bg-purple-50/50"}`}>
-                <CardContent className="p-6">
+                <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-start mb-3">
                   <p className="text-sm font-medium text-slate-900 font-bold">
                       Onboarding Checklist

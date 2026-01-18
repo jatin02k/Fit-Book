@@ -110,23 +110,22 @@ export default async function AdminDashboardPage() {
   const hasRealBookings = validAppts.length > 3;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="py-8 ml-0 md:ml-64">
-        
-        <DashboardHeader 
-            org={org}
-            timeSavedMinutes={timeSavedMinutes}
-            timeSavedHours={timeSavedHours}
-            revenueCollected={revenueCollected}
-            hasRealBookings={hasRealBookings}
-            isServicesEdited={isServicesEdited}
-        />
-      </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="md:ml-64 flex-1 flex flex-col overflow-hidden">
+        <div className="pt-20 md:pt-8 px-2 sm:px-6 lg:px-8 max-w-[100vw] overflow-x-hidden w-full flex-1">
+            <DashboardHeader 
+                org={org}
+                timeSavedMinutes={timeSavedMinutes}
+                timeSavedHours={timeSavedHours}
+                revenueCollected={revenueCollected}
+                hasRealBookings={hasRealBookings}
+                isServicesEdited={isServicesEdited}
+            />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-             {/* The CalendarComponent handles its own layout and container centering */}
-             <CalendarComponent appointments={appointments} />
-      </main>
+            {/* The CalendarComponent handles its own internal layout, but we constrain it here */}
+            <CalendarComponent appointments={appointments} />
+        </div>
+      </div>
     </div>
   );
 }

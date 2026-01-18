@@ -61,7 +61,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
       <div className="flex flex-1">
         <StaffSidebar slug={org.slug} /> 
         
-        <main className="flex-1 p-4">
+        <main className="flex-1 p-0">
           {children}
         </main>
       </div>

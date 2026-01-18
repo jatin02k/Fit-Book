@@ -88,8 +88,8 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
  
     
   return (
-    <div className="ml-0 md:ml-64 p-4 md:p-8 mt-16 md:mt-0 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="space-y-8 pb-8">
+      <div className="space-y-8">
         
         {/* Quick Stats - Moved to Top */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -139,13 +139,13 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Calendar Picker */}
-          <div className="lg:col-span-1">
-            <Card className="shadow-sm border-gray-100 h-full">
+          <div className="lg:col-span-1 max-w-[100vw] overflow-hidden">
+            <Card className="shadow-sm border-gray-100 h-full overflow-hidden">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-semibold text-gray-900">Calendar</CardTitle>
                 <p className="text-sm text-gray-500">Select a date to view details</p>
               </CardHeader>
-              <CardContent className="flex justify-center pt-2">
+              <CardContent className="flex justify-center pt-2 p-1 md:p-6">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
