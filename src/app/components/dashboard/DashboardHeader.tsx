@@ -89,7 +89,7 @@ export function DashboardHeader({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <header className="mb-8 ml-0 md:ml-0">
+    <header className="mb-8 ml-0 mt-5 md:ml-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 1. Header with CTA */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">

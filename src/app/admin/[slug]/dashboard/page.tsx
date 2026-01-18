@@ -111,7 +111,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="py-8 ml-64">
+      <div className="py-8 ml-0 md:ml-64">
         
         <DashboardHeader 
             org={org}

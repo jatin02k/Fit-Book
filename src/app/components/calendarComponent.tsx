@@ -88,7 +88,7 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
  
     
   return (
-    <div className="md:ml-52 p-4 md:p-8 mt-16 md:mt-0 bg-gray-50 min-h-screen">
+    <div className="ml-0 md:ml-64 p-4 md:p-8 mt-16 md:mt-0 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Quick Stats - Moved to Top */}
