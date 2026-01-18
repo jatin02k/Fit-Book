@@ -1,20 +1,28 @@
 export default function FAQPage() {
   const faqItems = [
     {
-      question: "How far in advance can I book?",
-      answer: "You can book appointments up to 30 days in advance.",
+      question: "How do I book an appointment",
+      answer: "Select a service, choose an available date and time, enter your details, and confirm. You will receive a confirmation instantly.",
     },
     {
-      question: "Can I cancel or reschedule?",
-      answer: "Yes, you can cancel or reschedule up to 24 hours before your appointment.",
+      question: "Do I need to create an account?",
+      answer: "No. Booking takes less than a minute and does not require creating an account.",
     },
     {
-      question: "What should I bring?",
-      answer: "Bring comfortable workout clothes, athletic shoes, and a water bottle.",
+      question: "Is payment required to confirm the booking?",
+      answer: "If the clinic requires advance payment, you will be asked to pay during booking. This helps secure your time slot and reduce no-shows.",
     },
     {
-      question: "Do you offer group discounts?",
-      answer: "Yes, we offer discounts for groups of 3 or more. Contact us for details.",
+      question: "Will I receive a confirmation?",
+      answer: "Yes. You will get a confirmation message after booking. Reminders are sent before your appointment.",
+    },
+    {
+      question: "What if I miss my appointment?",
+      answer: "Yes, if the clinic allows it. Use the reschedule or cancel option provided in your confirmation message.",
+    },
+    {
+      question: "Can I reschedule or cancel my appointment?",
+      answer: "Yes, if the clinic allows it. Use the reschedule or cancel option provided in your confirmation message.",
     },
   ];
 

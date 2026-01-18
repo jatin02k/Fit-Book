@@ -6,8 +6,8 @@ import NextTopLoader from 'nextjs-toploader';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Appointor | Service Management System',
-  description: 'The all-in-one operating system for service businesses. Manage bookings, schedule staff, and scale your operations.',
+  title: 'Appointor | #1 Physiotherapy Clinic Management Software',
+  description: 'The easiest way for physiotherapy clinics to manage patient bookings, staff rosters, and payments. Reduce no-shows by 40%.',
 };
 
 export default function RootLayout({

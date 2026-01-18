@@ -171,6 +171,8 @@ export type Database = {
       }
       services: {
         Row: {
+          created_at: string
+          updated_at: string | null
           description: string | null
           duration_minutes: number
           features: string[] | null
@@ -180,6 +182,8 @@ export type Database = {
           price: number
         }
         Insert: {
+          created_at?: string
+          updated_at?: string | null
           description?: string | null
           duration_minutes: number
           features?: string[] | null
@@ -189,6 +193,8 @@ export type Database = {
           price: number
         }
         Update: {
+          created_at?: string
+          updated_at?: string | null
           description?: string | null
           duration_minutes?: number
           features?: string[] | null

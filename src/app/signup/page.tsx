@@ -11,7 +11,7 @@ import { AlertCircle, Home } from "lucide-react";
 import Image from "next/image";
 
 export default function SignupPage() {
-  const router = useRouter();
+
   const supabase = createClient();
 
   const [formData, setFormData] = useState({
@@ -66,8 +66,6 @@ export default function SignupPage() {
       });
 
       if (authError) {
-          // RECOVERY MECHANISM: If user exists, try to log them in.
-          // If they log in successfully and HAVE NO ORG, we should let them finish signup (create org).
           if (authError.message.includes("already registered") || authError.message.includes("User already registered")) {
               console.log("User exists. Attempting recovery login...");
               const { data: signinData, error: signinError } = await supabase.auth.signInWithPassword({
@@ -75,11 +73,7 @@ export default function SignupPage() {
                   password: formData.password
               });
 
-              if (signinError) {
-                   // If password wrong or other error, fallback to standard error
-                   throw new Error("This email is already registered. Please Log In.");
-              }
-              
+              if (signinError) throw new Error("This email is already registered. Please Log In.");
               user = signinData.user;
           } else {
               throw authError;
@@ -90,65 +84,111 @@ export default function SignupPage() {
       
       if (!user) throw new Error("Authentication failed");
       
-      // Check if we have a valid session (required for RLS)
+      // Check for session to ensure RLS works
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
           setError("Please check your email to confirm your account before we can create your Dashboard.");
           return;
       }
 
-      // Check if Org already exists (Duplicate check)
+      // 2. Check for Existing Organization (Handle Re-login/Re-signup)
       const { data: existingOrg } = await supabase
         .from("organizations")
         .select("slug")
         .eq("owner_id", user.id)
         .single();
-
+      
       if (existingOrg) {
-           // User has an account AND an Org. Just redirect them.
-           console.log("User and Org already exist. Redirecting...");
-           const protocol = window.location.protocol;
-           const host = window.location.host;
-           const targetUrl = `${protocol}//${host}/app/${existingOrg.slug}/admin/dashboard`;
-           window.location.href = targetUrl;
-           return;
+         console.log("User already has an organization. Redirecting...");
+         const protocol = window.location.protocol;
+         const host = window.location.host;
+         window.location.href = `${protocol}//${host}/app/${existingOrg.slug}/admin/dashboard`;
+         return;
       }
 
-      // 2. Create Organization (If we reached here, User is Authed, but Org is missing)
-      console.log("Creating Organization for user:", user.id);
+      // 3. Create Organization
+      const orgName = formData.orgName || "Demo Physiotherapy Clinic";
+      const orgSlug = formData.orgSlug || `demo-physio-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      // 2. Create Organization
-      // Note: We need to use a public API route or ensure RLS allows INSERT for authenticated users.
-      // Assuming RLS allows: authenticated users can insert row where owner_id = auth.uid()
-      const { error: orgError } = await supabase.from("organizations").insert([
+      console.log("Creating Organization:", orgName);
+
+      const { data: newOrg, error: orgError } = await supabase.from("organizations").insert([
         {
-          name: formData.orgName,
-          slug: formData.orgSlug,
+          name: orgName,
+          slug: orgSlug,
           owner_id: user.id,
-          type: "gym", // Default type
+          type: "clinic",
           email: formData.email,
-          phone: formData.orgPhone,
+          phone: formData.orgPhone, 
           subscription_status: "active",
         },
-      ]);
+      ]).select().single();
 
-      if (orgError) {
-        // If org creation fails, it feels bad. We might need to rollback or handle it.
-        // Common cause: Slug already exists.
-        if (orgError.code === "23505") { // Unique violation
-            // Try again with a new random slug? Or just tell user.
-            throw new Error("This Gym Link (Slug) is still taken. Please try changing the Gym Name slightly.");
-        }
-        throw orgError;
+      if (orgError) throw orgError;
+      if (!newOrg) throw new Error("Failed to create organization");
+
+      // 4. SEED DATA: Services
+      console.log("Seeding Services...");
+      const { data: services, error: servicesError } = await supabase.from("services").insert([
+        { organization_id: newOrg.id, name: "Consultation", duration_minutes: 30, price: 500, description: "Initial assessment and diagnosis" },
+        { organization_id: newOrg.id, name: "Pain Relief Session", duration_minutes: 45, price: 800, description: "Manual therapy and modality treatment" },
+        { organization_id: newOrg.id, name: "Rehab Session", duration_minutes: 60, price: 1200, description: "Exercise therapy and strengthening" },
+      ]).select();
+
+      if (servicesError) console.error("Error seeding services:", servicesError);
+
+      // 5. SEED DATA: Appointments (if services created successfully)
+      if (services && services.length > 0) {
+          console.log("Seeding Appointments...");
+          const today = new Date();
+          // Helper to set time
+          const setTime = (h: number, m: number) => {
+              const d = new Date(today);
+              d.setHours(h, m, 0, 0);
+              return d.toISOString();
+          };
+          
+          // Get IDs for specific services if possible, or just use indices
+          const consultService = services.find(s => s.name === "Consultation") || services[0];
+          const reliefService = services.find(s => s.name === "Pain Relief Session") || services[1];
+          const rehabService = services.find(s => s.name === "Rehab Session") || services[2];
+
+          const { error: apptError } = await supabase.from("appointments").insert([
+              { 
+                  organization_id: newOrg.id, 
+                  service_id: consultService.id, 
+                  customer_name: "Rahul Verma", 
+                  start_time: setTime(10, 0), 
+                  end_time: setTime(10, 30), 
+                  status: "confirmed",
+                  notes: "Shoulder pain, first visit" 
+              },
+              { 
+                  organization_id: newOrg.id, 
+                  service_id: reliefService.id, 
+                  customer_name: "Sneha Gupta", 
+                  start_time: setTime(14, 0), 
+                  end_time: setTime(14, 45), 
+                  status: "confirmed",
+                  notes: "Lower back pain relief" 
+              },
+               { 
+                  organization_id: newOrg.id, 
+                  service_id: rehabService.id, 
+                  customer_name: "Amit Patel", 
+                  start_time: setTime(16, 0), 
+                  end_time: setTime(17, 0), 
+                  status: "confirmed",
+                  notes: " ACL Rehab - Session 3" 
+              }
+          ]);
+           if (apptError) console.error("Error seeding appointments:", apptError);
       }
 
-      // 3. Success! Redirect to Tenant Dashboard
+      // 6. Redirect
       const protocol = window.location.protocol;
-      const host = window.location.host; // e.g. fitbook.vercel.app or localhost:3000
-      
-      // Path-Based Redirection
-      // targetUrl = protocol + // + host + /app/ + slug + /admin/dashboard
-      const targetUrl = `${protocol}//${host}/app/${formData.orgSlug}/admin/dashboard`;
+      const host = window.location.host;
+      const targetUrl = `${protocol}//${host}/app/${newOrg.slug}/admin/dashboard`;
       
       console.log("Signup Complete. Redirecting to:", targetUrl);
       window.location.href = targetUrl;
@@ -158,7 +198,6 @@ export default function SignupPage() {
       if (err instanceof Error) {
         setError(err.message);
       } else if (typeof err === "object" && err !== null && "message" in err) {
-         // Handle Supabase/Postgrest errors which conform to { message: string, ... }
         setError((err as any).message); // eslint-disable-line @typescript-eslint/no-explicit-any
       } else {
         setError("Something went wrong.");
@@ -178,32 +217,32 @@ export default function SignupPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-gray-900 relative overflow-hidden flex-col justify-between p-12 text-white">
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-2 mb-8">
-                        <Image src="/logo.png" alt="Appointor" width={24} height={24} className="object-contain" />
+             <Image src="/logo.png" alt="Appointor" width={24} height={24} className="object-contain" />
              <span className="text-2xl font-bold tracking-tight">Appointor</span>
           </Link>
           <h1 className="text-5xl font-extrabold tracking-tight mb-6 leading-tight">
-            Manage your <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">
-              business empire
+            The OS for Modern <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
+              Physiotherapy Clinics
             </span>
           </h1>
           <p className="text-lg text-gray-400 max-w-md">
-             Join thousands of business owners who trust Appointor to automate bookings, payments, and member management.
+             Join thousands of clinic owners who trust Appointor to automate patient bookings and payments.
           </p>
         </div>
 
         {/* Decorative Circles */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-orange-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[500px] h-[500px] bg-pink-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-3xl"></div>
 
         {/* Testimonial / Footer */}
         <div className="relative z-10">
            <blockquote className="space-y-2">
               <p className="text-lg font-medium">
-                &ldquo;Appointor transformed how we run our studio. The booking experience is flawless for our clients.&rdquo;
+                &ldquo;Appointor transformed how we run our clinic. The booking experience is flawless for our patients.&rdquo;
               </p>
               <footer className="text-sm text-gray-500">
-                — Sarah Jenkins, Founder of CoreFlow Yoga
+                — Dr. Sarah Jenkins, City Physio
               </footer>
            </blockquote>
         </div>
@@ -220,11 +259,11 @@ export default function SignupPage() {
 
           <div className="mb-6 text-center lg:text-left">
             <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-gray-900">
-              Create account
+              Create your clinic
             </h2>
             <p className="mt-1 text-sm text-gray-600">
               Start your 7-day free trial. {" "}
-              <Link href="/admin/login" className="font-medium text-orange-600 hover:text-orange-500">
+              <Link href="/admin/login" className="font-medium text-blue-600 hover:text-blue-500">
                 Already have an account?
               </Link>
             </p>
@@ -233,12 +272,8 @@ export default function SignupPage() {
           <form className="space-y-4" onSubmit={handleSignup}>
             {/* Personal Details */}
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-                    Personal Details
-                </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                     <div>
                        <Label htmlFor="name" className="text-gray-700 text-xs uppercase font-semibold">Full Name</Label>
                        <Input
@@ -246,8 +281,8 @@ export default function SignupPage() {
                           name="name"
                           type="text"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
-                          placeholder="John Doe"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          placeholder="Dr. John Doe"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                        />
@@ -259,61 +294,74 @@ export default function SignupPage() {
                           name="email"
                           type="email"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
-                          placeholder="john@example.com"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          placeholder="john@clinic.com"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                        />
                     </div>
-                </div>
-                 <div>
-                   <Label htmlFor="password" className="text-gray-700 text-xs uppercase font-semibold">Password</Label>
-                   <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      required
-                      className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                   />
+                     <div>
+                       <Label htmlFor="password" className="text-gray-700 text-xs uppercase font-semibold">Password</Label>
+                       <Input
+                          id="password"
+                          name="password"
+                          type="password"
+                          required
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          placeholder="••••••••"
+                          value={formData.password}
+                          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                       />
+                    </div>
                 </div>
             </div>
 
-            {/* Business Details */}
+            {/* Clinic Details */}
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    <div className="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
-                    Business Info
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                       <Label htmlFor="orgName" className="text-gray-700 text-xs uppercase font-semibold">Business Name</Label>
+                <div className="grid grid-cols-1 gap-4">
+                     <div>
+                       <Label htmlFor="orgName" className="text-gray-700 text-xs uppercase font-semibold">Clinic Name</Label>
                        <Input
                           id="orgName"
                           name="orgName"
                           type="text"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
-                          placeholder="Iron Pumpers"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          placeholder="City Physiotherapy"
                           value={formData.orgName}
                           onChange={handleOrgNameChange}
                        />
                     </div>
                      <div>
-                       <Label htmlFor="orgPhone" className="text-gray-700 text-xs uppercase font-semibold">Phone</Label>
+                       <Label htmlFor="orgPhone" className="text-gray-700 text-xs uppercase font-semibold">Clinic Phone</Label>
                        <Input
                           id="orgPhone"
                           name="orgPhone"
                           type="tel"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-gray-50/50"
-                          placeholder="+1 (555) 000-0000"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          placeholder="+91 98765 43210"
                           value={formData.orgPhone}
                           onChange={(e) => setFormData({ ...formData, orgPhone: e.target.value })}
                        />
+                    </div>
+                     <div>
+                       <Label htmlFor="orgSlug" className="text-gray-700 text-xs uppercase font-semibold">Clinic URL</Label>
+                       <div className="flex rounded-md shadow-sm mt-1">
+                          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-200 bg-gray-50 text-gray-500 text-sm">
+                            /app/
+                          </span>
+                          <Input
+                            id="orgSlug"
+                            name="orgSlug"
+                            type="text"
+                            required
+                            className="block w-full rounded-none rounded-r-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                            placeholder="city-physio"
+                            value={formData.orgSlug}
+                            onChange={(e) => setFormData({ ...formData, orgSlug: e.target.value })}
+                         />
+                       </div>
                     </div>
                 </div>
             </div>
@@ -330,9 +378,9 @@ export default function SignupPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-orange-500/20 text-sm font-bold tracking-wide text-white bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200 transform hover:scale-[1.02]"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-500/20 text-sm font-bold tracking-wide text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02]"
             >
-              {isLoading ? "Creating..." : "Start Free Trial"}
+              {isLoading ? "Creating Clinic..." : "Create Clinic"}
             </Button>
           </form>
            

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { CalendarComponent } from "@/app/components/calendarComponent";
 import { redirect } from "next/navigation";
-import { BusinessDetailsForm } from "@/app/components/dashboard/BusinessDetailsForm";
+import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -47,16 +47,25 @@ export default async function AdminDashboardPage() {
       customer_name,
       services (
         name,
-        duration_minutes
+        duration_minutes,
+        price
       ),
       cancellation_link_uuid,
       status
     `)
     .eq("organization_id", org.id);
 
+  // 4. Fetch Services for Checklist & Revenue Calc
+  // We need to check for BOTH added services (>3) AND edited services (updated > created)
+  const { data: services } = await supabase
+    .from("services")
+    .select("created_at, updated_at")
+    .eq("organization_id", org.id);
+
+  const servicesCount = services?.length || 0;
+
   if (error) {
     console.error("Error fetching appointments:", JSON.stringify(error, null, 2));
-    // Handle error appropriately, maybe return an error message to the user
     return <div>Error loading appointments.</div>;
   }
 
@@ -65,41 +74,59 @@ export default async function AdminDashboardPage() {
     start: appt.start_time,
     end: appt.end_time,
     customerName: appt.customer_name,
-    // Safely access service details, handling array or single object response
     serviceName: Array.isArray(appt.services) ? appt.services[0]?.name : appt.services?.name,
     serviceDuration: Array.isArray(appt.services) ? appt.services[0]?.duration_minutes : appt.services?.duration_minutes,
     cancellationLink: appt.cancellation_link_uuid,
-    // Explicitly cast status to the specific union type expected by Appointment
     status: (appt.status as Appointment["status"]) || "pending",
   }));
 
+  // --- METRICS CALCULATION ---
+  const validAppts = rawAppointments || [];
+  
+  // Time Saved: 10 mins per booking
+  const timeSavedMinutes = validAppts.length * 10;
+  const timeSavedHours = (timeSavedMinutes / 60).toFixed(1).replace('.0', ''); // e.g. "2" or "2.5"
+
+  // Revenue: Sum of prices for "confirmed" appointments
+  // Seeded ones are confirmed.
+  const revenueCollected = validAppts
+    .filter(a => a.status === 'confirmed')
+    .reduce((sum, appt) => {
+        const s = Array.isArray(appt.services) ? appt.services[0] : appt.services;
+        const price = s?.price || 0;
+        return sum + price;
+    }, 0);
+
+  // --- CHECKLIST STATE PREP ---
+  // 1. Edit services
+  // Check if user has added/removed services (count != 3) or edited existing ones
+  const isServicesEdited = (servicesCount !== 3) || (services?.some(s => {
+      const created = new Date(s.created_at).getTime();
+      const updated = s.updated_at ? new Date(s.updated_at).getTime() : created;
+      return updated - created > 1000; 
+  }) ?? false);
+
+  // 2. Real Bookings (Share link check fallback)
+  const hasRealBookings = validAppts.length > 3;
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="py-10">
-        <header className="mb-8">
-          <div className="max-w-7xl mx-auto px-34 sm:px-50 lg:px-50">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">
-                    Hello, {org.name} 👋
-                    </h1>
-                    <p className="text-gray-500 mt-1">Here is what&apos;s happening with your business today.</p>
-                </div>
-                <div className="text-right hidden md:block">
-                     <p className="text-sm font-medium text-gray-500">
-                        {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                     </p>
-                </div>
-            </div>
-            {/* Divider */}
-            <div className="h-px bg-gray-200 mt-6 md:ml-50 lg:ml-50" /> 
-          </div>
-        </header>
-        <main className="flex-1">
+      <div className="py-8 ml-64">
+        
+        <DashboardHeader 
+            org={org}
+            timeSavedMinutes={timeSavedMinutes}
+            timeSavedHours={timeSavedHours}
+            revenueCollected={revenueCollected}
+            hasRealBookings={hasRealBookings}
+            isServicesEdited={isServicesEdited}
+        />
+      </div>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
              {/* The CalendarComponent handles its own layout and container centering */}
              <CalendarComponent appointments={appointments} />
-        </main>
-      </div>
+      </main>
     </div>
   );
 }

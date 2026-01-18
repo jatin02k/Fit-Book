@@ -1,0 +1,249 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Button } from "@/app/components/ui/button";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { Copy, Share2, ExternalLink, Check, CalendarCheck } from "lucide-react";
+import Link from "next/link";
+
+interface DashboardHeaderProps {
+  org: {
+    name: string;
+    slug: string;
+    id: string;
+  };
+  timeSavedMinutes: number;
+  timeSavedHours: string;
+  revenueCollected: number;
+  hasRealBookings: boolean;
+  isServicesEdited: boolean;
+}
+
+export function DashboardHeader({
+  org,
+  timeSavedMinutes,
+  timeSavedHours,
+  revenueCollected,
+  hasRealBookings,
+  isServicesEdited,
+}: DashboardHeaderProps) {
+  const [hasShared, setHasShared] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    // Check local storage for shared state
+    const storedShare = localStorage.getItem(`appointor_share_clicked_${org.id}`);
+    if (storedShare === "true") {
+      setHasShared(true);
+    }
+  }, [org.id]);
+
+  const [bookingUrl, setBookingUrl] = useState("");
+
+  const [prettyUrl, setPrettyUrl] = useState("");
+
+  useEffect(() => {
+    setBookingUrl(`${window.location.origin}/app/${org.slug}`);
+    setPrettyUrl(`${window.location.host}/app/${org.slug}`);
+  }, [org.slug]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(bookingUrl);
+      setCopied(true);
+      markAsShared();
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy", err);
+    }
+  };
+
+  const handleShare = async () => {
+    markAsShared();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${org.name} Booking`,
+          text: `Book your appointment at ${org.name}`,
+          url: bookingUrl,
+        });
+      } catch (err) {
+        console.log("Error sharing", err);
+        // Fallback to copy if share fails/cancelled (optional, but handleCopy does the UI feedback)
+         handleCopy();
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
+  const markAsShared = () => {
+    setHasShared(true);
+    localStorage.setItem(`appointor_share_clicked_${org.id}`, "true");
+  };
+
+  // Combine server logic (bookings) with client logic (clicks)
+  const isLinkShared = hasRealBookings || hasShared;
+  const allComplete = isServicesEdited && isLinkShared;
+  
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <header className="mb-8 ml-0 md:ml-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 1. Header with CTA */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Welcome to {org.name}
+            </h1>
+            <p className="text-slate-500 mt-1">
+              Your demo clinic is live! Share your link to get real bookings.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 items-center">
+            <Link
+              href={`/app/${org.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-2"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Open as Patient
+            </Link>
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1 pr-4">
+              <div className="bg-white px-3 py-1.5 text-xs text-slate-500 font-mono rounded border border-slate-100 select-all">
+                {prettyUrl}
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 text-xs text-blue-600 hover:bg-blue-50 gap-1.5"
+                onClick={handleCopy}
+              >
+                {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? "Copied" : "Copy Link"}
+              </Button>
+            </div>
+            <Button
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 gap-2"
+              onClick={handleShare}
+            >
+              <Share2 className="w-4 h-4" />
+              Share Your Booking Page
+            </Button>
+          </div>
+        </div>
+
+        {/* 2. Value-Driven Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="border-l-4 border-green-500 shadow-sm">
+            <CardContent className="p-6">
+              <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+                Time Saved
+              </p>
+              <h3 className="text-3xl font-bold text-slate-900 mt-2">
+                {timeSavedMinutes === 0
+                  ? "0 Minutes"
+                  : timeSavedMinutes >= 60
+                  ? `${timeSavedHours} Hours`
+                  : `${timeSavedMinutes} Minutes`}
+              </h3>
+              <p className="text-xs text-green-600 mt-1 font-medium">
+                {hasRealBookings
+                  ? "All by automating bookings"
+                  : "Starts updating after your first booking"}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-l-4 border-blue-500 shadow-sm">
+            <CardContent className="p-6">
+              <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+                Revenue Collected
+              </p>
+              <h3 className="text-3xl font-bold text-slate-900 mt-2">
+                ₹{revenueCollected.toLocaleString()}
+              </h3>
+              <p className="text-xs text-blue-600 mt-1 font-medium">
+                {revenueCollected > 0
+                  ? "Without a single phone call"
+                  : "Starts updating after your first booking"}
+              </p>
+            </CardContent>
+          </Card>
+          
+          {/* Onboarding Checklist - Minimizes when complete */}
+          {allComplete && !isExpanded ? (
+             <Card className="border-l-4 border-emerald-500 shadow-sm bg-emerald-50/50">
+                <CardContent className="p-6 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+                      <Check className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-emerald-900">You're all set!</p>
+                      <p className="text-xs text-emerald-700">Onboarding complete.</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-emerald-700 hover:text-emerald-800 hover:bg-emerald-100"
+                    onClick={() => setIsExpanded(true)}
+                  >
+                    View Checklist
+                  </Button>
+                </CardContent>
+             </Card>
+          ) : (
+            <Card className={`border-l-4 shadow-sm ${allComplete ? "border-emerald-500 bg-emerald-50/50" : "border-purple-500 bg-purple-50/50"}`}>
+                <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-3">
+                  <p className="text-sm font-medium text-slate-900 font-bold">
+                      Onboarding Checklist
+                  </p>
+                  {allComplete && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 text-xs text-slate-500 hover:text-slate-700 -mt-1"
+                      onClick={() => setIsExpanded(false)}
+                    >
+                      Minimize
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-2">
+                    <ChecklistItem label="Booking page created" checked={true} />
+                    <ChecklistItem label="Edit your services" checked={isServicesEdited} />
+                    <ChecklistItem label="Share link with patients" checked={isLinkShared} />
+                </div>
+                </CardContent>
+            </Card>
+          )}
+
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function ChecklistItem({ label, checked }: { label: string; checked: boolean }) {
+  if (checked) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-slate-700">
+        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">
+          <Check className="w-3 h-3" />
+        </div>
+        <span className="line-through text-slate-400">{label}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-2 text-sm text-slate-700">
+      <div className="w-5 h-5 border-2 border-slate-300 rounded-full"></div>
+      <span>{label}</span>
+    </div>
+  );
+}

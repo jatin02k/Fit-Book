@@ -57,12 +57,12 @@ export function StaffSidebar({ slug }: StaffSidebarProps) {
        icon: UserPlus, // Or User if imported
        gradient: "from-indigo-500 to-purple-500",
     },
-    {
-      href: `/app/${slug}`,
-      label: "Back to Customer Site",
-      icon: Home,
-      gradient: "from-gray-600 to-gray-800",
-    },
+    // {
+    //   href: `/app/${slug}`,
+    //   label: "Back to Customer Site",
+    //   icon: Home,
+    //   gradient: "from-gray-600 to-gray-800",
+    // },
   ];
 
   // Helper Content Component

@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import BookingForm from "@/app/components/bookingForm";
-import { ImageWithFallback } from "../figma/imageWithFallback";
+
 
 export default async function CheckoutPage({
   params,
