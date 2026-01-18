@@ -76,7 +76,7 @@ export default async function BookingSummary({
           <p className="text-xl text-gray-600">
             Your appointment has been successfully scheduled.
             {/* <br />
-            Status: Pending, Once confirmed you'll get confirmation email
+            Status: Pending, Once confirmed you&apos;ll get confirmation email
             <br />
             Thank you for booking our service! */}
           </p>

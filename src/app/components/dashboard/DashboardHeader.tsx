@@ -182,7 +182,7 @@ export function DashboardHeader({
                       <Check className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="font-bold text-emerald-900">You're all set!</p>
+                      <p className="font-bold text-emerald-900">You&apos;re all set!</p>
                       <p className="text-xs text-emerald-700">Onboarding complete.</p>
                     </div>
                   </div>
