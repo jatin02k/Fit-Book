@@ -98,7 +98,7 @@ export function DashboardHeader({
               Welcome to {org.name}
             </h1>
             <p className="text-slate-500 mt-1">
-              Your demo clinic is live! Share your link to get real bookings.
+              Your clinic is live! Share your link to get real bookings.
             </p>
           </div>
 
