@@ -223,7 +223,7 @@ export function FilteredDashboard({
     }, [appointments, serviceFilter, statusFilter, dateRange, isDefaultView]);
 
   return (
-    <div className="md:ml-64 p-4 md:p-8 mt-16 md:mt-0 bg-gray-50 min-h-screen">
+    <div className="md:ml-64 p-4 md:p-8 md:mt-0 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-6 md:mb-8">
@@ -238,6 +238,9 @@ export function FilteredDashboard({
           <Card>
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center gap-4">
+                <div className="bg-green-100 p-3 rounded-full">
+                  <CalendarIcon className="h-6 w-6 text-green-600" />
+                </div>
                 <div>
                   <p className="text-sm text-gray-600">Upcoming</p>
                   <p className="text-2xl text-black">{upcomingCount}</p>
@@ -301,7 +304,10 @@ export function FilteredDashboard({
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </div >
+                <div className="flex items-center gap-2 w-full md:w-auto">
+
+                <Filter className="h-4 w-4 text-gray-500 flex-shrink-0" />
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-full md:w-40">
                     <SelectValue placeholder="Filter by status" />
@@ -312,19 +318,21 @@ export function FilteredDashboard({
                     <SelectItem value="pending">Pending</SelectItem>
                   </SelectContent>
                 </Select>
+                </div>
                 {/* Date Range Filter */}
                 <div className="flex items-center gap-2 w-full md:w-auto">
+                  <CalendarIcon className=" h-4 w-4 text-gray-500 flex-shrink-0 " />
+
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         id="date"
                         variant={"outline"}
                         className={cn(
-                          "w-full md:w-[250px] justify-start text-left font-normal",
+                          "w-3/4 md:w-[250px] justify-start text-left font-normal",
                           !dateRange && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
                         {dateRange?.from ? (
                           dateRange.to ? (
                             <>

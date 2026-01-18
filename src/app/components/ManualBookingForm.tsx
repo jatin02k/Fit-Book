@@ -219,7 +219,7 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
 
     return (
         <div className="w-full">
-      <div className="max-w-6xl mx-auto p-10">
+      <div className="max-w-6xl mx-auto p-10 sm:mt-0 mt-10">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">

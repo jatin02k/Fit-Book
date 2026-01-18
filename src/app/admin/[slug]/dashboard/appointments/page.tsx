@@ -84,11 +84,10 @@ export default async function AppointmentsListPage() {
             </a>
           </div>
         )}
+      </div>     
+      <div className={!isSubscribed ? 'opacity-70 pointer-events-none blur-[1px]' : ''}>
+        <FilteredDashboard appointmentsList={appointmentsInput} services={uniqueServices} />
       </div>
-              
-        <div className={!isSubscribed ? 'opacity-30 pointer-events-none blur-[1px]' : ''}>
-           <FilteredDashboard appointmentsList={appointmentsInput} services={uniqueServices} />
-        </div>
     </div>
   );
 }

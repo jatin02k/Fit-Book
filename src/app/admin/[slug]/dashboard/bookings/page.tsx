@@ -159,7 +159,7 @@ export default async function CreateBookingPage() {
                     </div>
                     )}
 
-                    <div className={`transition-opacity duration-200 ${!isSubscribed ? 'opacity-30 pointer-events-none blur-[1px]' : ''}`}>
+                    <div className={`transition-opacity duration-200 ${!isSubscribed ? 'opacity-70 pointer-events-none blur-[1px]' : ''}`}>
                         <ManualBookingForm
                             services={services} 
                             businessHours={businessHours}
