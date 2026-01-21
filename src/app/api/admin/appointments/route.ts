@@ -2,6 +2,7 @@ import { fetchAdminBookings } from "@/lib/fetchAdminBookings";
 import { sendEmail } from "@/lib/mail";
 import { adminConfirmedTemplate } from "@/lib/mail/templates/adminConfirmed";
 import { customerConfirmedTemplate } from "@/lib/mail/templates/customerConfirmed";
+import { customerPendingTemplate } from "@/lib/mail/templates/customerPending";
 import { createClient } from "@/lib/supabase/server";
 import { render } from "@react-email/render";
 import { NextResponse } from "next/server";
@@ -43,39 +44,51 @@ export async function PATCH(request: Request) {
       const dateStr = start.toLocaleDateString('en-IN');
       const timeStr = start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
+      const cancellationLink = `${request.headers.get("origin")}/admin/cancel/${appointment.cancellation_link_uuid}`;
+
       // 1. Render both templates to HTML strings
       const customerHtml =customerConfirmedTemplate({
           name: appointment.customer_name,
           service: appointment.services.name,
           date: dateStr,
           time: timeStr,
-        })
-
-      const adminHtml = adminConfirmedTemplate({
-          customer: appointment.customer_name,
-          email: appointment.email,
-          service: appointment.services.name,
-          date: dateStr,
-          time: timeStr,
+          cancellationLink
         })
 
 
-      // 2. Send both emails simultaneously
-  await Promise.all([
-    sendEmail({
-      to: appointment.email,
-      subject: "✅ Appointment Confirmed - Appointor",
-      html: customerHtml,
-    }),
-    sendEmail({
-      to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
-      subject: `✅ BOOKING CONFIRMED: ${appointment.customer_name}`,
-      html: adminHtml,
-    })
-  ]);
+
+
+      // 2. Send email to Customer ONLY
+      await sendEmail({
+          to: appointment.email,
+          subject: "✅ Appointment Confirmed - Appointor",
+          html: customerHtml,
+      });
 
     } catch (emailError) {
       console.error("Confirmation emails failed:", emailError);
+    }
+  } else if (status === "pending") {
+    try {
+        const start = new Date(appointment.start_time);
+        const dateStr = start.toLocaleDateString('en-IN');
+        const timeStr = start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+        const customerHtml = customerPendingTemplate({
+            name: appointment.customer_name,
+            service: appointment.services.name,
+            date: dateStr,
+            time: timeStr,
+        });
+
+        await sendEmail({
+            to: appointment.email,
+            subject: "⏳ Appointment Status Updated: Pending",
+            html: customerHtml,
+        });
+
+    } catch (emailError) {
+        console.error("Pending email failed:", emailError);
     }
   }
     return NextResponse.json({ message: "Status updated successfully" });

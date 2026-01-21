@@ -16,7 +16,6 @@ export const bookingSchema = z.object({
     .email("Must be a valid email address.")
     .nonempty({ message: "Email is required." }),
   phoneNo: z.string().default(""),
-  paymentProofUrl: z.url("Invalid image URL"), // New field
 });
 
 export type BookingInput = z.infer<typeof bookingSchema>;

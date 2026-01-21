@@ -12,21 +12,41 @@ type Props = {
 
 export function adminPendingTemplate(props: Props) {
   return baseLayout({
-    title: "New Pending Booking 🔴",
+    title: "New Pending Request",
+    themeColor: "#f97316", // Orange-500
+    infoBoxColor: "#fff7ed", // Orange-50
+    infoBoxBorderColor: "#fdba74", // Orange-300
     content: `
-      <p><strong>Customer:</strong> ${props.customer}</p>
-      <p><strong>Email:</strong> ${props.email}</p>
-      <p><strong>Phone:</strong> ${props.phone ?? "N/A"}</p>
+      <p class="subtitle">You have a new appointment request pending approval.</p>
 
-      <div style="background:#f3f4f6; padding:16px; border-radius:8px; margin-top:12px;">
-        <p><strong>🛎 Service:</strong> ${props.service}</p>
-        <p><strong>📅 Date:</strong> ${props.date}</p>
-        <p><strong>⏰ Time:</strong> ${props.time}</p>
+      <div class="info-box">
+        <div class="info-row">
+          <span class="label">Customer: </span>
+          <span class="value">${props.customer}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Service: </span>
+          <span class="value">${props.service}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date: </span>
+          <span class="value">${props.date}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Time: </span>
+          <span class="value">${props.time}</span>
+        </div>
+         <div class="info-row">
+          <span class="label">Phone: </span>
+          <span class="value">${props.phone ?? "N/A"}</span>
+        </div>
       </div>
-
-      <p style="margin-top:16px;">
-        <a href="${props.paymentUrl}" target="_blank">💳 View Payment Screenshot</a>
-      </p>
+      
+       ${props.paymentUrl ? `
+        <div class="btn-container">
+            <a href="${props.paymentUrl}" class="button" target="_blank">View Payment Screenshot</a>
+        </div>
+       ` : ''}
     `,
   });
 }

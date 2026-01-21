@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 import * as crypto from "crypto";
 import { bookingSchema } from "@/lib/validation/bookingSchema";
 import { sendEmail } from "@/lib/mail";
-import { customerPendingTemplate } from "@/lib/mail/templates/customerPending";
-import { adminPendingTemplate } from "@/lib/mail/templates/adminPending";
+import { customerConfirmedTemplate } from "@/lib/mail/templates/customerConfirmed";
+import { adminConfirmedTemplate } from "@/lib/mail/templates/adminConfirmed";
 
 const BUFFER_MINUTES = 15;
 
@@ -53,9 +53,8 @@ export async function POST(request: Request) {
         customer_name: validatedData.name,
         email: validatedData.email,
         phone_number: validatedData.phoneNo,
-        payment_url: validatedData.paymentProofUrl,
         cancellation_link_uuid: cancellationUuid,
-        status: "pending",
+        status: "confirmed",
         reminder_sent: false,
       }])
       .select()
@@ -64,24 +63,25 @@ export async function POST(request: Request) {
     if (insertError) throw insertError;
 
     // e. SEND BOTH EMAILS SIMULTANEOUSLY
-try {
-  const customerHtml = customerPendingTemplate({
+    const cancellationLink = `${request.headers.get("origin")}/admin/cancel/${cancellationUuid}`;
+
+    try {
+      const customerHtml = customerConfirmedTemplate({
           name: validatedData.name,
           service: service.name,
           date: dateStr,
           time: timeStr,
+          cancellationLink,
         })
 
 
       // Render Admin HTML
-      const adminHtml = adminPendingTemplate({
+      const adminHtml = adminConfirmedTemplate({
           customer: validatedData.name,
           email: validatedData.email,
-          phone: validatedData.phoneNo || "Not provided",
           service: service.name,
           date: dateStr,
           time: timeStr,
-          paymentUrl: validatedData.paymentProofUrl, // The public URL from Supabase storage
         })
 
   const emailPromises = [];
@@ -89,7 +89,7 @@ try {
   // 1. Send to Customer
   emailPromises.push(sendEmail({
     to: validatedData.email,
-    subject: `⏳ Appointment Request Received — ${service.organizations.name}`,
+    subject: `✅ Appointment Confirmed — ${service.organizations.name}`,
     html: customerHtml,
     replyTo: service.organizations.email || undefined,
   }));
@@ -98,7 +98,7 @@ try {
   if (service.organizations.email) {
     emailPromises.push(sendEmail({
       to: service.organizations.email,
-      subject: `🔴 New Booking: ${validatedData.name} — ${service.name}`,
+      subject: `🎉 New Booking Confirmed: ${validatedData.name}`,
       html: adminHtml,
       replyTo: validatedData.email,
     }));

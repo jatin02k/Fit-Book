@@ -71,7 +71,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
            <BusinessDetailsForm 
               initialName={org.name}
               initialPhone={org.phone || ''}
-              initialQrCode={org.qr_code_url}
+            //   initialQrCode={org.qr_code_url}
               orgId={org.id}
               slug={org.slug}
            />

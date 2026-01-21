@@ -12,17 +12,15 @@ import { useRouter } from "next/navigation";
 interface BusinessDetailsFormProps {
   initialName: string;
   initialPhone: string;
-  initialQrCode?: string | null;
+
   orgId: string;
 }
 
-export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, orgId, slug }: BusinessDetailsFormProps & { slug: string }) {
+export function BusinessDetailsForm({ initialName, initialPhone, orgId, slug }: BusinessDetailsFormProps & { slug: string }) {
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState(initialPhone);
   
-  // QR Code State
-  const [qrFile, setQrFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(initialQrCode || null);
+
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -38,13 +36,7 @@ export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, 
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setQrFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,34 +44,14 @@ export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, 
     setMessage(null);
 
     try {
-      let uploadedQrUrl = initialQrCode;
 
-      // 1. Upload QR Code if a new file is selected
-      if (qrFile) {
-         const fileExt = qrFile.name.split('.').pop();
-         const fileName = `qr-code-${Date.now()}.${fileExt}`;
-         const filePath = `org-settings/${orgId}/${fileName}`;
-
-         const { error: uploadError } = await supabase.storage
-            .from('fitbook')
-            .upload(filePath, qrFile, { upsert: true });
-
-         if (uploadError) throw uploadError;
-
-         const { data: { publicUrl } } = supabase.storage
-            .from('fitbook')
-            .getPublicUrl(filePath);
-          
-         uploadedQrUrl = publicUrl;
-      }
 
       // 2. Update Organization Record
       const { error } = await supabase
         .from("organizations")
         .update({ 
             name, 
-            phone,
-            qr_code_url: uploadedQrUrl 
+            phone
         })
         .eq("id", orgId);
 
@@ -142,32 +114,7 @@ export function BusinessDetailsForm({ initialName, initialPhone, initialQrCode, 
             />
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="qr-code">Payment QR Code</Label>
-            <div className="flex items-start gap-4">
-                {previewUrl && (
-                    <div className="relative w-24 h-24 border rounded-lg overflow-hidden shrink-0">
-                        <img 
-                            src={previewUrl} 
-                            alt="QR Code Preview" 
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                )}
-                <div className="flex-1">
-                    <Input
-                    id="qr-code"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="cursor-pointer"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                        Upload your Venmo/UPI/Bank QR Code. Customers will scan this to pay.
-                    </p>
-                </div>
-            </div>
-          </div>
+
 
           {message && (
             <div

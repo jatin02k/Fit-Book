@@ -14,21 +14,27 @@ export function customerPendingTemplate({
   time,
 }: Props) {
   return baseLayout({
-    title: "Appointment Request Received ⏳",
+    title: "Appointment Pending",
+    themeColor: "#f59e0b", // Amber-500
+    infoBoxColor: "#fffbeb", // Amber-50
+    infoBoxBorderColor: "#fcd34d", // Amber-300
     content: `
-      <p>Hi <strong>${name}</strong>,</p>
+      <p class="subtitle">Hi ${name},<br>Your appointment status is currently pending. We will notify you once verified.</p>
 
-      <p>Your appointment request has been received and is pending verification.</p>
-
-      <div style="background:#f3f4f6; padding:16px; border-radius:8px;">
-        <p><strong>🛎 Service:</strong> ${service}</p>
-        <p><strong>📅 Date:</strong> ${date}</p>
-        <p><strong>⏰ Time:</strong> ${time}</p>
+      <div class="info-box">
+        <div class="info-row">
+          <span class="label">Service: </span>
+          <span class="value">${service}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date: </span>
+          <span class="value">${date}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Time: </span>
+          <span class="value">${time}</span>
+        </div>
       </div>
-
-      <p style="margin-top:16px;">
-        We’ll notify you once it’s confirmed.
-      </p>
     `,
   });
 }

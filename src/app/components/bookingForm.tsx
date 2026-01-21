@@ -18,7 +18,6 @@ type BookingFormProps = {
   date: string; // YYYY-MM-DD
   time: string; // HH:mm
   slug: string;
-  qrCodeUrl?: string;
 };
 
 export default function BookingForm({
@@ -26,7 +25,6 @@ export default function BookingForm({
   date,
   time,
   slug,
-  qrCodeUrl,
 }: BookingFormProps) {
   const router = useRouter();
 
@@ -36,7 +34,7 @@ export default function BookingForm({
     phoneNo: "",
   });
 
-  const [file, setFile] = useState<File | null>(null);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,10 +57,7 @@ export default function BookingForm({
     e.preventDefault();
 
     // 1️⃣ Basic checks
-    if (!file) {
-      toast.error("Please upload payment screenshot");
-      return;
-    }
+
 
     // 2️⃣ Validate form fields
     const parsed = clientSchema.safeParse(formData);
@@ -76,35 +71,13 @@ export default function BookingForm({
     }
 
     // 3️⃣ File type guard
-    if (!file.type.startsWith("image/")) {
-      toast.error("Only image files are allowed");
-      return;
-    }
+
 
     setIsSubmitting(true);
     const supabase = await createClient();
 
     try {
-      // 4️⃣ Upload image
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
-      const filePath = `payments/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("fitbook")
-        .upload(filePath, file, {
-          contentType: file.type,
-          upsert: false,
-        });
-
-      if (uploadError) throw uploadError;
-
-      // 5️⃣ Get public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("fitbook").getPublicUrl(filePath);
-
-      if (!publicUrl) throw new Error("Failed to get image URL");
 
       // 6️⃣ Build final payload
       const startTime = new Date(`${date}T${time}`).toISOString();
@@ -113,7 +86,6 @@ export default function BookingForm({
         ...formData,
         serviceId,
         startTime,
-        paymentProofUrl: publicUrl,
       };
 
       // 7️⃣ Server-level validation safety
@@ -194,24 +166,7 @@ export default function BookingForm({
             />
           </div>
 
-          <div>
-            <Label>Payment Screenshot</Label>
-            
-            
 
-            <input
-              type="file"
-              accept="image/*"
-              required
-              onChange={(e) =>
-                setFile(e.target.files?.[0] || null)
-              }
-              className="w-full border p-2 rounded-md"
-            />
-             <p className="text-xs text-gray-500 mt-1">
-                Upload a screenshot of your successful payment.
-            </p>
-          </div>
         </CardContent>
       </Card>
 

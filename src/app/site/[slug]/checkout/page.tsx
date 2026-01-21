@@ -43,7 +43,8 @@ export default async function CheckoutPage({
       price, 
       duration_minutes,
       organizations (
-        qr_code_url
+        name,
+        email
       )
     `)
     .eq("id", serviceId)
@@ -54,7 +55,7 @@ export default async function CheckoutPage({
   }
 
   // Extract QR Code URL safely
-  const qrCodeUrl = serviceData.organizations?.qr_code_url || undefined;
+
 
   return (
     <div className="min-h-screen pt-20 pb-16 bg-gray-50">
@@ -119,23 +120,7 @@ export default async function CheckoutPage({
                 </div>
               </div>
               {/* QR Code Display Section */}
-            {qrCodeUrl && (
-              <div className="mb-4 p-4 bg-gray-50 border rounded-lg flex flex-col items-center text-center">
-                 <p className="text-sm font-semibold text-gray-700 mb-2">Scan to Pay</p>
-                 <div className="relative bg-white p-2 rounded-lg shadow-sm w-48 h-48 mb-2">
-                    <Image 
-                      src={qrCodeUrl} 
-                      alt="Payment QR Code" 
-                      className="object-contain"
-                      fill
-                      unoptimized
-                    />
-                 </div>
-                 <p className="text-xs text-gray-500">
-                    Use your preferred payment app (Venmo, UPI, Bank App) to scan and pay.
-                 </p>
-              </div>
-            )}
+
             </CardContent>
           </Card>
 
@@ -146,7 +131,7 @@ export default async function CheckoutPage({
             time={String(bookingTime)}
             date={String(bookingDate)}
             slug={slug}
-            qrCodeUrl={qrCodeUrl}
+
           />
         </div>
       </div>
