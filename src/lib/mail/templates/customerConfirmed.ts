@@ -24,21 +24,18 @@ export function customerConfirmedTemplate({
 
       <div class="info-box">
         <div class="info-row">
-          <span class="label">Service: </span>
-          <span class="value">${service}</span>
+          <span class="label">Service:</span> <span class="value">${service}</span>
         </div>
         <div class="info-row">
-          <span class="label">Date: </span>
-          <span class="value">${date}</span>
+          <span class="label">Date:</span> <span class="value">${date}</span>
         </div>
         <div class="info-row">
-          <span class="label">Time: </span>
-          <span class="value">${time}</span>
+          <span class="label">Time:</span> <span class="value">${time}</span>
         </div>
       </div>
 
       <p style="text-align: center; color: #6b7280; font-size: 14px; margin-top: 24px;">
-        Please arrive 5-10 minutes early.
+        Please arrive 5 to 10 minutes early.
       </p>
 
       <div class="btn-container">

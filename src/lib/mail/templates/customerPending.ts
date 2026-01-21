@@ -23,16 +23,13 @@ export function customerPendingTemplate({
 
       <div class="info-box">
         <div class="info-row">
-          <span class="label">Service: </span>
-          <span class="value">${service}</span>
+          <span class="label">Service:</span> <span class="value">${service}</span>
         </div>
         <div class="info-row">
-          <span class="label">Date: </span>
-          <span class="value">${date}</span>
+          <span class="label">Date:</span> <span class="value">${date}</span>
         </div>
         <div class="info-row">
-          <span class="label">Time: </span>
-          <span class="value">${time}</span>
+          <span class="label">Time:</span> <span class="value">${time}</span>
         </div>
       </div>
     `,

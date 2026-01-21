@@ -20,24 +20,19 @@ export function adminConfirmedTemplate(props: Props) {
       
       <div class="info-box">
         <div class="info-row">
-          <span class="label">Customer: </span>
-          <span class="value">${props.customer}</span>
+          <span class="label">Customer:</span> <span class="value">${props.customer}</span>
         </div>
         <div class="info-row">
-          <span class="label">Service: </span>
-          <span class="value">${props.service}</span>
+          <span class="label">Service:</span> <span class="value">${props.service}</span>
         </div>
         <div class="info-row">
-          <span class="label">Date: </span>
-          <span class="value">${props.date}</span>
+          <span class="label">Date:</span> <span class="value">${props.date}</span>
         </div>
         <div class="info-row">
-          <span class="label">Time: </span>
-          <span class="value">${props.time}</span>
+          <span class="label">Time:</span> <span class="value">${props.time}</span>
         </div>
         <div class="info-row">
-            <span class="label">Email: </span>
-            <span class="value">${props.email}</span>
+            <span class="label">Email:</span> <span class="value">${props.email}</span>
         </div>
       </div>
     `,
