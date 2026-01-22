@@ -18,11 +18,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   if (!user) redirect("/admin/login");
 
   // 2. Get Organization & Subscription Details
-  const { data: org } = await supabase
+  const { data: orgData } = await supabase
     .from("organizations")
-    .select("id, name, email, phone, slug, subscription_status, subscription_id, qr_code_url")
+    .select("id, name, email, phone, slug, subscription_status, subscription_id, qr_code_url, razorpay_key_id, razorpay_key_secret")
     .eq("owner_id", user.id)
     .single();
+  
+  // Cast to any because types are not regenerated yet
+  const org = orgData as any;
 
   if (!org) return <div>Organization not found</div>;
 
@@ -74,6 +77,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             //   initialQrCode={org.qr_code_url}
               orgId={org.id}
               slug={org.slug}
+              initialRazorpayKeyId={org.razorpay_key_id || ''}
+              initialRazorpayKeySecret={org.razorpay_key_secret || ''}
            />
         </div>
 

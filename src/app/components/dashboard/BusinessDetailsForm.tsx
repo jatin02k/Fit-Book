@@ -14,11 +14,15 @@ interface BusinessDetailsFormProps {
   initialPhone: string;
 
   orgId: string;
+  initialRazorpayKeyId?: string;
+  initialRazorpayKeySecret?: string;
 }
 
-export function BusinessDetailsForm({ initialName, initialPhone, orgId, slug }: BusinessDetailsFormProps & { slug: string }) {
+export function BusinessDetailsForm({ initialName, initialPhone, orgId, slug, initialRazorpayKeyId, initialRazorpayKeySecret }: BusinessDetailsFormProps & { slug: string }) {
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState(initialPhone);
+  const [razorpayKeyId, setRazorpayKeyId] = useState(initialRazorpayKeyId || "");
+  const [razorpayKeySecret, setRazorpayKeySecret] = useState(initialRazorpayKeySecret || "");
   
 
 
@@ -51,7 +55,9 @@ export function BusinessDetailsForm({ initialName, initialPhone, orgId, slug }: 
         .from("organizations")
         .update({ 
             name, 
-            phone
+            phone,
+            razorpay_key_id: razorpayKeyId,
+            razorpay_key_secret: razorpayKeySecret
         })
         .eq("id", orgId);
 
@@ -112,6 +118,36 @@ export function BusinessDetailsForm({ initialName, initialPhone, orgId, slug }: 
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
+          </div>
+
+          <div className="grid gap-2 pt-4 border-t">
+            <h3 className="font-semibold text-gray-900">Payment Integration (Razorpay)</h3>
+            <p className="text-xs text-gray-500 mb-2">
+                Enter your Razorpay API keys to accept payments from customers directly.
+            </p>
+            
+            <div className="grid gap-2">
+                <Label htmlFor="razorpay-key-id">Key ID</Label>
+                <Input
+                    id="razorpay-key-id"
+                    name="razorpayKeyId"
+                    placeholder="rzp_test_..."
+                    value={razorpayKeyId}
+                    onChange={(e) => setRazorpayKeyId(e.target.value)}
+                />
+            </div>
+            
+            <div className="grid gap-2">
+                <Label htmlFor="razorpay-key-secret">Key Secret</Label>
+                <Input
+                    id="razorpay-key-secret"
+                    name="razorpayKeySecret"
+                    type="password"
+                    placeholder="Enter Key Secret"
+                    value={razorpayKeySecret}
+                    onChange={(e) => setRazorpayKeySecret(e.target.value)}
+                />
+            </div>
           </div>
 
 

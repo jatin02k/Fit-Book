@@ -11,9 +11,8 @@ export async function updateOrganization(formData: FormData) {
     return { error: "Unauthorized" };
   }
 
-  const name = formData.get("name") as string;
-  const phone = formData.get("phone") as string;
-  const email = formData.get("email") as string;
+  const razorpayKeyId = formData.get("razorpayKeyId") as string;
+  const razorpayKeySecret = formData.get("razorpayKeySecret") as string;
   // Slug is not editable to prevent URL breakage
   // Subscription status is read-only here
 
@@ -38,7 +37,9 @@ export async function updateOrganization(formData: FormData) {
         name,
         phone,
         email, 
-    })
+        razorpay_key_id: razorpayKeyId || null,
+        razorpay_key_secret: razorpayKeySecret || null,
+    } as any)
     .eq("id", org.id);
 
   if (updateError) {

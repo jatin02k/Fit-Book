@@ -38,7 +38,7 @@ export default function SignupPage() {
       .replace(/\s+/g, "-");
     
     // We update this in real-time. To avoid jitter, maybe we don't append random chars visibly?
-    // User complaint: "cant keep the gym name same coz it means slug becomes same".
+    // User complaint: "cant keep the business name same coz it means slug becomes same".
     // Solution: We should append a unique ID internally or let them edit it.
     // For MVP, let's append a random number to the slug in the state.
     const uniqueSlug = baseSlug ? `${baseSlug}-${Math.floor(1000 + Math.random() * 9000)}` : "";
@@ -107,8 +107,8 @@ export default function SignupPage() {
       }
 
       // 3. Create Organization
-      const orgName = formData.orgName || "Demo Physiotherapy Clinic";
-      const orgSlug = formData.orgSlug || `demo-physio-${Math.floor(1000 + Math.random() * 9000)}`;
+      const orgName = formData.orgName || "Demo Consultancy";
+      const orgSlug = formData.orgSlug || `demo-consult-${Math.floor(1000 + Math.random() * 9000)}`;
 
       console.log("Creating Organization:", orgName);
 
@@ -130,9 +130,9 @@ export default function SignupPage() {
       // 4. SEED DATA: Services
       console.log("Seeding Services...");
       const { data: services, error: servicesError } = await supabase.from("services").insert([
-        { organization_id: newOrg.id, name: "Consultation", duration_minutes: 30, price: 500, description: "Initial assessment and diagnosis" },
-        { organization_id: newOrg.id, name: "Pain Relief Session", duration_minutes: 45, price: 800, description: "Manual therapy and modality treatment" },
-        { organization_id: newOrg.id, name: "Rehab Session", duration_minutes: 60, price: 1200, description: "Exercise therapy and strengthening" },
+        { organization_id: newOrg.id, name: "Consultation Call", duration_minutes: 30, price: 50, description: "1-on-1 strategy session" },
+        { organization_id: newOrg.id, name: "Code Review", duration_minutes: 60, price: 150, description: "Deep dive into your codebase" },
+        { organization_id: newOrg.id, name: "Project Scope", duration_minutes: 45, price: 100, description: "Defining requirements and roadmap" },
       ]).select();
 
       if (servicesError) console.error("Error seeding services:", servicesError);
@@ -149,37 +149,37 @@ export default function SignupPage() {
           };
           
           // Get IDs for specific services if possible, or just use indices
-          const consultService = services.find(s => s.name === "Consultation") || services[0];
-          const reliefService = services.find(s => s.name === "Pain Relief Session") || services[1];
-          const rehabService = services.find(s => s.name === "Rehab Session") || services[2];
+          const consultService = services.find(s => s.name === "Consultation Call") || services[0];
+          const reviewService = services.find(s => s.name === "Code Review") || services[1];
+          const scopeService = services.find(s => s.name === "Project Scope") || services[2];
 
           const { error: apptError } = await supabase.from("appointments").insert([
               { 
                   organization_id: newOrg.id, 
                   service_id: consultService.id, 
-                  customer_name: "Rahul Verma", 
+                  customer_name: "Alex Design", 
                   start_time: setTime(10, 0), 
                   end_time: setTime(10, 30), 
                   status: "confirmed",
-                  notes: "Shoulder pain, first visit" 
+                  notes: "Discussing new SaaS UI" 
               },
               { 
                   organization_id: newOrg.id, 
-                  service_id: reliefService.id, 
-                  customer_name: "Sneha Gupta", 
+                  service_id: reviewService.id, 
+                  customer_name: "Sarah Founder", 
                   start_time: setTime(14, 0), 
-                  end_time: setTime(14, 45), 
+                  end_time: setTime(15, 0), 
                   status: "confirmed",
-                  notes: "Lower back pain relief" 
+                  notes: "React performance audit" 
               },
                { 
                   organization_id: newOrg.id, 
-                  service_id: rehabService.id, 
-                  customer_name: "Amit Patel", 
+                  service_id: scopeService.id, 
+                  customer_name: "Mike Product", 
                   start_time: setTime(16, 0), 
-                  end_time: setTime(17, 0), 
+                  end_time: setTime(16, 45), 
                   status: "confirmed",
-                  notes: " ACL Rehab - Session 3" 
+                  notes: " MVP Feature list" 
               }
           ]);
            if (apptError) console.error("Error seeding appointments:", apptError);
@@ -221,13 +221,13 @@ export default function SignupPage() {
              <span className="text-2xl font-bold tracking-tight">Appointor</span>
           </Link>
           <h1 className="text-5xl font-extrabold tracking-tight mb-6 leading-tight">
-            The OS for Modern <br />
+            The OS for <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
-              Physiotherapy Clinics
+              Indie Founders & Consultants
             </span>
           </h1>
           <p className="text-lg text-gray-400 max-w-md">
-             Join thousands of clinic owners who trust Appointor to automate patient bookings and payments.
+             Join thousands of founders who trust Appointor to automate strategy calls and payments.
           </p>
         </div>
 
@@ -239,10 +239,10 @@ export default function SignupPage() {
         <div className="relative z-10">
            <blockquote className="space-y-2">
               <p className="text-lg font-medium">
-                &ldquo;Appointor transformed how we run our clinic. The booking experience is flawless for our patients.&rdquo;
+                &ldquo;Appointor transformed how I run my consultancy. The booking experience is seamless for my clients.&rdquo;
               </p>
               <footer className="text-sm text-gray-500">
-                — Dr. Sarah Jenkins, City Physio
+                — Sarah Jenkins, Product Coach
               </footer>
            </blockquote>
         </div>
@@ -259,10 +259,10 @@ export default function SignupPage() {
 
           <div className="mb-6 text-center lg:text-left">
             <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-gray-900">
-              Create your clinic
+              Create your account
             </h2>
             <p className="mt-1 text-sm text-gray-600">
-              Start your 7-day free trial. {" "}
+              Start your 14-day free trial. {" "}
               <Link href="/admin/login" className="font-medium text-blue-600 hover:text-blue-500">
                 Already have an account?
               </Link>
@@ -282,7 +282,7 @@ export default function SignupPage() {
                           type="text"
                           required
                           className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
-                          placeholder="Dr. John Doe"
+                          placeholder="John Doe"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                        />
@@ -295,7 +295,7 @@ export default function SignupPage() {
                           type="email"
                           required
                           className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
-                          placeholder="john@clinic.com"
+                          placeholder="john@example.com"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                        />
@@ -320,33 +320,33 @@ export default function SignupPage() {
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
                 <div className="grid grid-cols-1 gap-4">
                      <div>
-                       <Label htmlFor="orgName" className="text-gray-700 text-xs uppercase font-semibold">Clinic Name</Label>
+                       <Label htmlFor="orgName" className="text-gray-700 text-xs uppercase font-semibold">Business / Brand Name</Label>
                        <Input
                           id="orgName"
                           name="orgName"
                           type="text"
                           required
                           className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
-                          placeholder="City Physiotherapy"
+                          placeholder="Acme Consulting"
                           value={formData.orgName}
                           onChange={handleOrgNameChange}
                        />
                     </div>
                      <div>
-                       <Label htmlFor="orgPhone" className="text-gray-700 text-xs uppercase font-semibold">Clinic Phone</Label>
+                       <Label htmlFor="orgPhone" className="text-gray-700 text-xs uppercase font-semibold">Phone (Optional)</Label>
                        <Input
                           id="orgPhone"
                           name="orgPhone"
                           type="tel"
                           required
                           className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
-                          placeholder="+91 98765 43210"
+                          placeholder="+1 555 000 0000"
                           value={formData.orgPhone}
                           onChange={(e) => setFormData({ ...formData, orgPhone: e.target.value })}
                        />
                     </div>
                      <div>
-                       <Label htmlFor="orgSlug" className="text-gray-700 text-xs uppercase font-semibold">Clinic URL</Label>
+                       <Label htmlFor="orgSlug" className="text-gray-700 text-xs uppercase font-semibold">Booking URL</Label>
                        <div className="flex rounded-md shadow-sm mt-1">
                           <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-200 bg-gray-50 text-gray-500 text-sm">
                             /app/
@@ -357,7 +357,7 @@ export default function SignupPage() {
                             type="text"
                             required
                             className="block w-full rounded-none rounded-r-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
-                            placeholder="city-physio"
+                            placeholder="acme-consulting"
                             value={formData.orgSlug}
                             onChange={(e) => setFormData({ ...formData, orgSlug: e.target.value })}
                          />
@@ -380,7 +380,7 @@ export default function SignupPage() {
               disabled={isLoading}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-500/20 text-sm font-bold tracking-wide text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02]"
             >
-              {isLoading ? "Creating Clinic..." : "Create Clinic"}
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
            

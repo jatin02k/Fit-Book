@@ -23,8 +23,8 @@ export function LandingHeader() {
               </Button>
             </Link>
             <Link href="/signup">
-              <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 shadow-md shadow-blue-500/20">
-                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+              <Button className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white border-0 shadow-md shadow-violet-500/20 transition-all hover:scale-105">
+                Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </div>

@@ -10,7 +10,7 @@ export default function FAQPage() {
     },
     {
       question: "Is payment required to confirm the booking?",
-      answer: "If the clinic requires advance payment, you will be asked to pay during booking. This helps secure your time slot and reduce no-shows.",
+      answer: "If the provider requires advance payment, you will be asked to pay during booking. This helps secure your time slot and reduce no-shows.",
     },
     {
       question: "Will I receive a confirmation?",
@@ -18,11 +18,11 @@ export default function FAQPage() {
     },
     {
       question: "What if I miss my appointment?",
-      answer: "Yes, if the clinic allows it. Use the reschedule or cancel option provided in your confirmation message.",
+      answer: "Yes, if the provider allows it. Use the reschedule or cancel option provided in your confirmation message.",
     },
     {
       question: "Can I reschedule or cancel my appointment?",
-      answer: "Yes, if the clinic allows it. Use the reschedule or cancel option provided in your confirmation message.",
+      answer: "Yes, if the provider allows it. Use the reschedule or cancel option provided in your confirmation message.",
     },
   ];
 

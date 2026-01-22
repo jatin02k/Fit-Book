@@ -42,7 +42,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
   
   let daysLeft = 0;
   if (isTrial && org.created_at) {
-      const trialEndsAt = new Date(new Date(org.created_at).getTime() + 7 * 24 * 60 * 60 * 1000);
+      const trialEndsAt = new Date(new Date(org.created_at).getTime() + 14 * 24 * 60 * 60 * 1000);
       daysLeft = Math.ceil((trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
   }
 
@@ -51,7 +51,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
       {isTrial && (
         <div className="bg-indigo-600 text-white px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2">
             <Clock className="w-4 h-4" />
-            <span>You are on the 7-day free trial. {Math.max(0, daysLeft)} days remaining.</span>
+            <span>You are on the 14-day free trial. {Math.max(0, daysLeft)} days remaining.</span>
             <Link href={`/app/${org.slug}/admin/dashboard/subscription`} className="underline hover:text-indigo-100">
                 Upgrade now to keep access
             </Link>

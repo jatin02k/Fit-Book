@@ -98,7 +98,7 @@ export function DashboardHeader({
               Welcome to {org.name}
             </h1>
             <p className="text-slate-500 mt-1">
-              Your clinic is live! Share your link to get real bookings.
+              Your booking page is live! Share your link to get real bookings.
             </p>
           </div>
 
@@ -110,7 +110,7 @@ export function DashboardHeader({
                 className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-2 whitespace-nowrap"
               >
                 <ExternalLink className="w-4 h-4" />
-                Open as Patient
+                Open Public Page
               </Link>
             <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1 pr-2 sm:pr-4 w-full sm:w-auto overflow-hidden">
               <div className="bg-white px-3 py-1.5 text-xs text-slate-500 font-mono rounded border border-slate-100 select-all truncate flex-1 sm:flex-none">
@@ -217,7 +217,7 @@ export function DashboardHeader({
                 <div className="space-y-2">
                     <ChecklistItem label="Booking page created" checked={true} />
                     <ChecklistItem label="Edit your services" checked={isServicesEdited} />
-                    <ChecklistItem label="Share link with patients" checked={isLinkShared} />
+                    <ChecklistItem label="Share link with clients" checked={isLinkShared} />
                 </div>
                 </CardContent>
             </Card>

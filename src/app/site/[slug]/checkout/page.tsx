@@ -131,7 +131,7 @@ export default async function CheckoutPage({
             time={String(bookingTime)}
             date={String(bookingDate)}
             slug={slug}
-
+            price={serviceData.price}
           />
         </div>
       </div>

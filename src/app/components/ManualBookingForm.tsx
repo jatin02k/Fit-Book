@@ -223,11 +223,11 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <UserPlus className="h-8 w-8 text-orange-500" />
+            <UserPlus className="h-8 w-8 text-blue-500" />
             <h1 className="text-3xl text-black">Manual Booking</h1>
           </div>
           <p className="text-lg text-gray-600">
-            Create walk-in appointments and manage bookings for customers
+            Create walk-in appointments and manage bookings for clients
           </p>
         </div>
 
@@ -322,9 +322,9 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
                           disabled={!available}
                           className={`p-2 rounded-lg border text-sm transition-colors ${
                             selectedTime === time
-                              ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white border-orange-500'
+                              ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-blue-500'
                               : available
-                              ? 'bg-white text-black border-gray-300 hover:border-orange-500 hover:bg-orange-50'
+                              ? 'bg-white text-black border-gray-300 hover:border-blue-500 hover:bg-blue-50'
                               : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
                           }`}
                         >
@@ -346,7 +346,7 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
             {/* Customer Details */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-black">Customer Information</CardTitle>
+                <CardTitle className="text-black">Client Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -354,7 +354,7 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
                   <Input
                     id="name"
                     type="text"
-                    placeholder="Enter customer's full name"
+                    placeholder="Enter client's full name"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="border-gray-300 focus:border-orange-500"
@@ -366,10 +366,10 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
                   <Input
                     id="email"
                     type="email"
-                    placeholder="customer@example.com"
+                    placeholder="client@example.com"
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
-                    className="border-gray-300 focus:border-orange-500"
+                    className="border-gray-300 focus:border-blue-500"
                   />
                 </div>
 
@@ -424,7 +424,7 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
             <Button 
               onClick={handleSubmit}
               disabled={!isFormValid() || isSubmitting}
-              className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600 py-6 text-lg"
+              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 py-6 text-lg"
               size="lg"
             >
               {isSubmitting ? 'Creating Booking...' : 'Create Manual Booking'}

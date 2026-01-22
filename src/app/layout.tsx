@@ -13,8 +13,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Appointor | #1 Physiotherapy Clinic Management Software',
-  description: 'The easiest way for physiotherapy clinics to manage patient bookings, staff rosters, and payments. Reduce no-shows by 40%.',
+  title: 'Appointor | Automate Booking for Coaches & Consultants',
+  description: 'Stop managing appointments manually. The simple booking system for founders, indie devs, coaches, consultants, and freelancers. 14-day free trial.',
+  keywords: ['booking software', 'appointment scheduling', 'booking system for coaches', 'scheduling software for consultants', 'indie dev tools', 'founder productivity', 'client booking', 'appointment booking for therapists'],
 };
 
 export default function RootLayout({

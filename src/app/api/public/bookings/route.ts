@@ -12,6 +12,8 @@ export async function POST(request: Request) {
   try {
     const supabase = await createClient();
     const body = await request.json();
+    // Allow paymentId and orderId to pass through even if not in original schema, strictly speaking we should update schema but for speed we extract from body
+    const { paymentId, orderId } = body; 
     const validatedData = bookingSchema.parse(body);
 
     // 1. Get Service Duration & Organization ID
@@ -56,6 +58,8 @@ export async function POST(request: Request) {
         cancellation_link_uuid: cancellationUuid,
         status: "confirmed",
         reminder_sent: false,
+        payment_id: paymentId || null,
+        order_id: orderId || null,
       }])
       .select()
       .single();

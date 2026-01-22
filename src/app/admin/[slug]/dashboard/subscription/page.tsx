@@ -91,7 +91,7 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
         
         // Check for trial
         if (org.subscription_status === 'active' && !org.subscription_id && org.created_at) {
-             const trialEnds = new Date(new Date(org.created_at).getTime() + 7 * 24 * 60 * 60 * 1000).getTime();
+             const trialEnds = new Date(new Date(org.created_at).getTime() + 14 * 24 * 60 * 60 * 1000).getTime();
              setTrialEndsAt(trialEnds);
         }
       }

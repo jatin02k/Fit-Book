@@ -18,13 +18,26 @@ type BookingFormProps = {
   date: string; // YYYY-MM-DD
   time: string; // HH:mm
   slug: string;
+  price: number;
 };
 
-export default function BookingForm({
+// This was the original export, we wrap it to include the script
+export default function BookingForm(props: BookingFormProps) {
+  return (
+    <>
+      <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
+      <BookingFormContent {...props} />
+    </>
+  );
+}
+
+function BookingFormContent({
   serviceId,
+  serviceName,
   date,
   time,
   slug,
+  price,
 }: BookingFormProps) {
   const router = useRouter();
 
@@ -56,9 +69,6 @@ export default function BookingForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1️⃣ Basic checks
-
-
     // 2️⃣ Validate form fields
     const parsed = clientSchema.safeParse(formData);
     if (!parsed.success) {
@@ -70,55 +80,96 @@ export default function BookingForm({
       return;
     }
 
-    // 3️⃣ File type guard
-
-
     setIsSubmitting(true);
-    const supabase = await createClient();
-
+    
     try {
+        // 1. Create Razorpay Order
+        const orderRes = await fetch("/api/payment/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ serviceId }),
+        });
+        
+        const orderData = await orderRes.json();
+        
+        if (!orderRes.ok) {
+            throw new Error(orderData.error || "Failed to initiate payment");
+        }
 
+        // 2. Open Razorpay Checkout
+        const options = {
+            key: orderData.keyId,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: "Appointor Booking", 
+            description: `Booking for ${serviceName}`,
+            order_id: orderData.orderId,
+            handler: async function (response: any) {
+                // Payment Success! Now confirm booking
+                await confirmBooking(response.razorpay_payment_id, response.razorpay_order_id);
+            },
+            prefill: {
+                name: formData.name,
+                email: formData.email,
+                contact: formData.phoneNo,
+            },
+            theme: {
+                color: "#000000",
+            },
+        };
 
-      // 6️⃣ Build final payload
-      const startTime = new Date(`${date}T${time}`).toISOString();
+        const rzp1 = new (window as any).Razorpay(options);
+        rzp1.on('payment.failed', function (response: any){
+             toast.error(response.error.description || "Payment Failed");
+             setIsSubmitting(false);
+        });
+        rzp1.open();
 
-      const payload = {
-        ...formData,
-        serviceId,
-        startTime,
-      };
-
-      // 7️⃣ Server-level validation safety
-      const serverParsed = bookingSchema.safeParse(payload);
-      if (!serverParsed.success) {
-        throw new Error("Invalid booking data");
-      }
-
-      // 8️⃣ Send to API
-      const res = await fetch("/api/public/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error || "Booking failed");
-      }
-
-      toast.success("Booking submitted!");
-      router.push(
-        `/app/${slug}/checkout/booking-summary/${data.cancellationLinkUuid}`
-      );
     } catch (err: unknown) {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : "Something went wrong";
       toast.error(errorMessage);
-    } finally {
       setIsSubmitting(false);
-    }
+    } 
   };
+  
+  const confirmBooking = async (paymentId: string, orderId: string) => {
+      try {
+        const startTime = new Date(`${date}T${time}`).toISOString();
+
+        const payload = {
+            ...formData,
+            serviceId,
+            startTime,
+            paymentId,
+            orderId
+        };
+  
+        // 8️⃣ Send to API
+        const res = await fetch("/api/public/bookings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+  
+        const data = await res.json();
+  
+        if (!res.ok) {
+            throw new Error(data?.error || "Booking confirmation failed");
+        }
+  
+        toast.success("Booking submitted!");
+        router.push(
+            `/app/${slug}/checkout/booking-summary/${data.cancellationLinkUuid}`
+        );
+      } catch(err: unknown) {
+          console.error(err);
+          const errorMessage = err instanceof Error ? err.message : "Booking failed after payment";
+          toast.error(errorMessage);
+      } finally {
+          setIsSubmitting(false);
+      }
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -181,7 +232,7 @@ export default function BookingForm({
             Submitting…
           </>
         ) : (
-          "Confirm Booking"
+          price > 0 ? `Pay ₹${price} & Book` : "Confirm Booking"
         )}
       </Button>
 
