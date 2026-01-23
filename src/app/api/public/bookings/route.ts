@@ -19,11 +19,15 @@ export async function POST(request: Request) {
     // 1. Get Service Duration & Organization ID
     const { data: service } = await supabase
       .from("services")
-      .select("*, organizations(id, name, email)") // Fetch nested Organization
+      .select("*, organizations(id, name, email, razorpay_key_secret)") // Fetch nested Organization with secret
       .eq("id", validatedData.serviceId)
       .single();
 
     if (!service) return NextResponse.json({ error: "Service not found" }, { status: 404 });
+
+    // Type assertion for joined data
+    const serviceOrg = (service as any).organizations; 
+    if (!serviceOrg) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
 
     // 2. Calculate Times
     const start = new Date(validatedData.startTime);
@@ -35,7 +39,7 @@ export async function POST(request: Request) {
     const { data: conflicts } = await supabase
       .from("appointments")
       .select("id")
-      .eq("organization_id", service.organizations.id) 
+      .eq("organization_id", serviceOrg.id) 
       .filter("start_time", "lt", end.toISOString())
       .filter("end_time", "gt", start.toISOString());
 
@@ -43,20 +47,48 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Slot already taken" }, { status: 409 });
     }
 
-    // 4. Insert Appointment
+    // 4. Verify Payment Signature (if paid)
+    if (paymentId && orderId) {
+       const signature = body.signature; 
+       if (!signature) {
+          return NextResponse.json({ error: "Missing payment signature" }, { status: 400 });
+       }
+
+       const secret = serviceOrg.razorpay_key_secret;
+       if (!secret) {
+          return NextResponse.json({ error: "Payment configuration missing on server" }, { status: 500 });
+       }
+
+       // Verify HMAC-SHA256
+       const generatedSignature = crypto
+         .createHmac("sha256", secret)
+         .update(orderId + "|" + paymentId)
+         .digest("hex");
+
+       if (generatedSignature !== signature) {
+         console.error("Signature Verification Failed:", {
+            sent: signature,
+            generated: generatedSignature
+         });
+         return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
+       }
+       console.log("Payment Signature Verified ✅");
+    }
+
+    // 5. Insert Appointment
     const cancellationUuid = crypto.randomUUID();
     const { error: insertError } = await supabase
       .from("appointments")
       .insert([{
         service_id: validatedData.serviceId,
-        organization_id: service.organizations.id, // <--- UPDATED: Accessing from joined table
+        organization_id: serviceOrg.id,
         start_time: start.toISOString(),
         end_time: end.toISOString(),
         customer_name: validatedData.name,
         email: validatedData.email,
         phone_number: validatedData.phoneNo,
         cancellation_link_uuid: cancellationUuid,
-        status: "confirmed",
+        status: "confirmed", // Securely confirmed now
         reminder_sent: false,
         payment_id: paymentId || null,
         order_id: orderId || null,
@@ -93,21 +125,21 @@ export async function POST(request: Request) {
   // 1. Send to Customer
   emailPromises.push(sendEmail({
     to: validatedData.email,
-    subject: `✅ Appointment Confirmed — ${service.organizations.name}`,
+    subject: `✅ Appointment Confirmed — ${serviceOrg.name}`,
     html: customerHtml,
-    replyTo: service.organizations.email || undefined,
+    replyTo: serviceOrg.email || undefined,
   }));
 
   // 2. Send to Admin (if email exists)
-  if (service.organizations.email) {
+  if (serviceOrg.email) {
     emailPromises.push(sendEmail({
-      to: service.organizations.email,
+      to: serviceOrg.email,
       subject: `🎉 New Booking Confirmed: ${validatedData.name}`,
       html: adminHtml,
       replyTo: validatedData.email,
     }));
   } else {
-    console.warn(`Organization ${service.organizations.id} has no email, skipping admin notification.`);
+    console.warn(`Organization ${serviceOrg.id} has no email, skipping admin notification.`);
   }
 
   await Promise.all(emailPromises);

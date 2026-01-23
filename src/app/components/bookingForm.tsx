@@ -144,7 +144,7 @@ function BookingFormContent({
             order_id: orderData.orderId,
             handler: async function (response: RazorpayResponse) {
                 // Payment Success! Now confirm booking
-                await confirmBooking(response.razorpay_payment_id, response.razorpay_order_id);
+                await confirmBooking(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
             },
             prefill: {
                 name: formData.name,
@@ -174,7 +174,7 @@ function BookingFormContent({
     } 
   };
   
-  const confirmBooking = async (paymentId: string, orderId: string) => {
+  const confirmBooking = async (paymentId: string, orderId: string, signature: string) => {
       try {
         const startTime = new Date(`${date}T${time}`).toISOString();
 
@@ -183,7 +183,8 @@ function BookingFormContent({
             serviceId,
             startTime,
             paymentId,
-            orderId
+            orderId,
+            signature // Send signature for server verification
         };
   
         // 8️⃣ Send to API

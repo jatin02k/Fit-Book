@@ -25,13 +25,13 @@ export async function POST(request: Request) {
 
     const payload = JSON.parse(rawBody);
     const event = payload.event;
-    const entity = payload.payload.subscription.entity;
+    const entity = payload.payload.subscription ? payload.payload.subscription.entity : payload.payload.payment?.entity;
     
     // We stored organization_id in notes when creating subscription, BUT
     // Razorpay subscription entity notes might not always be directly available in the same structure depending on event.
     // Ideally we rely on subscription_id matching.
     
-    const subscriptionId = entity.id;
+    const subscriptionId = entity?.id;
     const supabase = await createClient();
 
     let newStatus = '';
@@ -47,6 +47,14 @@ export async function POST(request: Request) {
       case "subscription.pending":
         newStatus = "inactive";
         break;
+      case "order.paid":
+        // Handle One-Time Payment webhook as duplicate protection or async confirm
+        // For now we just log it, or we could update an appointment if we stored it as 'pending' first.
+        // Current flow inserts as 'confirmed' directly on API.
+        // If we want robust async, we should insert 'pending' then update here.
+        // For this immediate task, we will just log success to show we receive it.
+        console.log("Webhook: Order Paid", payload.payload.order.entity.id);
+        return NextResponse.json({ status: "ok" });
     }
 
     if (newStatus) {
