@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     if (!service) return NextResponse.json({ error: "Service not found" }, { status: 404 });
 
     // Type assertion for joined data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const serviceOrg = (service as any).organizations; 
     if (!serviceOrg) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
 
