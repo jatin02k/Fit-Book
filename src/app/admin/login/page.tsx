@@ -30,6 +30,8 @@ export default function AdminLoginPage() {
   // 2. Initialize Supabase Client (Shared Config)
   const supabase = createClient();
 
+  // Create useCallback for handleRedirect to be stable for useEffect
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleRedirect = async (user: User) => {
       try {
           // 4. Success! Fetch Slug + Redirect
@@ -99,7 +101,7 @@ export default function AdminLoginPage() {
     checkSession();
     
     return () => { mounted = false; };
-  }, [supabase, router]);
+  }, [supabase, router, handleRedirect]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

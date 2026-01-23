@@ -1,9 +1,8 @@
+
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button"; // Assuming this exists, based on previous context. If not, I'll use standard <button> styling but usually setups have this.
-// Actually, to be safe and avoid "module not found" if Button component is different, I will build standard buttons with Tailwind classes or check if I can assume components/ui exists.
-// The user previously viewed `src/app/site/[slug]/page.tsx` which imported `Button` from `@/app/components/ui/button`. So it should be safe.
-// Wait, to be super safe and fully self-contained as requested ("Create as a single-page..."), I will use raw HTML/Tailwind for buttons unless I'm sure. I'll use the imported Button if I can, but standard elements are safer if I want to guarantee "single file" request spirit.
-// Actually, I will use standard HTML elements with Tailwind classes for maximum control and matching the "single-page HTML" request spirit while being in Next.js.
+import { Button } from "@/app/components/ui/button"; 
+// Using standard HTML buttons for landing page as per design choice, but keeping import if needed for future or removing if strictly unused.
+// Linter says unused.
 import { 
   CheckCircle2, 
   MessageCircle, 
@@ -11,10 +10,8 @@ import {
   Clock, 
   ChevronRight, 
   Menu, 
-  X,
   Users,
   Brain,
-  Dumbbell,
   Briefcase,
   GraduationCap,
   Sparkles,
@@ -25,51 +22,17 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { LandingFooter } from "@/app/components/LandingFooter";
+import { LandingHeader } from "@/app/components/LandingHeader";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
       
       {/* HEADER */}
-      <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-600 rounded-lg p-1.5">
-               <span className="font-bold text-white text-lg tracking-tight">Ap</span>
-            </div>
-            <span className="font-bold text-xl tracking-tight text-slate-900">Appointor</span>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-8">
-            <nav className="flex gap-6 text-sm font-medium text-slate-600">
-              <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-              <a href="#how-it-works" className="hover:text-blue-600 transition-colors">How it Works</a>
-              <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
-              <a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a>
-            </nav>
-            <div className="flex items-center gap-4">
-              <Link href="/login" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">
-                Log in
-              </Link>
-              <Link href="/signup">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:translate-y-px">
-                  Start Free Trial
-                </button>
-              </Link>
-            </div>
-          </div>
-
-          <div className="md:hidden">
-             {/* Mobile Menu Button Placeholder - would need state for real implementation */}
-             <button className="p-2 text-slate-600">
-               <Menu className="w-6 h-6" />
-             </button>
-          </div>
-        </div>
-      </header>
+      <LandingHeader />
 
       {/* HERO SECTION */}
-      <section className="pt-28 pb-16 lg:pt-32 lg:pb-24 relative overflow-hidden flex items-center min-h-[calc(100vh-64px)]">
+      <section className="pt-20 pb-12 lg:pt-32 lg:pb-24 relative overflow-hidden flex items-center min-h-[calc(100vh-64px)]">
         {/* Background Elements - High Contrast Grid Pattern */}
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(0,0,0,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.1)_1px,transparent_1px)] bg-[size:40px_40px]">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50 rounded-full blur-3xl opacity-50 translate-x-1/2 -translate-y-1/2"></div>
@@ -89,7 +52,7 @@ export default function LandingPage() {
                 New: Payments Integration
               </div>
 
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1]">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight lg:leading-[1.1]">
                 Stop Managing Appointments <br className="hidden md:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600">Manually</span>
               </h1>
@@ -202,7 +165,7 @@ export default function LandingPage() {
                  </div>
                  <h3 className="text-xl font-bold text-slate-900 mb-3">Manual Booking Chaos</h3>
                  <p className="text-slate-600 leading-relaxed">
-                   "Are you free Tuesday?" "No, how about Wed?"... <br/>
+                   &quot;Are you free Tuesday?&quot; &quot;No, how about Wed?&quot;... <br/>
                    Endless back-and-forth messages on WhatsApp, DM, or Email just to book one session.
                  </p>
               </div>
@@ -373,7 +336,7 @@ export default function LandingPage() {
                     <CheckCircle2 className="w-6 h-6" />
                  </div>
                  <h3 className="text-xl font-bold text-slate-900 mb-3">Calendar Sync</h3>
-                 <p className="text-slate-600">Connects with your Google Calendar so you're never double-booked. (Coming Soon)</p>
+                 <p className="text-slate-600">Connects with your Google Calendar so you&apos;re never double-booked. (Coming Soon)</p>
               </div>
 
               {/* Feature 6 */}

@@ -1,35 +1,77 @@
-"use client";
+'use client';
+
+import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import Image from "next/image";
+import { Menu, X } from "lucide-react";
 
 export function LandingHeader() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
-    <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link href="/" className="cursor-pointer group">
-            <h2 className="tracking-tight flex items-center gap-2 text-2xl font-bold">
-              <Image src="/logo.png" alt="Appointor" width={24} height={24} className="object-contain" />
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Appointor</span>
-            </h2>
-          </Link>
+      <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-600 rounded-lg p-1.5">
+               <span className="font-bold text-white text-lg tracking-tight">Ap</span>
+            </div>
+            <span className="font-bold text-xl tracking-tight text-slate-900">Appointor</span>
+          </div>
           
-          <div className="flex items-center gap-4">
-            <Link href="/admin/login">
-              <Button variant="ghost" className="text-gray-600 hover:text-blue-600 hover:bg-gray-50 font-medium">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white border-0 shadow-md shadow-violet-500/20 transition-all hover:scale-105">
-                Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+          <div className="hidden md:flex items-center gap-8">
+            <nav className="flex gap-6 text-sm font-medium text-slate-600">
+              <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
+              <a href="#how-it-works" className="hover:text-blue-600 transition-colors">How it Works</a>
+              <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
+              <a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a>
+            </nav>
+            <div className="flex items-center gap-4">
+              <Link href="/login" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">
+                Log in
+              </Link>
+              <Link href="/signup">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:translate-y-px">
+                  Start Free Trial
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="md:hidden">
+             {/* Mobile Menu Button */}
+             <button 
+               className="p-2 text-slate-600 hover:text-slate-900 transition-colors"
+               onClick={toggleMobileMenu}
+             >
+               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+             </button>
           </div>
         </div>
-      </div>
-    </header>
+
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-16 left-0 w-full bg-white border-b border-slate-100 shadow-xl p-4 flex flex-col gap-4 md:hidden animate-in slide-in-from-top-2 z-40">
+            <nav className="flex flex-col gap-4 text-sm font-medium text-slate-600">
+              <a href="#features" className="hover:text-blue-600 transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>Features</a>
+              <a href="#how-it-works" className="hover:text-blue-600 transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>How it Works</a>
+              <a href="#pricing" className="hover:text-blue-600 transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>Pricing</a>
+              <a href="#faq" className="hover:text-blue-600 transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>FAQ</a>
+            </nav>
+            <div className="flex flex-col gap-3 mt-2 border-t border-slate-50 pt-4">
+              <Link href="/login" className="text-center font-semibold text-slate-700 hover:text-blue-600 transition-colors py-2">
+                Log in
+              </Link>
+              <Link href="/signup">
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full text-sm font-semibold transition-all shadow-md">
+                  Start Free Trial
+                </button>
+              </Link>
+            </div>
+          </div>
+        )}
+      </header>
   );
 }

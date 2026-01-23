@@ -3,15 +3,10 @@
 // import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { format } from 'date-fns';
-import {
-    Card,
-    CardHeader,
-    CardContent,
-    CardTitle,
-} from "@/app/components/ui/card";
 import { Calendar } from "./ui/calendar";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { Check, Clock, ChevronRight } from "lucide-react";
 
 
 interface TimeSlot {
@@ -95,129 +90,117 @@ export function AvailabilitySelector({ serviceId, serviceName, slug }: Availabil
     }, [selectedDate, serviceId, dateString])
 
     return (
-        <div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Calendar */}
-                <Card className="bg-white">
-                    <CardHeader>
-                        <CardTitle className="text-black">Choose Date</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+        <div className="space-y-8">
+            <div className="flex flex-col xl:flex-row gap-12">
+                {/* Calendar Section */}
+                <div className="flex-shrink-0">
+                    <label className="block text-sm font-semibold text-slate-500 mb-4 uppercase tracking-wider">1. Choose Date</label>
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm inline-block p-4">
                         <Calendar
                             mode="single"
                             selected={selectedDate}
                             onSelect={setSelectedDate}
                             disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
-                            className="rounded-md border"
+                            className="rounded-md"
                         />
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                {/* Time Slots */}
-                <Card className="bg-white">
-                    <CardHeader>
-                        <CardTitle className="text-black">Available Times</CardTitle>
+                {/* Time Slots Section */}
+                <div className="flex-1 min-w-[300px]">
+                    <div className="flex items-center justify-between mb-4">
+                        <label className="block text-sm font-semibold text-slate-500 uppercase tracking-wider">2. Choose Time</label>
                         {selectedDate && (
-                            <p className="text-sm text-gray-600">
-                                {selectedDate.toLocaleDateString('en-US', {
-                                    weekday: 'long',
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                })}
-                            </p>
+                            <span className="text-sm font-medium text-slate-900 bg-slate-100 px-3 py-1 rounded-full">
+                                {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </span>
                         )}
-                    </CardHeader>
-                    <CardContent>
+                    </div>
+                    
+                    <div className="min-h-[300px]">
                         {!selectedDate ? (
-                            <p className="text-gray-500 text-center py-8">
-                                Please select a date first
-                            </p>
+                            <div className="h-full flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50 p-8">
+                                <Clock className="w-8 h-8 mb-2 opacity-50" />
+                                <p>Please select a date first</p>
+                            </div>
                         ) : isLoading ? (
-                            <p className="text-gray-500 text-center py-8">
-                                Loading slots...
-                            </p>
+                            <div className="grid grid-cols-3 gap-3 animate-pulse">
+                                {[1,2,3,4,5,6].map(i => (
+                                    <div key={i} className="h-12 bg-slate-100 rounded-xl"></div>
+                                ))}
+                            </div>
                         ) : (
-                            <div className="grid grid-cols-2 gap-3"> {/* Matches the 2-column Figma layout */}
-
-                                {/* Handle case where no slots are returned at all (e.g., day is fully booked or closed) */}
+                            <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
                                 {!isLoading && timeSlots.length === 0 ? (
-                                    <p className="col-span-2 text-gray-500 text-center py-8">
-                                        No slots are available for this date.
-                                    </p>
+                                    <div className="col-span-3 text-center py-12 text-slate-500 bg-slate-50 rounded-2xl border border-slate-100">
+                                        No slots available for this date.
+                                    </div>
                                 ) : (
-                                    // Render all time slots (available and unavailable)
                                     timeSlots.map((slot) => {
                                         const isSelected = selectedTime === slot.time;
-                                        const baseClasses = "p-3 rounded-lg border text-sm transition-colors text-center font-medium";
-
-                                        if (slot.isAvailable) {
-                                            return (
-                                                <button
-                                                    key={slot.time}
-                                                    onClick={() => setSelectedTime(slot.time)}
-                                                    className={`${baseClasses} 
-                                ${isSelected
-                                                            ? 'bg-black text-white border-black shadow-lg'
-                                                            : 'bg-white text-black border-gray-300 hover:bg-gray-100'
-                                                        }
-                            `}
-                                                >
-                                                    {slot.time}
-                                                </button>
-                                            );
-                                        } else {
-                                            return (
-                                                // Render unavailable slot as a non-interactive div
-                                                <div
-                                                    key={slot.time}
-                                                    className={`${baseClasses} bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed`}
-                                                >
-                                                    {slot.time}
-                                                    <div className="text-xs mt-1 font-medium">Unavailable</div>
+                                        return slot.isAvailable ? (
+                                            <button
+                                                key={slot.time}
+                                                onClick={() => setSelectedTime(slot.time)}
+                                                className={`
+                                                    relative px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 border
+                                                    ${isSelected 
+                                                        ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/20 scale-[1.02]' 
+                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50'
+                                                    }
+                                                `}
+                                            >
+                                                {slot.time}
+                                                {isSelected && (
+                                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white"></div>
+                                                )}
+                                            </button>
+                                        ) : (
+                                            <div
+                                                key={slot.time}
+                                                className="px-4 py-3 text-sm rounded-xl bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed justify-center flex decoration-slate-300 relative overflow-hidden"
+                                            >
+                                                <span className="relative z-10">{slot.time}</span>
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="w-full h-[1px] bg-slate-200 rotate-12"></div>
                                                 </div>
-                                            );
-                                        }
+                                            </div>
+                                        );
                                     })
                                 )}
                             </div>
                         )}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
-                {/* Summary */}
-                {selectedDate && selectedTime && (
-                    <Card className="mt-8 bg-white">
-                        <CardContent className="pt-6">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h3 className="text-lg text-black mb-1">Appointment Summary</h3>
-                                    <p className="text-gray-600">
-                                        {serviceName} on{' '}
-                                        {selectedDate.toLocaleDateString('en-US', {
-                                            weekday: 'long',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            year: 'numeric'
-                                        })} at {selectedTime}
-                                    </p>
-                                </div>
-                                <Link
-                                    href={`/app/${slug}/checkout?serviceId=${serviceId}&date=${dateString}&time=${timeParam}`}
-                                    className="ml-auto"
-                                >
-                                    <Button
-                                        className="bg-black text-white hover:bg-gray-800"
-                                        size="lg"
-                                    >
-                                        Continue to Booking
-                                    </Button>
-                                </Link>
 
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
+            {/* Sticky/Fixed Summary Footer if date & time selected */}
+            {selectedDate && selectedTime && (
+                <div className="mt-8 pt-8 border-t border-slate-100 animate-fade-in-up">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                         <div className="flex items-center gap-4">
+                             <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+                                <Check className="w-6 h-6" />
+                             </div>
+                             <div>
+                                 <p className="text-sm text-slate-500 font-medium uppercase tracking-wide">Excellent Choice</p>
+                                 <p className="text-slate-900 font-bold text-lg">
+                                    {selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at {selectedTime}
+                                 </p>
+                             </div>
+                         </div>
+                         
+                         <Link
+                            href={`/app/${slug}/checkout?serviceId=${serviceId}&date=${dateString}&time=${timeParam}`}
+                            className="w-full sm:w-auto"
+                        >
+                            <Button className="w-full sm:w-auto bg-slate-900 hover:bg-blue-600 text-white px-8 py-6 rounded-xl font-bold text-lg shadow-xl shadow-slate-900/10 transition-all hover:scale-105">
+                                Continue <ChevronRight className="ml-2 w-5 h-5" />
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

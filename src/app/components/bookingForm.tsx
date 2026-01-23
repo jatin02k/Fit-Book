@@ -10,7 +10,45 @@ import { toast, ToastContainer } from "react-toastify";
 import z from "zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+// Minimal Type Definitions for Razorpay
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayErrorResponse {
+  error: {
+    code: string;
+    description: string;
+    source: string;
+    step: string;
+    reason: string;
+    metadata: unknown;
+  };
+}
+
+// Renamed to avoid global conflict if any
+interface AppointorRazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  prefill: {
+    name: string;
+    email: string;
+    contact?: string;
+  };
+  theme: {
+    color: string;
+  };
+}
+
+// Remove global declaration to avoid merge conflicts
+// declare global { ... }
 
 type BookingFormProps = {
   serviceId: string;
@@ -97,14 +135,14 @@ function BookingFormContent({
         }
 
         // 2. Open Razorpay Checkout
-        const options = {
+        const options: AppointorRazorpayOptions = {
             key: orderData.keyId,
             amount: orderData.amount,
             currency: orderData.currency,
             name: "Appointor Booking", 
             description: `Booking for ${serviceName}`,
             order_id: orderData.orderId,
-            handler: async function (response: any) {
+            handler: async function (response: RazorpayResponse) {
                 // Payment Success! Now confirm booking
                 await confirmBooking(response.razorpay_payment_id, response.razorpay_order_id);
             },
@@ -118,8 +156,11 @@ function BookingFormContent({
             },
         };
 
+        // Use 'any' cast for window to access Razorpay constructor without conflict
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const rzp1 = new (window as any).Razorpay(options);
-        rzp1.on('payment.failed', function (response: any){
+        
+        rzp1.on('payment.failed', function (response: RazorpayErrorResponse){
              toast.error(response.error.description || "Payment Failed");
              setIsSubmitting(false);
         });

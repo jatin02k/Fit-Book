@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { User, Mail, Building, CreditCard, Calendar, CheckCircle, AlertCircle, Sparkles } from "lucide-react";
+import { User, Mail, Building, CreditCard, Sparkles, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { BusinessDetailsForm } from "@/app/components/dashboard/BusinessDetailsForm";
 
@@ -8,10 +8,27 @@ interface ProfilePageProps {
   params: Promise<{ slug: string }>;
 }
 
+interface OrganizationData {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  slug: string;
+  subscription_status: string;
+  subscription_id: string;
+  qr_code_url: string;
+  razorpay_key_id: string;
+  razorpay_key_secret: string;
+  profile_image_url?: string;
+  headline?: string;
+  bio?: string;
+  social_links?: { platform: string; url: string }[];
+}
+
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const supabase = await createClient();
-  const resolvedParams = await params;
-  const { slug } = resolvedParams;
+  await params; // consume params to satisfy async requirement if needed, or just remove if unused
+  // Not using slug from params as we get it from org data
 
   // 1. Get User
   const { data: { user } } = await supabase.auth.getUser();
@@ -20,19 +37,19 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   // 2. Get Organization & Subscription Details
   const { data: orgData } = await supabase
     .from("organizations")
-    .select("id, name, email, phone, slug, subscription_status, subscription_id, qr_code_url, razorpay_key_id, razorpay_key_secret")
+    .select("id, name, email, phone, slug, subscription_status, subscription_id, qr_code_url, razorpay_key_id, razorpay_key_secret, profile_image_url, headline, bio, social_links")
     .eq("owner_id", user.id)
     .single();
   
-  // Cast to any because types are not regenerated yet
-  const org = orgData as any;
+  // Cast to defined interface
+  const org = orgData as unknown as OrganizationData;
 
   if (!org) return <div>Organization not found</div>;
 
   const isActive = org.subscription_status === 'active';
 
   return (
-    <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0 min-h-screen bg-gray-50">
+    <div className="p-4 md:p-8 md:ml-64 mt-20 md:mt-0 min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Header */}
@@ -68,13 +85,16 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
            <div className="border-b px-6 py-4 bg-gray-50/50 flex items-center gap-2">
               <Building className="w-5 h-5 text-gray-500" />
-              <h2 className="font-semibold text-gray-700">Business Profile</h2>
+              <h2 className="font-semibold text-gray-700">Profile</h2>
            </div>
            
            <BusinessDetailsForm 
               initialName={org.name}
               initialPhone={org.phone || ''}
-            //   initialQrCode={org.qr_code_url}
+              initialProfileImage={org.profile_image_url}
+              initialHeadline={org.headline}
+              initialBio={org.bio}
+              initialSocialLinks={org.social_links}
               orgId={org.id}
               slug={org.slug}
               initialRazorpayKeyId={org.razorpay_key_id || ''}

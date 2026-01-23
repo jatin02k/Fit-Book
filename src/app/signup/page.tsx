@@ -249,7 +249,7 @@ export default function SignupPage() {
       </div>
 
       {/* FORM SIDER (RIGHT) - COMPACT LAYOUT */}
-      <div className="flex-1 flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-20 xl:px-24 bg-gray-50 h-screen overflow-y-auto">
+      <div className="flex-1 flex flex-col justify-center py-6 px-3 sm:px-6 lg:px-20 xl:px-24 bg-gray-50 h-screen overflow-y-auto">
         <div className="mx-auto w-full max-w-lg lg:max-w-2xl">
           <div className="lg:hidden mb-4 text-center">
              <Link href="/" className="inline-flex items-center gap-2">
@@ -269,11 +269,11 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSignup}>
+          <form className="space-y-3 md:space-y-4" onSubmit={handleSignup}>
             {/* Personal Details */}
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+            <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3 md:space-y-4">
                 
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-3 md:gap-4">
                     <div>
                        <Label htmlFor="name" className="text-gray-700 text-xs uppercase font-semibold">Full Name</Label>
                        <Input
@@ -281,7 +281,7 @@ export default function SignupPage() {
                           name="name"
                           type="text"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50 py-2 md:py-2"
                           placeholder="John Doe"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -294,7 +294,7 @@ export default function SignupPage() {
                           name="email"
                           type="email"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50 py-2 md:py-2"
                           placeholder="john@example.com"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -307,7 +307,7 @@ export default function SignupPage() {
                           name="password"
                           type="password"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50 py-2 md:py-2"
                           placeholder="••••••••"
                           value={formData.password}
                           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -317,8 +317,8 @@ export default function SignupPage() {
             </div>
 
             {/* Clinic Details */}
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                <div className="grid grid-cols-1 gap-4">
+            <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3 md:space-y-4">
+                <div className="grid grid-cols-1 gap-3 md:gap-4">
                      <div>
                        <Label htmlFor="orgName" className="text-gray-700 text-xs uppercase font-semibold">Business / Brand Name</Label>
                        <Input
@@ -326,7 +326,7 @@ export default function SignupPage() {
                           name="orgName"
                           type="text"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50 py-2 md:py-2"
                           placeholder="Acme Consulting"
                           value={formData.orgName}
                           onChange={handleOrgNameChange}
@@ -339,7 +339,7 @@ export default function SignupPage() {
                           name="orgPhone"
                           type="tel"
                           required
-                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                          className="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50 py-2 md:py-2"
                           placeholder="+1 555 000 0000"
                           value={formData.orgPhone}
                           onChange={(e) => setFormData({ ...formData, orgPhone: e.target.value })}
@@ -356,7 +356,7 @@ export default function SignupPage() {
                             name="orgSlug"
                             type="text"
                             required
-                            className="block w-full rounded-none rounded-r-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50"
+                            className="block w-full rounded-none rounded-r-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500 bg-gray-50/50 py-2 md:py-2"
                             placeholder="acme-consulting"
                             value={formData.orgSlug}
                             onChange={(e) => setFormData({ ...formData, orgSlug: e.target.value })}

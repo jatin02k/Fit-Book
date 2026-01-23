@@ -138,6 +138,10 @@ export type Database = {
           qr_code_url: string | null
           subscription_id: string | null
           subscription_status: string | null
+          profile_image_url: string | null
+          bio: string | null
+          headline: string | null
+          social_links: Json | null
         }
         Insert: {
           created_at?: string | null
@@ -152,6 +156,10 @@ export type Database = {
           qr_code_url?: string | null
           subscription_id?: string | null
           subscription_status?: string | null
+          profile_image_url?: string | null
+          bio?: string | null
+          headline?: string | null
+          social_links?: Json | null
         }
         Update: {
           created_at?: string | null
@@ -166,6 +174,10 @@ export type Database = {
           qr_code_url?: string | null
           subscription_id?: string | null
           subscription_status?: string | null
+          profile_image_url?: string | null
+          bio?: string | null
+          headline?: string | null
+          social_links?: Json | null
         }
         Relationships: []
       }

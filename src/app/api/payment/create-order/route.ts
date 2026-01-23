@@ -19,15 +19,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Service not found" }, { status: 404 });
     }
 
-    const org = service.organizations as any; 
+    interface ServiceWithOrg {
+        price: number;
+        organizations: {
+            id: string;
+            razorpay_key_id: string | null;
+            razorpay_key_secret: string | null;
+        } | {
+            id: string;
+            razorpay_key_id: string | null;
+            razorpay_key_secret: string | null;
+        }[] | null;
+    }
+
+    const serviceData = service as unknown as ServiceWithOrg;
+    // Handle array or object result from join
+    const org = Array.isArray(serviceData.organizations) 
+        ? serviceData.organizations[0] 
+        : serviceData.organizations;
+
     console.log("Debug Payment: Org Data", { 
         orgId: org?.id, 
         hasKeyId: !!org?.razorpay_key_id, 
         hasSecret: !!org?.razorpay_key_secret 
     });
 
-    const key_id = org.razorpay_key_id;
-    const key_secret = org.razorpay_key_secret;
+    const key_id = org?.razorpay_key_id;
+    const key_secret = org?.razorpay_key_secret;
 
     if (!key_id || !key_secret) {
       console.error("Missing keys for org:", org?.id);
@@ -56,8 +74,9 @@ export async function POST(request: Request) {
         keyId: key_id 
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating order:", error);
-    return NextResponse.json({ error: error.message || "Failed to create order" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to create order";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

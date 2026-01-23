@@ -30,6 +30,7 @@ export default function AdminLoginPage() {
   // 2. Initialize Supabase Client (Shared Config)
   const supabase = createClient();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleRedirect = async (user: User) => {
       try {
           // 4. Success! Fetch Slug + Redirect
@@ -99,7 +100,7 @@ export default function AdminLoginPage() {
     checkSession();
     
     return () => { mounted = false; };
-  }, [supabase, router]);
+  }, [supabase, router, handleRedirect]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,24 +149,24 @@ export default function AdminLoginPage() {
       <div className="absolute top-0 right-1/4 translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-3xl opacity-60 animate-pulse" style={{ animationDelay: "2s" }}></div>
 
       <Card className="w-full max-w-md shadow-2xl border-0 bg-white/95 backdrop-blur-sm relative z-10">
-        <CardHeader className="text-center pb-2 pt-8">
-          <Link href="/" className="absolute top-6 right-6 z-50 p-3 rounded-full bg-black backdrop-blur-md border border-white/10 text-white shadow-xl hover:bg-gray-500 hover:scale-110 transition-all duration-300 group">
-         <Home className="w-5 h-5 text-white/80 group-hover:text-blue-400" />
+        <CardHeader className="text-center pb-2 pt-5 md:pt-8">
+          <Link href="/" className="absolute top-4 right-4 md:top-6 md:right-6 z-50 p-2 md:p-3 rounded-full bg-black backdrop-blur-md border border-white/10 text-white shadow-xl hover:bg-gray-500 hover:scale-110 transition-all duration-300 group">
+         <Home className="w-4 h-4 md:w-5 md:h-5 text-white/80 group-hover:text-blue-400" />
       </Link>
-           <div className="mx-auto mb-4 h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <LogIn className="w-6 h-6 text-white" />
+           <div className="mx-auto mb-4 h-10 w-10 md:h-12 md:w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <LogIn className="w-5 h-5 md:w-6 md:h-6 text-white" />
            </div>
-          <CardTitle className="text-3xl font-bold tracking-tight text-gray-900">
+          <CardTitle className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">
             Welcome back
           </CardTitle>
-          <CardDescription className="text-base text-gray-500 mt-2">
+          <CardDescription className="text-sm md:text-base text-gray-500 mt-2">
             Sign in to manage your business
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-8 pt-6">
-          <form onSubmit={handleSubmit} className="space-y-5">
+        <CardContent className="p-5 pt-4 md:p-8 md:pt-6">
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
             {error && (
-              <div className="p-4 bg-red-50 border border-red-100 text-red-700 rounded-xl text-sm flex items-center gap-2">
+              <div className="p-3 md:p-4 bg-red-50 border border-red-100 text-red-700 rounded-xl text-sm flex items-center gap-2">
                  <div className="h-2 w-2 rounded-full bg-red-500"></div>
                  {error}
               </div>
@@ -180,7 +181,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="py-6 rounded-xl border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                className="py-3 md:py-6 rounded-xl border-gray-200 focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
 
@@ -196,7 +197,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="py-6 rounded-xl border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                className="py-3 md:py-6 rounded-xl border-gray-200 focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
 

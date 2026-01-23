@@ -11,8 +11,23 @@ export async function updateOrganization(formData: FormData) {
     return { error: "Unauthorized" };
   }
 
-  const razorpayKeyId = formData.get("razorpayKeyId") as string;
-  const razorpayKeySecret = formData.get("razorpayKeySecret") as string;
+  const name = formData.get("name") as string;
+  const phone = formData.get("phone") as string;
+  // const email = formData.get("email") as string; // Removed email from update to avoid conflict or need for verification logic if not intended.
+  const profile_image_url = formData.get("profile_image_url") as string;
+  const headline = formData.get("headline") as string;
+  const bio = formData.get("bio") as string;
+  const social_links_raw = formData.get("social_links") as string;
+  const razorpayKeyId = formData.get("razorpay_key_id") as string;
+  const razorpayKeySecret = formData.get("razorpay_key_secret") as string;
+
+  let social_links = [];
+  try {
+      social_links = JSON.parse(social_links_raw || '[]');
+  } catch (e) {
+      console.error("Failed to parse social links", e);
+  }
+
   // Slug is not editable to prevent URL breakage
   // Subscription status is read-only here
 
@@ -28,6 +43,7 @@ export async function updateOrganization(formData: FormData) {
     .single();
 
   if (orgError || !org) {
+    console.error("Org fetch error:", orgError);
     return { error: "Organization not found" };
   }
 
@@ -36,10 +52,13 @@ export async function updateOrganization(formData: FormData) {
     .update({
         name,
         phone,
-        email, 
+        profile_image_url,
+        headline,
+        bio,
+        social_links,
         razorpay_key_id: razorpayKeyId || null,
         razorpay_key_secret: razorpayKeySecret || null,
-    } as any)
+    })
     .eq("id", org.id);
 
   if (updateError) {

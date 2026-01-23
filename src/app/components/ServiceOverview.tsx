@@ -211,11 +211,12 @@ export default function ServiceOverview({
     if (response.status === 204) {
       setServices(services.filter((s) => s.id !== serviceId));
     } else {
-      let errorMessage = "Failed to delete service.";
+      const errorMessage = "Failed to delete service.";
       try {
         const errorBody = await response.json();
         // Assuming the server returns an object like { error: "Database Delete Failed: ..." }
-        errorMessage = errorBody.error || errorMessage;
+        // errorMessage = errorBody.error || errorMessage; // unused
+        console.error("Delete error body:", errorBody); // Log it instead
       } catch (e) {
         // Failsafe if the 500 error response wasn't proper JSON either
         console.error("Could not parse error response body:", e);

@@ -1,0 +1,59 @@
+`next lint` is deprecated and will be removed in Next.js 16.
+For new projects, use create-next-app to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+npx @next/codemod@canary next-lint-to-eslint-cli .
+
+
+./src/app/admin/[slug]/dashboard/subscription/page.tsx
+5:33  Warning: 'AlertCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/appointments/route.ts
+3:10  Warning: 'adminConfirmedTemplate' is defined but never used.  @typescript-eslint/no-unused-vars
+7:10  Warning: 'render' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/subscription/create/route.ts
+5:28  Warning: '_request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/components/AvailabilitySelector.tsx
+25:51  Warning: 'serviceName' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/components/FilteredDashboard.tsx
+64:26  Warning: '_service' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/components/ServiceOverview.tsx
+214:11  Error: 'errorMessage' is never reassigned. Use 'const' instead.  prefer-const
+214:11  Warning: 'errorMessage' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/components/dashboard/BusinessDetailsForm.tsx
+227:30  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/app/components/dashboard/DashboardHeader.tsx
+6:45  Warning: 'CalendarCheck' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/page.tsx
+2:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/signup/page.tsx
+8:10  Warning: 'useRouter' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/site/[slug]/book/[id]/page.tsx
+6:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+73:21  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+73:92  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/app/site/[slug]/checkout/page.tsx
+5:8  Warning: 'Image' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/site/[slug]/page.tsx
+6:158  Warning: 'Star' is defined but never used.  @typescript-eslint/no-unused-vars
+6:164  Warning: 'MapPin' is defined but never used.  @typescript-eslint/no-unused-vars
+6:172  Warning: 'CreditCard' is defined but never used.  @typescript-eslint/no-unused-vars
+7:8  Warning: 'Image' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/site/[slug]/services/page.tsx
+3:10  Warning: 'ImageWithFallback' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/middleware.ts
+58:9  Warning: 'searchParams' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

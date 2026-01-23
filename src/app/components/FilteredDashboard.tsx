@@ -61,7 +61,7 @@ const formatDateTime = (startTime: string) => {
   };
 };
 
-const getServiceColor = (service: string) => {
+const getServiceColor = (_service: string) => {
   // Simple hashing or cyclical selection for consistent colors could be better,
   // but for now, let's keep it simple or default to gray/blue.
   // We can't easily switch on dynamic strings without a known list.

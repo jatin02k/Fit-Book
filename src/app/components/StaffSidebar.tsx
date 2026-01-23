@@ -3,7 +3,7 @@ import { useState } from "react"; // Add useState
 import { createClient } from "@/lib/supabase/client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Calendar, UserPlus, List, Users, Home, Sparkles, LogOut, Menu, X } from "lucide-react"; // Add Menu, X
+import { Calendar, UserPlus, List, Users, Sparkles, LogOut, Menu, X } from "lucide-react"; // Add Menu, X
 import { Button } from "./ui/button";
 
 interface StaffSidebarProps {
