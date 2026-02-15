@@ -110,7 +110,7 @@ export default async function AdminDashboardPage() {
   const hasRealBookings = validAppts.length > 3;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-zinc-950 flex flex-col">
       <div className="md:ml-64 flex-1 flex flex-col overflow-hidden">
         <div className="pt-20 md:pt-8 px-2 sm:px-6 lg:px-8 max-w-[100vw] overflow-x-hidden w-full flex-1">
             <DashboardHeader 

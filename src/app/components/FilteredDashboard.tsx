@@ -223,53 +223,53 @@ export function FilteredDashboard({
     }, [appointments, serviceFilter, statusFilter, dateRange, isDefaultView]);
 
   return (
-    <div className="md:ml-64 p-4 md:p-8 md:mt-0 bg-gray-50 min-h-screen">
+    <div className="md:ml-64 p-4 md:p-8 md:mt-0 bg-zinc-950 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl text-black mb-2">Upcoming Appointments</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl md:text-3xl text-white mb-2">Upcoming Appointments</h1>
+          <p className="text-slate-400">
             View and manage all scheduled appointments
           </p>
         </div>
 
         {/* Quick Stats Block (The component on the top of the image) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-          <Card>
+          <Card className="bg-zinc-900 border-zinc-800">
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center gap-4">
                 <div className="bg-green-100 p-3 rounded-full">
                   <CalendarIcon className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Upcoming</p>
-                  <p className="text-2xl text-black">{upcomingCount}</p>
+                  <p className="text-sm text-slate-400">Upcoming</p>
+                  <p className="text-2xl text-white">{upcomingCount}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-zinc-900 border-zinc-800">
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center gap-4">
                 <div className="bg-green-100 p-3 rounded-full">
                   <User className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Confirmed</p>
-                  <p className="text-2xl text-black">{confirmedCount}</p>
+                  <p className="text-sm text-slate-400">Confirmed</p>
+                  <p className="text-2xl text-white">{confirmedCount}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-zinc-900 border-zinc-800">
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center gap-4">
                 <div className="bg-yellow-100 p-3 rounded-full">
                   <Clock className="h-6 w-6 text-yellow-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Pending</p>
-                  <p className="text-2xl text-black">{pendingCount}</p>
+                  <p className="text-sm text-slate-400">Pending</p>
+                  <p className="text-2xl text-white">{pendingCount}</p>
                 </div>
               </div>
             </CardContent>
@@ -277,7 +277,7 @@ export function FilteredDashboard({
         </div>
 
         {/* Filters and Table */}
-        <Card>
+        <Card className="bg-zinc-900 border-zinc-800">
           <CardHeader>
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <CardTitle className="flex items-center gap-2 self-start md:self-center">
@@ -384,30 +384,30 @@ export function FilteredDashboard({
             {/* Mobile View: Cards */}
             <div className="md:hidden space-y-4">
                {sortedAppointments.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-slate-400">
                      No appointments found.
                   </div>
                ) : (
                   sortedAppointments.map((appointment) => {
                      const { date, time } = formatDateTime(appointment.start_time);
                      return (
-                        <div key={appointment.id} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm space-y-3">
+                        <div key={appointment.id} className="bg-zinc-800 p-4 rounded-lg border border-zinc-700 shadow-sm space-y-3">
                            <div className="flex justify-between items-start">
                               <div>
-                                 <p className="font-semibold text-black">{appointment.customerName}</p>
-                                 <p className="text-sm text-gray-500">{appointment.serviceName}</p>
+                                 <p className="font-semibold text-white">{appointment.customerName}</p>
+                                 <p className="text-sm text-slate-400">{appointment.serviceName}</p>
                               </div>
                               <Badge className={getStatusColor(appointment.status)}>
                                  {appointment.status}
                               </Badge>
                            </div>
                            
-                           <div className="flex items-center gap-2 text-sm text-gray-600">
+                           <div className="flex items-center gap-2 text-sm text-slate-400">
                               <CalendarIcon className="w-4 h-4" />
                               <span>{date} at {time}</span>
                            </div>
                            
-                           <div className="text-sm text-gray-600 space-y-1 pt-2 border-t border-gray-100">
+                           <div className="text-sm text-slate-400 space-y-1 pt-2 border-t border-zinc-700">
                               <div className="flex items-center gap-2">
                                 <Mail className="w-3 h-3" /> {appointment.email}
                               </div>
@@ -512,7 +512,7 @@ export function FilteredDashboard({
                     return (
                       <TableRow key={appointment.id}>
                         <TableCell>
-                          <p className="text-black">
+                          <p className="text-white">
                             {appointment.customerName}
                           </p>
                         </TableCell>
@@ -542,8 +542,8 @@ export function FilteredDashboard({
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            <p className="text-gray-600">{appointment.email}</p>
-                            <p className="text-gray-600">
+                            <p className="text-slate-400">{appointment.email}</p>
+                            <p className="text-slate-400">
                               {appointment.phone_number}
                             </p>
                           </div>

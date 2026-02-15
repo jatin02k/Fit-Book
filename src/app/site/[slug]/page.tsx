@@ -284,7 +284,7 @@ export default async function TenantHomePage({ params }: TenantPageProps) {
 
 
       {/* --------------------- HOW IT WORKS --------------------- */}
-      <section className="py-20 md:py-24 bg-slate-900 text-white relative overflow-hidden">
+      <section className="py-20 md:py-24 bg-zinc-900/30 text-white relative overflow-hidden">
          {/* Decoration */}
          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 

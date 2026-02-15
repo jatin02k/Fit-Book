@@ -56,9 +56,9 @@ export default async function ServicesPage() {
   }
 
   return (
-    <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0 bg-zinc-950 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Session Management</h1>
+        <h1 className="text-3xl font-bold text-white mb-8">Session Management</h1>
         
         {!isSubscribed && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between">

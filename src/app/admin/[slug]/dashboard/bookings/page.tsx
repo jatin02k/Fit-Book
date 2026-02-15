@@ -142,7 +142,7 @@ export default async function CreateBookingPage() {
 
     return (
 
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-zinc-950">
             <div className="ml-0 md:ml-64 transition-all duration-300 ease-in-out">
                 <div className="max-w-6xl mx-auto">
                     {/* <h1 className="text-3xl font-bold text-gray-900 mb-8">Manual Booking</h1> */}

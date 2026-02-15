@@ -124,28 +124,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* VIDEO WALKTHROUGH SECTION */}
-      <section id="demo" className="py-20 bg-zinc-950 border-t border-zinc-900">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-           <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-xs font-semibold uppercase tracking-wide mb-6">
-              <Zap className="w-4 h-4" />
-              See it in action
-           </div>
-           <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">
-             Watch how easy it is to <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-amber-400">fill your chair</span>
-           </h2>
-           
-           <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-rose-900/10 border border-zinc-800 bg-zinc-900 aspect-video">
-              <iframe 
-                className="absolute inset-0 w-full h-full" 
-                src="https://www.youtube.com/embed/ru9JoVg3A5o?si=1acHFz1ftCTVdPrH&amp;start=41" 
-                title="Appointor Walkthrough" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowFullScreen
-              ></iframe>
-           </div>
-        </div>
-      </section>
 
       {/* PROBLEM SECTION */}
       <section className="py-24 bg-zinc-900/30">
@@ -249,7 +227,7 @@ export default function LandingPage() {
       </section>
 
       {/* WHO IT'S FOR */}
-      <section className="py-24 bg-slate-900 text-white">
+      <section className="py-24 bg-zinc-900/30 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
            <div className="text-center mb-16">
              <h2 className="text-3xl md:text-5xl font-bold mb-6">
@@ -353,13 +331,13 @@ export default function LandingPage() {
       </section>
       
       {/* VIDEO WALKTHROUGH SECTION */}
-      <section id="demo" className="py-20 bg-white border-t border-slate-100">
+      <section id="demo" className="py-20 bg-zinc-900/30 border-t">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
            <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-50 border border-purple-100 rounded-full text-purple-700 text-xs font-semibold uppercase tracking-wide mb-6">
               <Zap className="w-4 h-4" />
               See it in action
            </div>
-           <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-8">
+           <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">
              Watch how easy it is to <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">fill your chair</span>
            </h2>
            
@@ -434,7 +412,7 @@ export default function LandingPage() {
             </div>
             <h2 className="text-2xl font-bold text-white mb-6">Built for precision. Made for artists.</h2>
             <p className="text-lg text-slate-400 leading-relaxed italic">
-              &quot;As a B.Tech ECE student, I learned that precision is everything—whether in circuits or in ink. I built Appointor to give local creators the professional, high-performance infrastructure their talent deserves.&quot;
+              &quot;As a B.Tech ECE student, I learned that precision is everything whether in circuits or in ink. I built Appointor to give local creators the professional, high-performance infrastructure their talent deserves.&quot;
             </p>
             <p className="mt-4 font-bold text-white">— Jatin, Founder</p>
         </div>

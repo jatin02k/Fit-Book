@@ -71,7 +71,7 @@ export default async function AppointmentsListPage() {
   const uniqueServices = Array.from(new Set(servicesData?.map(s => s.name) || []));
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-zinc-950">
       <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0">
          {!isSubscribed && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between shadow-sm">

@@ -110,10 +110,10 @@ export default function BusinessHoursForm({ initialHours = [] }: { initialHours:
 
   return (
     <div className="lg:col-span-1">
-      <Card className="border-2 border-orange-200 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-orange-50 to-pink-50 border-b border-orange-100">
-          <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-gradient-to-r from-orange-500 to-pink-500 rounded-lg">
+      <Card className="bg-zinc-900 border-zinc-800 shadow-lg">
+        <CardHeader className="bg-zinc-800/50 border-b border-zinc-700">
+          <CardTitle className="flex items-center gap-2 text-white">
+            <div className="p-2 bg-orange-600 rounded-lg">
               <Clock className="h-5 w-5 text-white" />
             </div>
             Set Business Hours
@@ -133,10 +133,10 @@ export default function BusinessHoursForm({ initialHours = [] }: { initialHours:
                 return (
                   <div
                     key={dayHours.day_of_week} 
-                    className={`bg-gradient-to-r ${gradient} border-2 border-gray-200 rounded-lg p-4`}
+                    className="bg-zinc-800 border border-zinc-700 rounded-lg p-4"
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-black">{dayHours.name}</h3> {/* FIX: Use name property for display */}
+                      <h3 className="text-white font-semibold">{dayHours.name}</h3> {/* FIX: Use name property for display */}
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
@@ -150,7 +150,7 @@ export default function BusinessHoursForm({ initialHours = [] }: { initialHours:
                           }
                           className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
                         />
-                        <span className="text-sm text-gray-700">Open</span>
+                        <span className="text-sm text-slate-300">Open</span>
                       </label>
                     </div>
 
@@ -159,7 +159,7 @@ export default function BusinessHoursForm({ initialHours = [] }: { initialHours:
                         <div>
                           <Label
                             htmlFor={`start-${dayHours.day_of_week}`}
-                            className="text-xs text-gray-600"
+                            className="text-xs text-slate-400"
                           >
                             Start Time
                           </Label>
@@ -180,7 +180,7 @@ export default function BusinessHoursForm({ initialHours = [] }: { initialHours:
                         <div>
                           <Label
                             htmlFor={`end-${dayHours.day_of_week}`}
-                            className="text-xs text-gray-600"
+                            className="text-xs text-slate-400"
                           >
                             End Time
                           </Label>
@@ -202,7 +202,7 @@ export default function BusinessHoursForm({ initialHours = [] }: { initialHours:
                     )}
 
                     {!dayHours.isOpen && (
-                      <p className="text-sm text-gray-500 text-center py-2">
+                      <p className="text-sm text-slate-400 text-center py-2">
                         Closed
                       </p>
                     )}
@@ -213,7 +213,7 @@ export default function BusinessHoursForm({ initialHours = [] }: { initialHours:
               <Button 
                 type="submit" 
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.01] p-3 rounded-lg font-bold disabled:opacity-50 disabled:scale-100"
+                className="w-full bg-orange-600 text-white hover:bg-orange-700 transition-all duration-300 p-3 rounded-lg font-bold disabled:opacity-50"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {isLoading ? 'Saving...' : 'Save Business Hours'}

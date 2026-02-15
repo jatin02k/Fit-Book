@@ -187,15 +187,15 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
   const isActive = status === 'active';
 
   return (
-    <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0 min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+    <div className="p-4 md:p-8 md:ml-64 mt-16 md:mt-0 min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       
       <div className="w-full max-w-5xl mx-auto">
         <div className="text-center mb-12">
-           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+           <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
               Upgrade to <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">Pro</span>
            </h1>
-           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
               Unlock the full potential of Appointor. Unlimited bookings, advanced appointments management, and premium support.
            </p>
         </div>
@@ -224,9 +224,9 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
              {/* Glow Effect */}
              <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
              
-             <div className="relative bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col">
+             <div className="relative bg-zinc-900 rounded-2xl shadow-xl border border-zinc-800 overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="p-8 bg-gray-900 text-white text-center relative overflow-hidden">
+                <div className="p-8 bg-zinc-800 text-white text-center relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-1/4 -translate-y-1/4">
                        <Sparkles className="w-32 h-32" />
                     </div>
@@ -239,7 +239,7 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
                 </div>
 
                 {/* Features */}
-                <div className="p-8 flex-1 bg-white">
+                <div className="p-8 flex-1 bg-zinc-900">
                    <ul className="space-y-4 mb-8">
                      {[
                        "Unlimited Services & Appointments",
@@ -251,21 +251,21 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
                      ].map((feature, i) => (
                        <li key={i} className="flex items-start">
                           <CheckCircle className="w-5 h-5 mr-3 text-green-500 flex-shrink-0" />
-                          <span className="text-gray-700">{feature}</span>
+                          <span className="text-slate-300">{feature}</span>
                        </li>
                      ))}
                    </ul>
 
                    {!isActive && (
-                     <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mb-6 rounded-r-md">
-                        <p className="text-sm text-orange-800">
+                     <div className="bg-orange-900/30 border-l-4 border-orange-500 p-4 mb-6 rounded-r-md">
+                        <p className="text-sm text-orange-300">
                            <span className="font-bold">Note:</span> Your subscription is currently inactive. Subscribe now to access all features.
                         </p>
                      </div>
                    )}
                    
                    {isActive ? (
-                      <Button className="w-full py-6 text-lg bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 shadow-none cursor-default font-semibold">
+                      <Button className="w-full py-6 text-lg bg-zinc-800 text-slate-300 hover:bg-zinc-700 border border-zinc-700 shadow-none cursor-default font-semibold">
                          <div className="flex items-center justify-center">
                             <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
                             Currently Active
@@ -282,7 +282,7 @@ export default function SubscriptionPage({ params }: SubscriptionPageProps) {
                       </Button>
                    )}
                    
-                   <p className="text-xs text-center text-gray-400 mt-4">
+                   <p className="text-xs text-center text-slate-500 mt-4">
                       Secure payment via Razorpay. Cancel anytime.
                    </p>
                 </div>

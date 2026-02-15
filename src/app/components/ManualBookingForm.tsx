@@ -223,10 +223,10 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <UserPlus className="h-8 w-8 text-blue-500" />
-            <h1 className="text-3xl text-black">Manual Booking</h1>
+            <UserPlus className="h-8 w-8 text-blue-400" />
+            <h1 className="text-3xl text-white">Manual Booking</h1>
           </div>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-slate-400">
             Create walk-in appointments and manage bookings for clients
           </p>
         </div>
@@ -255,9 +255,9 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
           {/* Left Column - Service & Time Selection */}
           <div className="space-y-6">
             {/* Service Selection */}
-            <Card>
+            <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
-                <CardTitle className="text-black">Select Service</CardTitle>
+                <CardTitle className="text-white">Select Service</CardTitle>
               </CardHeader>
               <CardContent>
                 <Select value={selectedService} onValueChange={setSelectedService}>
@@ -276,9 +276,9 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
             </Card>
 
             {/* Date Selection */}
-            <Card>
+            <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
-                <CardTitle className="text-black">Choose Date</CardTitle>
+                <CardTitle className="text-white">Choose Date</CardTitle>
               </CardHeader>
               <CardContent>
                 <Calendar
@@ -292,11 +292,11 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
             </Card>
 
             {/* Time Selection */}
-            <Card>
+            <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
-                <CardTitle className="text-black">Available Times</CardTitle>
+                <CardTitle className="text-white">Available Times</CardTitle>
                 {selectedDate && selectedService && (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-slate-400">
                     {selectedDate.toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -308,11 +308,11 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
               </CardHeader>
               <CardContent>
                 {!selectedDate || !selectedService ? (
-                  <p className="text-gray-500 text-center py-8">
+                  <p className="text-slate-400 text-center py-8">
                     Please select a service and date first
                   </p>
                 ) : isLoadingSlots ? (
-                  <p className="text-gray-500 text-center py-8">
+                  <p className="text-slate-400 text-center py-8">
                     Loading available slots...
                   </p>
                 ) : (
@@ -328,8 +328,8 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
                             selectedTime === time
                               ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-blue-500'
                               : available
-                              ? 'bg-white text-black border-gray-300 hover:border-blue-500 hover:bg-blue-50'
-                              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                              ? 'bg-zinc-800 text-white border-zinc-700 hover:border-blue-500 hover:bg-zinc-700'
+                              : 'bg-zinc-950 text-slate-600 border-zinc-800 cursor-not-allowed'
                           }`}
                         >
                           {time}
@@ -348,13 +348,13 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
           {/* Right Column - Customer Information */}
           <div className="space-y-6">
             {/* Customer Details */}
-            <Card>
+            <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
-                <CardTitle className="text-black">Client Information</CardTitle>
+                <CardTitle className="text-white">Client Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-black">Full Name *</Label>
+                  <Label htmlFor="name" className="text-slate-300">Full Name *</Label>
                   <Input
                     id="name"
                     type="text"
@@ -366,7 +366,7 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-black">Email Address *</Label>
+                  <Label htmlFor="email" className="text-slate-300">Email Address *</Label>
                   <Input
                     id="email"
                     type="email"
@@ -378,7 +378,7 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-black">Phone Number *</Label>
+                  <Label htmlFor="phone" className="text-slate-300">Phone Number *</Label>
                   <Input
                     id="phone"
                     type="tel"
@@ -393,18 +393,18 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
 
             {/* Booking Summary */}
             {selectedService && selectedDate && selectedTime && (
-              <Card className="border-orange-200 bg-orange-50">
+              <Card className="bg-zinc-800 border-zinc-700">
                 <CardHeader>
-                  <CardTitle className="text-black">Booking Summary</CardTitle>
+                  <CardTitle className="text-white">Booking Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-700">Service:</span>
-                    <span className="text-black">{selectedServiceData?.name}</span>
+                    <span className="text-slate-400">Service:</span>
+                    <span className="text-white">{selectedServiceData?.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-700">Date:</span>
-                    <span className="text-black">
+                    <span className="text-slate-400">Date:</span>
+                    <span className="text-white">
                       {selectedDate.toLocaleDateString('en-US', { 
                         month: 'short', 
                         day: 'numeric',
@@ -413,12 +413,12 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-700">Time:</span>
-                    <span className="text-black">{selectedTime}</span>
+                    <span className="text-slate-400">Time:</span>
+                    <span className="text-white">{selectedTime}</span>
                   </div>
-                  <div className="flex justify-between border-t border-orange-200 pt-3">
-                    <span className="text-black">Total:</span>
-                    <span className="text-xl text-black">{selectedServiceData?.price}</span>
+                  <div className="flex justify-between border-t border-zinc-700 pt-3">
+                    <span className="text-white font-semibold">Total:</span>
+                    <span className="text-xl text-white font-bold">{selectedServiceData?.price}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -435,7 +435,7 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
             </Button>
 
             {/* Info Text */}
-            <p className="text-sm text-gray-500 text-center">
+            <p className="text-sm text-slate-500 text-center">
               This booking will be added to the appointments calendar and prevent overlapping bookings
             </p>
           </div>
@@ -443,9 +443,9 @@ export function ManualBookingForm({ services, businessHours, createBookingAction
 
         {/* Current Unavailable Slots Info */}
         {unavailableSlots.length > 0 && selectedDate && selectedService && (
-          <Card className="mt-6 border-blue-200 bg-blue-50">
+          <Card className="mt-6 bg-blue-900/30 border-blue-700">
             <CardContent className="pt-6">
-              <p className="text-sm text-blue-800">
+              <p className="text-sm text-blue-300">
                 <strong>Already Booked:</strong> {unavailableSlots.join(", ")} for {selectedServiceData?.name} on {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </p>
             </CardContent>

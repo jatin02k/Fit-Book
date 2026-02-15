@@ -246,11 +246,11 @@ export default function ServiceOverview({
 
   return (
     <div className="lg:col-span-1">
-      <Card className="border-2 border-purple-200 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 border-b border-purple-100">
-          <CardTitle className="flex items-center justify-between">
+      <Card className="bg-zinc-900 border-zinc-800 shadow-lg">
+        <CardHeader className="bg-zinc-800/50 border-b border-zinc-700">
+          <CardTitle className="flex items-center justify-between text-white">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg">
+              <div className="p-2 bg-purple-600 rounded-lg">
                 <Briefcase className="h-5 w-5 text-white" />
               </div>
               Service Overview
@@ -259,13 +259,13 @@ export default function ServiceOverview({
               <DialogTrigger asChild>
                 <Button
                   size="sm"
-                  className="bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300"
+                  className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Add Service
                 </Button>
               </DialogTrigger>
-              <DialogContent className=" bg-gray-50">
+              <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
                 <DialogHeader>
                   <DialogTitle>Add New Service</DialogTitle>
                 </DialogHeader>
@@ -375,10 +375,10 @@ export default function ServiceOverview({
               return (
                 <div
                   key={service.id}
-                  className={`bg-gradient-to-r ${gradient.bg} border-2 ${gradient.border} rounded-lg p-4 hover:shadow-md transition-all duration-300`}
+                  className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 hover:bg-zinc-700/50 transition-all duration-300"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-black">{service.name}</h3>
+                    <h3 className="text-white font-semibold">{service.name}</h3>
                     <div className="flex items-center gap-2">
                       {/* <Badge className={`bg-gradient-to-r ${gradient.badge} text-white border-0`}>
                             {service.status}
@@ -394,7 +394,7 @@ export default function ServiceOverview({
                               <Edit className="h-3 w-3" />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className=" bg-gray-100">
+                          <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
                             <DialogHeader>
                               <DialogTitle>Edit Service</DialogTitle>
                             </DialogHeader>
@@ -513,22 +513,22 @@ export default function ServiceOverview({
                       </div>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-slate-400 mt-1">
                     {service.description}
                   </p>
                   <br />
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-4 text-sm text-slate-300">
                     <span>⏱️ {service.duration_minutes}min</span>
                     <span>💰 ₹{String(service.price)}</span>
                   </div>
                   <br />
                   
                   {service.features.length > 0 && (
-                    <ul className="text-sm text-gray-600 list-disc list-inside space-y-1 ml-4">
+                    <ul className="text-sm text-slate-300 list-disc list-inside space-y-1 ml-4">
                       {service.features.map((feature, i) => (
                         <li key={i} className="flex items-start">
                           {/* Custom list bullet for styling */}
-                          <span className="inline-block mr-1 text-purple-500 text-lg leading-none">
+                          <span className="inline-block mr-1 text-purple-400 text-lg leading-none">
                             &bull;
                           </span>
                           <span className="flex-1">{feature}</span>

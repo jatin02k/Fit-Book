@@ -93,12 +93,12 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
         
         {/* Quick Stats - Moved to Top */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          <Card className="border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow bg-zinc-900 border-t-0 border-r-0 border-b-0">
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Today&apos;s Appointments</p>
-                  <h3 className="text-3xl font-bold text-gray-900 mt-1">
+                  <p className="text-sm font-medium text-slate-400">Today&apos;s Appointments</p>
+                  <h3 className="text-3xl font-bold text-white mt-1">
                     {getAppointmentsForDate(new Date()).length}
                   </h3>
                 </div>
@@ -106,12 +106,12 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-green-500 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-l-4 border-green-500 shadow-sm hover:shadow-md transition-shadow bg-zinc-900 border-t-0 border-r-0 border-b-0">
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                   <p className="text-sm font-medium text-gray-500">Total Scheduled</p>
-                   <h3 className="text-3xl font-bold text-gray-900 mt-1">{totalAppointments}</h3>
+                   <p className="text-sm font-medium text-slate-400">Total Scheduled</p>
+                   <h3 className="text-3xl font-bold text-white mt-1">{totalAppointments}</h3>
                 </div>
                 <div className="bg-green-100 p-3 rounded-full">
                   <User className="h-6 w-6 text-green-600" />
@@ -120,12 +120,12 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-yellow-500 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-l-4 border-yellow-500 shadow-sm hover:shadow-md transition-shadow bg-zinc-900 border-t-0 border-r-0 border-b-0">
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center justify-between">
                  <div>
-                    <p className="text-sm font-medium text-gray-500">Pending Actions</p>
-                    <h3 className="text-3xl font-bold text-gray-900 mt-1">
+                    <p className="text-sm font-medium text-slate-400">Pending Actions</p>
+                    <h3 className="text-3xl font-bold text-white mt-1">
                         {appointments.filter((apt) => apt.status === "pending").length}
                     </h3>
                  </div>
@@ -140,10 +140,10 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Calendar Picker */}
           <div className="lg:col-span-1 max-w-[100vw] overflow-hidden">
-            <Card className="shadow-sm border-gray-100 h-full overflow-hidden">
+            <Card className="shadow-sm border-zinc-800 h-full overflow-hidden bg-zinc-900">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-semibold text-gray-900">Calendar</CardTitle>
-                <p className="text-sm text-gray-500">Select a date to view details</p>
+                <CardTitle className="text-lg font-semibold text-white">Calendar</CardTitle>
+                <p className="text-sm text-slate-400">Select a date to view details</p>
               </CardHeader>
               <CardContent className="flex justify-center pt-2 p-1 md:p-6">
                 <Calendar
@@ -158,14 +158,14 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
           
           {/* Daily Schedule */}
           <div className="lg:col-span-2">
-            <Card className="shadow-sm border-gray-100 h-full min-h-[400px]">
-              <CardHeader className="border-b border-gray-100 bg-gray-50/50">
+            <Card className="shadow-sm border-zinc-800 h-full min-h-[400px] bg-zinc-900">
+              <CardHeader className="border-b border-zinc-800 bg-zinc-800/50">
                 <div className="flex items-center justify-between">
                     <div>
                         <CardTitle className="flex items-center gap-2 text-xl">
                         Schedule
                         </CardTitle>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-slate-400 mt-1">
                             {selectedDate?.toLocaleDateString("en-US", {
                                 weekday: "long",
                                 month: "long",
@@ -179,36 +179,36 @@ export function CalendarComponent({ appointments }: CalendarComponentProps) {
               </CardHeader>
               <CardContent className="p-0">
                 {totalAppointments === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+                    <div className="flex flex-col items-center justify-center py-16 text-slate-400">
                        
                         <p>No appointments scheduled</p>
                     </div>
                 ) : selectedDateAppointments.length === 0 ? (
-                   <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+                   <div className="flex flex-col items-center justify-center py-16 text-slate-400">
                       <p>No appointments for this specific date.</p>
                       <Button variant="link" className="mt-2" onClick={() => setSelectedDate(undefined)}>View All</Button>
                    </div>
                 ) : (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-zinc-800">
                     {selectedDateAppointments.map((appointment) => (
                       <div
                         key={appointment.id}
-                        className="p-4 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 hover:border-gray-500"
+                        className="p-4 hover:bg-zinc-800/50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 hover:border-zinc-700"
                       >
                         <div className="flex items-start gap-4">
                             <div className={`p-2 rounded-lg ${getServiceColor(appointment.serviceName).split(' ')[0]}`}>
                                 {getServiceIcon(appointment.serviceName)}
                             </div>
                             <div>
-                              <h4 className="font-semibold text-gray-900">{appointment.customerName}</h4>
-                              <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                              <h4 className="font-semibold text-white">{appointment.customerName}</h4>
+                              <div className="flex items-center gap-2 text-sm text-slate-400 mt-1">
                                  <Clock className="h-3 w-3" />
                                  {formatTime(new Date(appointment.start))} - {formatTime(new Date(new Date(appointment.start).getTime() + appointment.serviceDuration * 60000))}
                               </div>
                             </div>
                         </div>
                         <div className="flex items-center gap-3 self-end sm:self-center">
-                            <Badge variant="outline" className="border-gray-200 text-gray-600 bg-white">
+                            <Badge variant="outline" className="border-zinc-700 text-slate-300 bg-zinc-800">
                                 {appointment.serviceName}
                             </Badge>
                             <Badge className={`${getStatusColor(appointment.status)} border-0`}>

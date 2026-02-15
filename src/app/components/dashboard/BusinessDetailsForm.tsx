@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { useState, useRef } from "react";
+import { useState, useRef } from "react"
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
